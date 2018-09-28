@@ -60,4 +60,11 @@ public class Territory {
     public void setOwner(Player owner) {
         this.owner = owner;
     }
+
+	@Override
+	public String toString() {
+		return this.name;
+	}
+    
+    
 }

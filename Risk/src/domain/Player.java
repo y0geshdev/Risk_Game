@@ -22,5 +22,12 @@ public class Player {
 	public void setTerritories(List<Territory> territories) {
 		this.territories = territories;
 	}
+	
+	@Override
+	public String toString() {
+		return this.name;
+	}
+	
+	
 
 }

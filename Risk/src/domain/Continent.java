@@ -51,4 +51,11 @@ public class Continent {
     public void setTerritories(List<Territory> territories) {
         this.territories = territories;
     }
+
+	@Override
+	public String toString() {
+		return this.name;
+	}
+    
+    
 }

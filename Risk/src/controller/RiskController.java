@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import domain.Continent;
+import domain.Territory;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -15,6 +17,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.FileChooser;
+import javafx.stage.FileChooser.ExtensionFilter;
 
 /**
  * RiskController class have all the methods which handle different actions
@@ -59,13 +62,13 @@ public class RiskController {
 	private AnchorPane lowerAP;
 
 	@FXML
-	private ComboBox<String> contsCB;
+	private ComboBox<Continent> contsCB;
 
 	@FXML
-	private ListView<String> allTerritoriesCTMapping;
+	private ListView<Territory> allTerritoriesCTMapping;
 
 	@FXML
-	private ListView<String> mappedTerritoriesCTMapping;
+	private ListView<Territory> mappedTerritoriesCTMapping;
 
 	@FXML
 	private Button removeTerrsToContsButton;
@@ -74,13 +77,13 @@ public class RiskController {
 	private Button addTerrsToContsButton;
 
 	@FXML
-	private ComboBox<String> terrsCB;
+	private ComboBox<Territory> terrsCB;
 
 	@FXML
-	private ListView<String> allTerritoriesTTMapping;
+	private ListView<Territory> allTerritoriesTTMapping;
 
 	@FXML
-	private ListView<String> mappedTerritoriesTTMapping;
+	private ListView<Territory> mappedTerritoriesTTMapping;
 
 	@FXML
 	private Button addTerrsToTerrsButton;
@@ -94,10 +97,10 @@ public class RiskController {
 	@FXML
 	private Button saveMapButton;
 
-	private HashMap<String, List<String>> continentTerritoriesMapping = new HashMap<>();
-	private HashMap<String, List<String>> neighbourTerritoriesMapping = new HashMap<>();
-	private ArrayList<String> continentsList = new ArrayList<>();
-	private ArrayList<String> territoriesList = new ArrayList<>();
+	private HashMap<Continent, List<Territory>> continentTerritoriesMapping = new HashMap<>();
+	private HashMap<Territory, List<Territory>> neighbourTerritoriesMapping = new HashMap<>();
+	private ArrayList<Continent> continentsList = new ArrayList<>();
+	private ArrayList<Territory> territoriesList = new ArrayList<>();
 
 	/**
 	 * This method handle {@link RiskController#generateMap} button event. This
@@ -126,15 +129,16 @@ public class RiskController {
 			return;
 		}
 		errorLabelMaps.setText("");
-		String tempContinent;
+		// String tempContinent;
+		Continent tempContinent;
 		for (int i = 1; i <= continents; i++) {
-			tempContinent = "Continent " + i;
+			tempContinent = new Continent("Continent " + i);
 			continentsList.add(tempContinent);
 			continentTerritoriesMapping.put(tempContinent, new ArrayList<>());
 		}
-		String tempTerritory;
+		Territory tempTerritory;
 		for (int i = 1; i <= territories; i++) {
-			tempTerritory = "Territory " + i;
+			tempTerritory = new Territory("Territory " + i);
 			territoriesList.add(tempTerritory);
 			neighbourTerritoriesMapping.put(tempTerritory, new ArrayList<>());
 		}
@@ -163,6 +167,7 @@ public class RiskController {
 	public void chooseMapToModify(ActionEvent event) {
 		// cleanUp();
 		FileChooser chooser = new FileChooser();
+		chooser.getExtensionFilters().add(new ExtensionFilter(".map file", "*.map"));
 		File file = chooser.showOpenDialog(null);
 		mapPathMaps.setText(file == null ? "" : file.getAbsolutePath());
 	}
@@ -178,6 +183,7 @@ public class RiskController {
 	public void chooseMapToPlayGame(ActionEvent event) {
 		// cleanUp();
 		FileChooser chooser = new FileChooser();
+		chooser.getExtensionFilters().add(new ExtensionFilter(".map file", "*.map"));
 		File file = chooser.showOpenDialog(null);
 		mapPathGame.setText(file == null ? "" : file.getAbsolutePath());
 	}
@@ -191,7 +197,7 @@ public class RiskController {
 	 */
 	@FXML
 	public void updateTerritoriesPerContinent(ActionEvent event) {
-		String selectedContinent = contsCB.getValue();
+		Continent selectedContinent = contsCB.getValue();
 		mappedTerritoriesCTMapping
 				.setItems(FXCollections.observableList(continentTerritoriesMapping.get(selectedContinent)));
 	}
@@ -205,9 +211,9 @@ public class RiskController {
 	 */
 	@FXML
 	public void addTerritoriesToContinent(ActionEvent event) {
-		String selectedTerritory = allTerritoriesCTMapping.getSelectionModel().getSelectedItem();
-		String selectedContinent = contsCB.getValue();
-		if (!continentTerritoriesMapping.get(selectedContinent).contains(selectedTerritory)) {
+		Territory selectedTerritory = allTerritoriesCTMapping.getSelectionModel().getSelectedItem();
+		Continent selectedContinent = contsCB.getValue();
+		if (selectedTerritory!=null && !continentTerritoriesMapping.get(selectedContinent).contains(selectedTerritory) ) {
 			continentTerritoriesMapping.get(selectedContinent).add(selectedTerritory);
 		}
 		mappedTerritoriesCTMapping
@@ -223,8 +229,8 @@ public class RiskController {
 	 */
 	@FXML
 	public void removeTerritoriesToContinent(ActionEvent event) {
-		String selectedTerritory = mappedTerritoriesCTMapping.getSelectionModel().getSelectedItem();
-		String selectedContinent = contsCB.getValue();
+		Territory selectedTerritory = mappedTerritoriesCTMapping.getSelectionModel().getSelectedItem();
+		Continent selectedContinent = contsCB.getValue();
 		continentTerritoriesMapping.get(selectedContinent).remove(selectedTerritory);
 		mappedTerritoriesCTMapping
 				.setItems(FXCollections.observableList(continentTerritoriesMapping.get(selectedContinent)));
@@ -239,7 +245,7 @@ public class RiskController {
 	 */
 	@FXML
 	public void updateTerritoriesPerTerritory(ActionEvent event) {
-		String selectedTerritory = terrsCB.getValue();
+		Territory selectedTerritory = terrsCB.getValue();
 		mappedTerritoriesTTMapping
 				.setItems(FXCollections.observableList(neighbourTerritoriesMapping.get(selectedTerritory)));
 	}
@@ -254,9 +260,9 @@ public class RiskController {
 	 */
 	@FXML
 	public void addTerritoriesToTerritory(ActionEvent event) {
-		String neighbourTerritory = allTerritoriesTTMapping.getSelectionModel().getSelectedItem();
-		String selectedTerritory = terrsCB.getValue();
-		if (!neighbourTerritoriesMapping.get(selectedTerritory).contains(neighbourTerritory)) {
+		Territory neighbourTerritory = allTerritoriesTTMapping.getSelectionModel().getSelectedItem();
+		Territory selectedTerritory = terrsCB.getValue();
+		if (neighbourTerritory!= null && !neighbourTerritoriesMapping.get(selectedTerritory).contains(neighbourTerritory)) {
 			neighbourTerritoriesMapping.get(selectedTerritory).add(neighbourTerritory);
 		}
 		mappedTerritoriesTTMapping
@@ -273,8 +279,8 @@ public class RiskController {
 	 */
 	@FXML
 	public void removeTerritoriesToTerritory(ActionEvent event) {
-		String neighbourTerritory = mappedTerritoriesTTMapping.getSelectionModel().getSelectedItem();
-		String selectedTerritory = terrsCB.getValue();
+		Territory neighbourTerritory = mappedTerritoriesTTMapping.getSelectionModel().getSelectedItem();
+		Territory selectedTerritory = terrsCB.getValue();
 		neighbourTerritoriesMapping.get(selectedTerritory).remove(neighbourTerritory);
 		mappedTerritoriesTTMapping
 				.setItems(FXCollections.observableList(neighbourTerritoriesMapping.get(selectedTerritory)));
@@ -289,7 +295,7 @@ public class RiskController {
 		allTerritoriesTTMapping.setItems(null);
 		mappedTerritoriesCTMapping.setItems(null);
 		allTerritoriesCTMapping.setItems(null);
-		terrsCB.setValue("");
+		terrsCB.setValue(null);
 		contsCB.setItems(null);
 		errorLabelGame.setText("");
 		mapPathGame.setText("");
