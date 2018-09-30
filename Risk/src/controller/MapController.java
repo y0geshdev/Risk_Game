@@ -3,9 +3,13 @@ package controller;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import domain.Continent;
+import domain.GameConstants;
 import domain.Territory;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -19,6 +23,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import service.MapFileParser;
 import service.MapService;
 
 /**
@@ -364,11 +369,24 @@ public class MapController {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters().add(new ExtensionFilter(".map file", "*.map"));
 		File file = fileChooser.showSaveDialog(null);
-
+		Set<Territory> territoryObjectSet = new HashSet<>();
+		Set<Continent> continentObjectSet = new HashSet<>();
+		Map<String,Set> continentAndTerritorySetObjectMap	= new HashMap<>();
 		if (file != null) {
 			List<String> errorList = new ArrayList();
 			// validate the map.
-			mapService.validateMap(continentTerritoriesMapping, neighbourTerritoriesMapping, errorList);
+			MapFileParser fileParserObject	=	new MapFileParser();
+			
+			try {
+			continentAndTerritorySetObjectMap=	fileParserObject.parseFile(file, true);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			continentObjectSet	=	continentAndTerritorySetObjectMap.get(GameConstants.CONTINENT_SET_KEY);
+			territoryObjectSet	=	continentAndTerritorySetObjectMap.get(GameConstants.TERRITORY_SET_KEY);
+			
+			mapService.validateMap(continentObjectSet,territoryObjectSet , errorList);
 
 			// check for validation errors and proceed or notify user accordingly.
 			if (errorList.size() == 0) {
@@ -383,6 +401,7 @@ public class MapController {
 				errorLabelMapping.setText(errorList.get(0));
 		}
 	}
+
 
 	/**
 	 * This method is used to cleanup unrequited data from various labels and list
