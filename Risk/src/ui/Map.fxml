@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.MapController">
+	<VBox prefHeight="600.0" prefWidth="800.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+		<AnchorPane prefHeight="156.0" prefWidth="800.0" style="-fx-border-color: black;">
+			<opaqueInsets>
+				<Insets />
+			</opaqueInsets>
+			<SplitPane dividerPositions="0.5" layoutX="2.0" layoutY="2.0" prefHeight="147.0" prefWidth="798.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="1.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+					<Label alignment="CENTER" layoutX="167.0" layoutY="14.0" prefHeight="28.0" prefWidth="46.0" text="Maps" underline="true" AnchorPane.rightAnchor="182.0">
+						<font>
+							<Font size="14.0" />
+						</font>
+					</Label>
+					<Label layoutX="3.0" layoutY="52.0" text="No. Of Continents" />
+					<TextField fx:id="contsNo" layoutX="98.0" layoutY="48.0" prefHeight="22.0" prefWidth="51.0" promptText="numeric" />
+					<TextField fx:id="terrsNo" layoutX="247.0" layoutY="48.0" prefHeight="22.0" prefWidth="51.0" promptText="numeric" />
+					<Label layoutX="156.0" layoutY="52.0" text="No. Of Territories" />
+					<Button fx:id="generateMap" layoutX="308.0" layoutY="48.0" mnemonicParsing="false" onAction="#generateMapHandler" text="Generate Map" />
+					<Label layoutX="3.0" layoutY="83.0" text="Map Path" />
+					<TextField fx:id="mapPathMaps" layoutX="57.0" layoutY="79.0" prefHeight="22.0" prefWidth="159.0" promptText="map file path" />
+					<Button fx:id="chooseMaps" layoutX="223.0" layoutY="79.0" mnemonicParsing="false" onAction="#chooseMapToModify" prefHeight="22.0" prefWidth="75.0" text="Choose ..." />
+					<Button fx:id="modifyMap" layoutX="308.0" layoutY="79.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="85.0" text="Modify Map" />
+					<Label fx:id="errorLabelMaps" alignment="CENTER" contentDisplay="CENTER" layoutX="13.0" layoutY="113.0" prefHeight="14.0" prefWidth="214.0" textFill="#f50202" />
+				</AnchorPane>
+				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="147.0" prefWidth="355.0">
+					<Label alignment="CENTER" layoutX="193.0" layoutY="14.0" prefHeight="28.0" prefWidth="46.0" text="Game" underline="true" AnchorPane.leftAnchor="175.0">
+						<font>
+							<Font size="14.0" />
+						</font>
+					</Label>
+					<Label layoutX="24.0" layoutY="50.0" text="Choose Map" />
+					<TextField fx:id="mapPathGame" layoutX="97.0" layoutY="46.0" prefHeight="22.0" prefWidth="159.0" promptText="map file path" />
+					<Button fx:id="chooseGame" layoutX="270.0" layoutY="46.0" mnemonicParsing="false" onAction="#chooseMapToPlayGame" prefHeight="22.0" prefWidth="75.0" text="Choose..." />
+					<Button layoutX="270.0" layoutY="88.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="75.0" text="Start Game" />
+					<Label fx:id="errorLabelGame" alignment="CENTER" contentDisplay="CENTER" layoutX="24.0" layoutY="110.0" prefHeight="14.0" prefWidth="214.0" textFill="#ff0404" />
+				</AnchorPane>
+			</SplitPane>
+		</AnchorPane>
+		<AnchorPane fx:id="lowerAP" prefHeight="451.0" prefWidth="800.0" style="-fx-border-color: black;" VBox.vgrow="ALWAYS">
+			<Label alignment="CENTER" contentDisplay="CENTER" layoutX="50.0" layoutY="7.0" prefHeight="15.0" prefWidth="176.0" text="Continents - Territories Mapping" textAlignment="CENTER" AnchorPane.leftAnchor="50.0" AnchorPane.rightAnchor="49.0">
+				<font>
+					<Font size="12.0" />
+				</font>
+			</Label>
+			<ComboBox fx:id="contsCB" layoutX="19.0" layoutY="30.0" onAction="#updateTerritoriesPerContinent" prefHeight="22.0" prefWidth="138.0" AnchorPane.leftAnchor="19.0" />
+			<SplitPane dividerPositions="0.5" layoutX="167.0" layoutY="31.0" prefHeight="155.0" prefWidth="615.0" AnchorPane.leftAnchor="167.0" AnchorPane.rightAnchor="18.0">
+				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+					<ListView fx:id="allTerritoriesCTMapping" layoutX="29.0" layoutY="-56.0" prefHeight="158.0" prefWidth="172.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+				</AnchorPane>
+				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+					<ListView fx:id="mappedTerritoriesCTMapping" layoutX="-34.0" prefHeight="158.0" prefWidth="460.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+				</AnchorPane>
+			</SplitPane>
+			<Button fx:id="removeTerrsToContsButton" layoutX="93.0" layoutY="72.0" mnemonicParsing="false" onAction="#removeTerritoriesToContinent" prefHeight="22.0" prefWidth="67.0" text="Remove" AnchorPane.leftAnchor="93.0" AnchorPane.topAnchor="72.0" />
+			<Button fx:id="addTerrsToContsButton" layoutX="20.0" layoutY="71.0" mnemonicParsing="false" onAction="#addTerritoriesToContinent" prefHeight="22.0" prefWidth="67.0" text="Add" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="71.0" />
+			<ComboBox fx:id="terrsCB" layoutX="25.0" layoutY="224.0" onAction="#updateTerritoriesPerTerritory" prefHeight="22.0" prefWidth="138.0" AnchorPane.leftAnchor="24.0" />
+			<SplitPane dividerPositions="0.49592169657422513" layoutX="169.0" layoutY="224.0" prefHeight="155.0" prefWidth="615.0" AnchorPane.leftAnchor="169.0" AnchorPane.rightAnchor="20.0">
+				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+					<ListView fx:id="allTerritoriesTTMapping" layoutX="14.0" layoutY="-14.0" prefHeight="153.0" prefWidth="301.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+				</AnchorPane>
+				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="400.0">
+					<ListView fx:id="mappedTerritoriesTTMapping" prefHeight="153.0" prefWidth="306.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+				</AnchorPane>
+			</SplitPane>
+			<Button fx:id="addTerrsToTerrsButton" layoutX="21.0" layoutY="266.0" mnemonicParsing="false" onAction="#addTerritoriesToTerritory" prefHeight="22.0" prefWidth="67.0" text="Add" />
+			<Button fx:id="removeTerrsToTerrsButton" layoutX="93.0" layoutY="266.0" mnemonicParsing="false" onAction="#removeTerritoriesToTerritory" prefHeight="22.0" prefWidth="67.0" text="Remove" />
+			<Label alignment="CENTER" contentDisplay="CENTER" layoutX="51.0" layoutY="199.0" text="Territories - Territories Mapping" textAlignment="CENTER" AnchorPane.leftAnchor="51.0" AnchorPane.rightAnchor="50.0">
+				<font>
+					<Font size="12.0" />
+				</font>
+			</Label>
+			<HBox layoutX="621.0" layoutY="412.0" prefHeight="22.0" prefWidth="159.0" AnchorPane.bottomAnchor="14.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="411.0">
+				<Button fx:id="showMapButton" mnemonicParsing="false" prefHeight="22.0" prefWidth="67.0" text="Show Map" />
+				<Region prefHeight="22.0" prefWidth="25.0" />
+				<Button fx:id="saveMapButton" mnemonicParsing="false" onAction="#saveMap" prefHeight="22.0" prefWidth="67.0" text="Save Map" />
+			</HBox>
+         <Label layoutX="20.0" layoutY="109.0" text="Continent Control Value" />
+         <TextField fx:id="contiControlValue" layoutX="21.0" layoutY="132.0" prefHeight="22.0" prefWidth="60.0" promptText="numeric" />
+         <Button fx:id="updateContiControlValueButton" layoutX="88.0" layoutY="132.0" mnemonicParsing="false" onAction="#updateContiControlValue" prefHeight="22.0" prefWidth="67.0" text="Update" />
+         <Label fx:id="errorLabelMapping" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="24.0" layoutY="416.0" prefHeight="14.0" prefWidth="572.0" textAlignment="RIGHT" textFill="#f50303" AnchorPane.leftAnchor="23.0" AnchorPane.rightAnchor="205.0" />
+         <Label fx:id="errorLabelCCV" layoutX="24.0" layoutY="166.0" prefHeight="14.0" prefWidth="131.0" textFill="#f50303" />
+         <Label fx:id="errorLabelTTM" layoutX="21.0" layoutY="308.0" prefHeight="14.0" prefWidth="131.0" textFill="#f50202" />
+		</AnchorPane>
+	</VBox>
+</AnchorPane>

@@ -11,14 +11,14 @@ public class Territory {
 
     private String name;
     private List<Territory> neighbourTerritories;
-    private String continent;
+    private Continent continent;
     private Player owner;
 
     public Territory() {
         this.neighbourTerritories = new ArrayList<>();
     }
 
-    public Territory(String name, String continent) {
+    public Territory(String name, Continent continent) {
         this.name = name;
         this.continent = continent;
         this.neighbourTerritories = new ArrayList<>();
@@ -45,11 +45,11 @@ public class Territory {
         this.neighbourTerritories = neighbourTerritories;
     }
 
-    public String getContinent() {
+    public Continent getContinent() {
         return continent;
     }
 
-    public void setContinent(String continent) {
+    public void setContinent(Continent continent) {
         this.continent = continent;
     }
 

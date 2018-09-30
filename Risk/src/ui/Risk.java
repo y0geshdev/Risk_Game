@@ -9,10 +9,10 @@ import javafx.stage.Stage;
 /**
  * This is the main entry point of application.
  * 
- * @author Naresh
+ * @author Yogesh
  *
  */
-public class Main extends Application {
+public class Risk extends Application {
 
 	/**
 	 * start() is an overridden method from Application abstract class which sets up
@@ -27,7 +27,7 @@ public class Main extends Application {
 	 */
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		Parent root = FXMLLoader.load(getClass().getResource("Risk.fxml"));
+		Parent root = FXMLLoader.load(getClass().getResource("Map.fxml"));
 		primaryStage.setTitle("RISK");
 		primaryStage.setScene(new Scene(root, 800, 600));
 		primaryStage.setResizable(false);
