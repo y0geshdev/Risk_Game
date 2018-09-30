@@ -2,7 +2,7 @@ package controller;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import domain.Continent;
@@ -114,10 +114,15 @@ public class MapController {
 	@FXML
 	private Label errorLabelTTM;
 
-	private HashMap<Continent, List<Territory>> continentTerritoriesMapping = new HashMap<>();
-	private HashMap<Territory, List<Territory>> neighbourTerritoriesMapping = new HashMap<>();
-	private ArrayList<Continent> continentsList = new ArrayList<>();
-	private ArrayList<Territory> territoriesList = new ArrayList<>();
+	/*
+	 * private HashMap<Continent, List<Territory>> continentTerritoriesMapping = new
+	 * HashMap<>(); private HashMap<Territory, List<Territory>>
+	 * neighbourTerritoriesMapping = new HashMap<>(); private ArrayList<Continent>
+	 * continentsList = new ArrayList<>(); private ArrayList<Territory>
+	 * territoriesList = new ArrayList<>();
+	 */
+	private HashSet<Continent> continentsSet = new HashSet();
+	private HashSet<Territory> territoriesSet = new HashSet();
 	private MapService mapService = new MapService();
 
 	/**
@@ -130,12 +135,9 @@ public class MapController {
 	 */
 	@FXML
 	public void generateMapHandler(ActionEvent event) {
-		// cleanUp();
-		/*
-		 * continentTerritoriesMapping = new HashMap<>(); neighbourTerritoriesMapping =
-		 * new HashMap<>(); continentsList = new ArrayList<>(); territoriesList = new
-		 * ArrayList<>();
-		 */
+		List<Continent> continentsList = new ArrayList<>();
+		List<Territory> territoriesList = new ArrayList<>();
+
 		int continents, territories;
 		try {
 			continents = Integer.parseInt(contsNo.getText());
@@ -146,33 +148,33 @@ public class MapController {
 			errorLabelMaps.setText("Invalid continents/territories.");
 			return;
 		}
+
 		errorLabelMaps.setText("");
-		// String tempContinent;
 		Continent tempContinent;
 		for (int i = 1; i <= continents; i++) {
 			tempContinent = new Continent("Continent " + i);
+			continentsSet.add(tempContinent);
 			continentsList.add(tempContinent);
-			continentTerritoriesMapping.put(tempContinent, new ArrayList<>());
 		}
+
 		Territory tempTerritory;
 		for (int i = 1; i <= territories; i++) {
 			tempTerritory = new Territory("Territory " + i);
+			territoriesSet.add(tempTerritory);
 			territoriesList.add(tempTerritory);
-			neighbourTerritoriesMapping.put(tempTerritory, new ArrayList<>());
 		}
 
 		contsCB.setItems(FXCollections.observableList(continentsList));
 		contsCB.setValue(continentsList.get(0));
 		contiControlValue.setText(String.valueOf(continentsList.get(0).getContinentArmyValue()));
 		allTerritoriesCTMapping.setItems(FXCollections.observableList(territoriesList));
-		mappedTerritoriesCTMapping
-				.setItems(FXCollections.observableList(continentTerritoriesMapping.get(continentsList.get(0))));
+		mappedTerritoriesCTMapping.setItems(FXCollections.observableList(continentsList.get(0).getTerritories()));
 
 		terrsCB.setItems(FXCollections.observableList(territoriesList));
 		terrsCB.setValue(territoriesList.get(0));
 		allTerritoriesTTMapping.setItems(FXCollections.observableList(territoriesList));
 		mappedTerritoriesTTMapping
-				.setItems(FXCollections.observableList(neighbourTerritoriesMapping.get(territoriesList.get(0))));
+				.setItems(FXCollections.observableList(territoriesList.get(0).getNeighbourTerritories()));
 	}
 
 	/**
@@ -200,7 +202,6 @@ public class MapController {
 	 */
 	@FXML
 	public void chooseMapToPlayGame(ActionEvent event) {
-		// cleanUp();
 		FileChooser chooser = new FileChooser();
 		chooser.getExtensionFilters().add(new ExtensionFilter(".map file", "*.map"));
 		File file = chooser.showOpenDialog(null);
@@ -217,8 +218,7 @@ public class MapController {
 	@FXML
 	public void updateTerritoriesPerContinent(ActionEvent event) {
 		Continent selectedContinent = contsCB.getValue();
-		mappedTerritoriesCTMapping
-				.setItems(FXCollections.observableList(continentTerritoriesMapping.get(selectedContinent)));
+		mappedTerritoriesCTMapping.setItems(FXCollections.observableList(selectedContinent.getTerritories()));
 		contiControlValue.setText(String.valueOf(selectedContinent.getContinentArmyValue()));
 	}
 
@@ -235,14 +235,14 @@ public class MapController {
 		Continent selectedContinent = contsCB.getValue();
 		errorLabelCCV.setText("");
 
-		if (selectedTerritory != null && !continentTerritoriesMapping.get(selectedContinent).contains(selectedTerritory)
+		if (selectedTerritory != null && !selectedContinent.getTerritories().contains(selectedTerritory)
 				&& selectedTerritory.getContinent() == null) {
-			continentTerritoriesMapping.get(selectedContinent).add(selectedTerritory);
+			selectedContinent.getTerritories().add(selectedTerritory);
 			selectedTerritory.setContinent(selectedContinent);
 		} else
 			errorLabelCCV.setText("Invalid territory selected.");
-		mappedTerritoriesCTMapping
-				.setItems(FXCollections.observableList(continentTerritoriesMapping.get(selectedContinent)));
+
+		mappedTerritoriesCTMapping.setItems(FXCollections.observableList(selectedContinent.getTerritories()));
 	}
 
 	/**
@@ -258,13 +258,12 @@ public class MapController {
 		Continent selectedContinent = contsCB.getValue();
 		errorLabelCCV.setText("");
 		if (selectedTerritory != null) {
-			continentTerritoriesMapping.get(selectedContinent).remove(selectedTerritory);
+			selectedContinent.getTerritories().remove(selectedTerritory);
 			selectedTerritory.setContinent(null);
 		} else
 			errorLabelCCV.setText("Invalid territory selected.");
 
-		mappedTerritoriesCTMapping
-				.setItems(FXCollections.observableList(continentTerritoriesMapping.get(selectedContinent)));
+		mappedTerritoriesCTMapping.setItems(FXCollections.observableList(selectedContinent.getTerritories()));
 	}
 
 	/**
@@ -277,8 +276,7 @@ public class MapController {
 	@FXML
 	public void updateTerritoriesPerTerritory(ActionEvent event) {
 		Territory selectedTerritory = terrsCB.getValue();
-		mappedTerritoriesTTMapping
-				.setItems(FXCollections.observableList(neighbourTerritoriesMapping.get(selectedTerritory)));
+		mappedTerritoriesTTMapping.setItems(FXCollections.observableList(selectedTerritory.getNeighbourTerritories()));
 	}
 
 	/**
@@ -294,14 +292,16 @@ public class MapController {
 		Territory neighbourTerritory = allTerritoriesTTMapping.getSelectionModel().getSelectedItem();
 		Territory selectedTerritory = terrsCB.getValue();
 		errorLabelTTM.setText("");
-		if (neighbourTerritory != null
-				&& !neighbourTerritoriesMapping.get(selectedTerritory).contains(neighbourTerritory)
+
+		if (neighbourTerritory != null && !selectedTerritory.getNeighbourTerritories().contains(neighbourTerritory)
 				&& !selectedTerritory.equals(neighbourTerritory)) {
-			neighbourTerritoriesMapping.get(selectedTerritory).add(neighbourTerritory);
+			selectedTerritory.getNeighbourTerritories().add(neighbourTerritory);
+			if (!neighbourTerritory.getNeighbourTerritories().contains(selectedTerritory)) {
+				neighbourTerritory.getNeighbourTerritories().add(selectedTerritory);
+			}
 		} else
 			errorLabelTTM.setText("Invalid territory selected.");
-		mappedTerritoriesTTMapping
-				.setItems(FXCollections.observableList(neighbourTerritoriesMapping.get(selectedTerritory)));
+		mappedTerritoriesTTMapping.setItems(FXCollections.observableList(selectedTerritory.getNeighbourTerritories()));
 	}
 
 	/**
@@ -317,11 +317,12 @@ public class MapController {
 		Territory neighbourTerritory = mappedTerritoriesTTMapping.getSelectionModel().getSelectedItem();
 		Territory selectedTerritory = terrsCB.getValue();
 		errorLabelTTM.setText("");
-		if (neighbourTerritory != null)
-			neighbourTerritoriesMapping.get(selectedTerritory).remove(neighbourTerritory);
-		else errorLabelTTM.setText("Invalid territory selected.");
-		mappedTerritoriesTTMapping
-				.setItems(FXCollections.observableList(neighbourTerritoriesMapping.get(selectedTerritory)));
+		if (neighbourTerritory != null) {
+			selectedTerritory.getNeighbourTerritories().remove(neighbourTerritory);
+			neighbourTerritory.getNeighbourTerritories().remove(selectedTerritory);
+		} else
+			errorLabelTTM.setText("Invalid territory selected.");
+		mappedTerritoriesTTMapping.setItems(FXCollections.observableList(selectedTerritory.getNeighbourTerritories()));
 	}
 
 	/**
@@ -352,7 +353,7 @@ public class MapController {
 
 	/**
 	 * This method handle {@link MapController#saveMapButton} button event. It
-	 * validates the map mapping and save it to a text file.
+	 * validates the mapping and save it to a text file.
 	 * 
 	 * @param event:
 	 *            ActionEvent instance which is generated by user.
@@ -368,12 +369,12 @@ public class MapController {
 		if (file != null) {
 			List<String> errorList = new ArrayList();
 			// validate the map.
-			mapService.validateMap(continentTerritoriesMapping, neighbourTerritoriesMapping, errorList);
+			mapService.validateMap(continentsSet, territoriesSet, errorList);
 
 			// check for validation errors and proceed or notify user accordingly.
 			if (errorList.size() == 0) {
 				// if file is saved, inform user or show error.
-				if (mapService.saveMap(file, continentTerritoriesMapping, neighbourTerritoriesMapping)) {
+				if (mapService.saveMap(file, continentsSet, territoriesSet)) {
 					errorLabelMapping.setText("Map saved.");
 					errorLabelMapping.setTextFill(Color.BLACK);
 				} else

@@ -2,7 +2,7 @@ package service;
 
 import java.io.File;
 import java.io.PrintWriter;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import controller.MapController;
@@ -29,8 +29,8 @@ public class MapService {
 	 * @param errorList:
 	 *            An ArrayList to store validation errors.
 	 */
-	public void validateMap(HashMap<Continent, List<Territory>> continentTerritoriesMapping,
-			HashMap<Territory, List<Territory>> neighbourTerritoriesMapping, List<String> errorList) {
+	public void validateMap(HashSet<Continent> continentsSet, HashSet<Territory> territoriesSet,
+			List<String> errorList) {
 	}
 
 	/**
@@ -41,12 +41,11 @@ public class MapService {
 	 *            HashMap which represent mapping between territories.
 	 * @return true is file is saved else false.
 	 */
-	public boolean saveMap(File file, HashMap<Continent, List<Territory>> continentTerritoriesMapping,
-			HashMap<Territory, List<Territory>> neighbourTerritoriesMapping) {
-		
+	public boolean saveMap(File file, HashSet<Continent> continentsSet, HashSet<Territory> territoriesSet) {
+
 		try {
 			PrintWriter writer = new PrintWriter(file);
-			//static content to maintain map file format.
+			// static content to maintain map file format.
 			writer.println("[Map]");
 			writer.println("image=default.bmp");
 			writer.println("wrap=default");
@@ -54,22 +53,22 @@ public class MapService {
 			writer.println("author=default");
 			writer.println("warn=default\n");
 			writer.println("[Continents]");
-			
-			//write continent data to file.
-			for(Continent continent : continentTerritoriesMapping.keySet())
-				writer.println(continent+"="+continent.getContinentArmyValue());
-			
+
+			// write continent data to file.
+			for (Continent continent : continentsSet)
+				writer.println(continent + "=" + continent.getContinentArmyValue());
+
 			writer.println("\n[Territories]");
-			//for(Territory territory : )
-			for(Territory parentTerritory : neighbourTerritoriesMapping.keySet()) {
-				writer.print(parentTerritory+", 0, 0, "+parentTerritory.getContinent());
-				for(Territory childTerritory : neighbourTerritoriesMapping.get(parentTerritory))
-					writer.print(", "+childTerritory);
+			//write territory data.
+			for (Territory parentTerritory : territoriesSet) {
+				writer.print(parentTerritory + ", 0, 0, " + parentTerritory.getContinent());
+				for (Territory childTerritory : parentTerritory.getNeighbourTerritories())
+					writer.print(", " + childTerritory);
 				writer.println();
 			}
 			writer.close();
 			return true;
-			
+
 		} catch (Exception e) {
 			return false;
 		}
