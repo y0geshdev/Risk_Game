@@ -121,8 +121,8 @@ public class MapController {
 	 * continentsList = new ArrayList<>(); private ArrayList<Territory>
 	 * territoriesList = new ArrayList<>();
 	 */
-	private HashSet<Continent> continentsSet = new HashSet();
-	private HashSet<Territory> territoriesSet = new HashSet();
+	static public HashSet<Continent> continentsSet = new HashSet();
+	static public HashSet<Territory> territoriesSet = new HashSet();
 	private MapService mapService = new MapService();
 
 	/**
@@ -365,7 +365,7 @@ public class MapController {
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters().add(new ExtensionFilter(".map file", "*.map"));
 		File file = fileChooser.showSaveDialog(null);
-
+		
 		if (file != null) {
 			List<String> errorList = new ArrayList();
 			// validate the map.
@@ -384,6 +384,7 @@ public class MapController {
 				errorLabelMapping.setText(errorList.get(0));
 		}
 	}
+
 
 	/**
 	 * This method is used to cleanup unrequited data from various labels and list
