@@ -31,23 +31,23 @@ public class MapService {
 	 * This method is used to validate that whether the map in application memory is
 	 * valid map or not.
 	 * 
-	 * @param continentTerritoriesMapping:
-	 *            HashMap which represent continent and territories mappings.
-	 * @param neighbourTerritoriesMapping:
-	 *            HashMap which represent mapping between territories.
-	 * @param errorList:
-	 *            An ArrayList to store validation errors.
+	 * @author karanbhalla
+	 * @param continentTerritoriesMapping: HashMap which represent continent and
+	 *        territories mappings.
+	 * @param neighbourTerritoriesMapping: HashMap which represent mapping between
+	 *        territories.
+	 * @param errorList: An ArrayList to store validation errors.
 	 */
 	public void validateMap(Set<Continent> continentsSet, Set<Territory> territoriesSet, List<String> errorList) {
 
 		String errorMessage = new String();
 		Map<String, Boolean> ifTerritoryInContinent = new HashMap<>();
 
-		Iterator<Continent> ite = continentsSet.iterator();
+		Iterator<Continent> iteContinent = continentsSet.iterator();
 		Iterator<Territory> iteTerritory = territoriesSet.iterator();
 
-		while (ite.hasNext()) {
-			Continent continent = ite.next();
+		while (iteContinent.hasNext()) {
+			Continent continent = iteContinent.next();
 			// checking that each continent have atleast one territory in it.
 			if (continent.getTerritories().size() < 1) {
 				errorMessage = "Continent " + continent.getName() + " Does Not Have Any Territory in it";
@@ -65,7 +65,9 @@ public class MapService {
 				} else {
 					ifTerritoryInContinent.put(territoryList.get(i).getName(), true);
 				}
+
 			}
+
 		}
 		// check for connected graph.
 		while (iteTerritory.hasNext()) {
@@ -79,29 +81,40 @@ public class MapService {
 		iteTerritory = territoriesSet.iterator();
 		Set<Territory> testingQueue = new HashSet<>();
 
-		checkConnectedGraph(iteTerritory.next().getNeighbourTerritories(), testingQueue, territoriesSet.size());
-		if (testingQueue.size() == territoriesSet.size()) {
+		checkConnectedGraph(iteTerritory.next().getNeighbourTerritories(), testingQueue);
+		if (testingQueue.size() != territoriesSet.size()) {
 			errorMessage = "The graph you entered is unconnected";
 			errorList.add(errorMessage);
 
 		}
+		iteContinent = continentsSet.iterator();
 
+		while (iteContinent.hasNext()) {
+			testingQueue = new HashSet<>();
+			Continent contObject = iteContinent.next();
+			checkConnectedGraph(contObject.getTerritories(), testingQueue);
+			if (testingQueue.size() != contObject.getTerritories().size()) {
+				errorMessage = "Territories in Continent" + contObject.getName() + " are not connected ";
+				errorList.add(errorMessage);
+			}
+		}
 	}
-	
+
 	/**
 	 * DFS helper method to check for connectivity of graph.
 	 * 
+	 * @author karanbhalla
 	 * @param territoryList: A {@link List} of {@link Territory}.
 	 * @param queueForChecking: A {@link Set} of {@link Territory}.
 	 * @param size: size of territoriesSet.
 	 */
-	private void checkConnectedGraph(List<Territory> territoryList, Set<Territory> queueForChecking, int size) {
+	private void checkConnectedGraph(List<Territory> territoryList, Set<Territory> queueForChecking) {
 
 		for (int i = 0; i < territoryList.size(); i++) {
 
 			if (!queueForChecking.contains(territoryList.get(i))) {
 				queueForChecking.add(territoryList.get(i));
-				checkConnectedGraph(territoryList.get(i).getNeighbourTerritories(), queueForChecking, size);
+				checkConnectedGraph(territoryList.get(i).getNeighbourTerritories(), queueForChecking);
 			}
 		}
 
@@ -109,10 +122,10 @@ public class MapService {
 
 	/**
 	 * 
-	 * @param continentTerritoriesMapping:
-	 *            HashMap which represent continent and territories mappings.
-	 * @param neighbourTerritoriesMapping:
-	 *            HashMap which represent mapping between territories.
+	 * @param continentTerritoriesMapping: HashMap which represent continent and
+	 *        territories mappings.
+	 * @param neighbourTerritoriesMapping: HashMap which represent mapping between
+	 *        territories.
 	 * @return true is file is saved else false.
 	 */
 	public boolean saveMap(File file, HashSet<Continent> continentsSet, HashSet<Territory> territoriesSet) {
@@ -148,7 +161,7 @@ public class MapService {
 		}
 
 	}
-	
+
 	/**
 	 * This method is using the File object in order to access the file and parse
 	 * it's contents. It will call the rendering Class method which will render the
@@ -157,18 +170,16 @@ public class MapService {
 	 * 
 	 * @author Kunal
 	 *
-	 * @param file:
-	 *            This object is passed from the <u>class</u> where we choose a
-	 *            particular map file.
+	 * @param                 file: This object is passed from the <u>class</u>
+	 *                        where we choose a particular map file.
 	 * 
-	 * @param ifForValidation
-	 *            : This object for checking if this function is being called for
-	 *            validation or for starting the game
+	 * @param ifForValidation : This object for checking if this function is being
+	 *                        called for validation or for starting the game
 	 * @return
 	 * @throws Exception
 	 */
 	public Map<String, Set> parseFile(File file, boolean ifForValidation) throws Exception {
-		
+
 		Set<Territory> territoryObjectSet = new HashSet<>();
 		Set<Continent> continentObjectSet = new HashSet<>();
 		Continent continentObject;
@@ -179,7 +190,7 @@ public class MapService {
 		HashMap<String, Territory> ifTerritoryObject;
 		HashMap<String, Continent> ifContinentObject = null;
 		ArrayList<Territory> territoryInAContinentList;
-		
+
 		Map<String, Set> continentAndTerritorySetObjectMap = new HashMap<>();
 		BufferedReader bufferedReaderObject = new BufferedReader(new FileReader(file));
 		String fileContents;
@@ -214,7 +225,7 @@ public class MapService {
 					String[] lineContent = fileContents.split(",");
 					String territoryName = lineContent[0];
 					String continentName;
-					if(lineContent.length > 3) {
+					if (lineContent.length > 3) {
 						continentName = lineContent[3];
 						neighbouringTerritories = new ArrayList<>();
 						territoryInAContinentList = new ArrayList<Territory>();
@@ -227,14 +238,14 @@ public class MapService {
 							} else {
 								neighbouringTerritories.add(ifTerritoryObject.get(tempTerritoryObject.getName()));
 							}
-	
+
 						}
 						territoryObject = new Territory(territoryName);
 						if (ifTerritoryObject.get(territoryObject.getName()) != null) {
 							territoryObject = ifTerritoryObject.get(territoryObject.getName());
 							territoryObject.setContinent(ifContinentObject.get(continentName));
 							territoryObject.setNeighbourTerritories(neighbouringTerritories);
-	
+
 						} else {
 							territoryObject.setName(territoryName);
 							territoryObject.setContinent(ifContinentObject.get(continentName));
@@ -249,7 +260,7 @@ public class MapService {
 						}
 						territoryObjectSet.add(territoryObject);
 					}
-				fileContents = bufferedReaderObject.readLine();
+					fileContents = bufferedReaderObject.readLine();
 
 				} while (fileContents != null);
 			}
@@ -259,13 +270,13 @@ public class MapService {
 
 		while (iteratorObject.hasNext()) {
 			Continent continentToSetTerritories = iteratorObject.next();
-			List<Territory> abc	=	continentToTerritoryMap.get(continentToSetTerritories.getName());
+			List<Territory> abc = continentToTerritoryMap.get(continentToSetTerritories.getName());
 			continentToSetTerritories.setTerritories(abc);
 		}
-		
+
 		continentAndTerritorySetObjectMap.put(GameConstants.CONTINENT_SET_KEY, continentObjectSet);
 		continentAndTerritorySetObjectMap.put(GameConstants.TERRITORY_SET_KEY, territoryObjectSet);
-		
+
 		if (!ifForValidation) {
 			Render renderObj = new Render();
 			renderObj.startGame(continentObjectSet, territoryObjectSet);
