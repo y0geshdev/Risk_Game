@@ -181,12 +181,10 @@ public class MapService {
 	 * @param                 file: This object is passed from the <u>class</u>
 	 *                        where we choose a particular map file.
 	 * 
-	 * @param ifForValidation : This object for checking if this function is being
-	 *                        called for validation or for starting the game
 	 * @return
 	 * @throws Exception
 	 */
-	public Map<String, Set> parseFile(File file) throws Exception {
+	public void parseFile(File file) throws Exception {
 
 		Set<Territory> territoryObjectSet = new HashSet<>();
 		Set<Continent> continentObjectSet = new HashSet<>();
@@ -260,7 +258,7 @@ public class MapService {
 							territoryObject.setNeighbourTerritories(neighbouringTerritories);
 							ifTerritoryObject.put(territoryObject.getName(), territoryObject);
 						}
-						if (continentToTerritoryMap.get(continentName) != null) {
+		 				if (continentToTerritoryMap.get(continentName) != null) {
 							continentToTerritoryMap.get(continentName).add(territoryObject);
 						} else {
 							territoryInAContinentList.add(territoryObject);
@@ -282,26 +280,27 @@ public class MapService {
 			continentToSetTerritories.setTerritories(abc);
 		}
 
-		continentAndTerritorySetObjectMap.put(GameConstants.CONTINENT_SET_KEY, continentObjectSet);
-		continentAndTerritorySetObjectMap.put(GameConstants.TERRITORY_SET_KEY, territoryObjectSet);
-
+		MapService mapServiceObj = new MapService();
+		List<String>errorList	=	new ArrayList<>();
+		mapServiceObj.validateMap(continentObjectSet, territoryObjectSet, errorList);
+		MapController.continentsSet	=	(HashSet<Continent>) continentObjectSet;
+		MapController.territoriesSet=	(HashSet<Territory>) territoryObjectSet;
 		
-		return continentAndTerritorySetObjectMap;
 	}
 	
 	public static void main(String[] args) throws Exception {
 		
 		MapService obj	=	new MapService();
 		File file = new File("C:\\Coding Practice\\connected2.map");
-	Map<String,Set> mapSetObj	=		obj.parseFile(file);
-	List<String>errorList	=	new ArrayList<>();
-		obj.validateMap(mapSetObj.get(GameConstants.CONTINENT_SET_KEY), mapSetObj.get(GameConstants.TERRITORY_SET_KEY),
-				errorList);
-		if(errorList.isEmpty()) {
-			System.out.println("Graph is totally Connected");
-		}
-		for(int i=0;i<errorList.size();i++) {
-			System.out.println(errorList.get(i));
-		}
+//	Map<String,Set> mapSetObj	=		obj.parseFile(file);
+//	List<String>errorList	=	new ArrayList<>();
+//		obj.validateMap(mapSetObj.get(GameConstants.CONTINENT_SET_KEY), mapSetObj.get(GameConstants.TERRITORY_SET_KEY),
+//				errorList);
+//		if(errorList.isEmpty()) {
+//			System.out.println("Graph is totally Connected");
+//		}
+//		for(int i=0;i<errorList.size();i++) {
+//			System.out.println(errorList.get(i));
+//		}
 	}
 }
