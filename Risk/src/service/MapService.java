@@ -32,11 +32,12 @@ public class MapService {
 	 * valid map or not.
 	 * 
 	 * @author karanbhalla
-	 * @param continentTerritoriesMapping: HashMap which represent continent and
-	 *        territories mappings.
-	 * @param neighbourTerritoriesMapping: HashMap which represent mapping between
-	 *        territories.
-	 * @param errorList: An ArrayList to store validation errors.
+	 * @param continentTerritoriesMapping:
+	 *            HashMap which represent continent and territories mappings.
+	 * @param neighbourTerritoriesMapping:
+	 *            HashMap which represent mapping between territories.
+	 * @param errorList:
+	 *            An ArrayList to store validation errors.
 	 */
 	public void validateMap(Set<Continent> continentsSet, Set<Territory> territoriesSet, List<String> errorList) {
 
@@ -104,9 +105,12 @@ public class MapService {
 	 * DFS helper method to check for connectivity of graph.
 	 * 
 	 * @author karanbhalla
-	 * @param territoryList: A {@link List} of {@link Territory}.
-	 * @param queueForChecking: A {@link Set} of {@link Territory}.
-	 * @param size: size of territoriesSet.
+	 * @param territoryList:
+	 *            A {@link List} of {@link Territory}.
+	 * @param queueForChecking:
+	 *            A {@link Set} of {@link Territory}.
+	 * @param size:
+	 *            size of territoriesSet.
 	 */
 	private void checkConnectedGraph(List<Territory> territoryList, Set<Territory> queueForChecking) {
 
@@ -121,12 +125,15 @@ public class MapService {
 	}
 
 	/**
+	 * This method is used to save the created/modified map as a file.
 	 * 
-	 * @param continentTerritoriesMapping: HashMap which represent continent and
-	 *        territories mappings.
-	 * @param neighbourTerritoriesMapping: HashMap which represent mapping between
-	 *        territories.
-	 * @return true is file is saved else false.
+	 * @param file:
+	 *            File object to which file needs to be written and save.
+	 * @param continentsSet:
+	 *            Set of all the continents in map.
+	 * @param territoriesSet
+	 *            Set of all the territories in map.
+	 * @return true if file is save else false.
 	 */
 	public boolean saveMap(File file, HashSet<Continent> continentsSet, HashSet<Territory> territoriesSet) {
 
@@ -170,11 +177,13 @@ public class MapService {
 	 * 
 	 * @author Kunal
 	 *
-	 * @param                 file: This object is passed from the <u>class</u>
-	 *                        where we choose a particular map file.
+	 * @param file:
+	 *            This object is passed from the <u>class</u> where we choose a
+	 *            particular map file.
 	 * 
-	 * @param ifForValidation : This object for checking if this function is being
-	 *                        called for validation or for starting the game
+	 * @param ifForValidation
+	 *            : This object for checking if this function is being called for
+	 *            validation or for starting the game
 	 * @return
 	 * @throws Exception
 	 */
