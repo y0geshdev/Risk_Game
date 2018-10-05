@@ -409,15 +409,13 @@ public class MapController {
 	public void startGame(ActionEvent event) {
 
 		try {
-			File file	=	new File(mapPathGameTF.getText());
-			MapService obj	=	new MapService();
-			obj.parseFile(file);
+			File file = new File(mapPathGameTF.getText());
+			mapService.parseFile(file);
 			Parent root = FXMLLoader.load(getClass().getResource("/ui/Game.fxml"));
 			Stage stage = new Stage();
-			stage.setScene(new Scene(root,800,600));
+			stage.setScene(new Scene(root, 800, 600));
 			stage.show();
 		} catch (Exception e) {
-			
 			e.printStackTrace();
 		}
 	}

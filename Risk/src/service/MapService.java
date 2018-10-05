@@ -11,12 +11,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import controller.MapController;
 import domain.Continent;
-import domain.GameConstants;
 import domain.Territory;
-import ui.Render;
 
 /**
  * This class is used to handle all the service calls from {@link MapController}
@@ -27,16 +24,20 @@ import ui.Render;
  */
 public class MapService {
 
+	private static final String CONTINENT_KEY = "[Continents]";
+	private static final String TERRITORY_KEY = "[Territories]";
+
 	/**
 	 * This method is used to validate that whether the map in application memory is
 	 * valid map or not.
 	 * 
 	 * @author karanbhalla
-	 * @param continentTerritoriesMapping: HashMap which represent continent and
-	 *        territories mappings.
-	 * @param neighbourTerritoriesMapping: HashMap which represent mapping between
-	 *        territories.
-	 * @param errorList: An ArrayList to store validation errors.
+	 * @param continentsSet:
+	 *            Set which represent continent object.
+	 * @param territoriesSet:
+	 *            Set which represent territories object.
+	 * @param errorList:
+	 *            An ArrayList to store validation errors.
 	 */
 	public void validateMap(Set<Continent> continentsSet, Set<Territory> territoriesSet, List<String> errorList) {
 
@@ -78,7 +79,7 @@ public class MapService {
 		iteTerritory = territoriesSet.iterator();
 		Set<Territory> testingQueue = new HashSet<>();
 
-		checkConnectedGraph(iteTerritory.next().getNeighbourTerritories().get(0), testingQueue,null);
+		checkConnectedGraph(iteTerritory.next().getNeighbourTerritories().get(0), testingQueue, null);
 		if (testingQueue.size() != territoriesSet.size()) {
 			errorMessage = "The graph you entered is unconnected";
 			errorList.add(errorMessage);
@@ -89,7 +90,7 @@ public class MapService {
 		while (iteContinent.hasNext()) {
 			testingQueue = new HashSet<>();
 			Continent contObject = iteContinent.next();
-			checkConnectedGraph(contObject.getTerritories().get(0), testingQueue,contObject);
+			checkConnectedGraph(contObject.getTerritories().get(0), testingQueue, contObject);
 			if (testingQueue.size() != contObject.getTerritories().size()) {
 				errorMessage = "Territories in " + contObject.getName() + " are not connected ";
 				errorList.add(errorMessage);
@@ -102,39 +103,44 @@ public class MapService {
 	 * 
 	 * @author karanbhalla
 	 * 
-	 * @param territoryObject: A starting object of Territory, could be any Territory.
-	 * @param queueForChecking: A set to keep the Territories
-	 * @param continentOfTerritory:  A continent object referring to  a continent whose territories we are traversing.
-	 * It will be null for the case when we will check that if the whole graph is connected or not.
+	 * @param territoryObject:
+	 *            A starting object of Territory, could be any Territory.
+	 * @param queueForChecking:
+	 *            A set to keep the Territories
+	 * @param continentOfTerritory:
+	 *            A continent object referring to a continent whose territories we
+	 *            are traversing. It will be null for the case when we will check
+	 *            that if the whole graph is connected or not.
 	 */
 	private void checkConnectedGraph(Territory territoryObject, Set<Territory> queueForChecking,
 			Continent continentOfTerritory) {
 
 		for (int i = 0; i < territoryObject.getNeighbourTerritories().size(); i++) {
 
-			Territory neighbouringTerritory	=	territoryObject.getNeighbourTerritories().get(i);
+			Territory neighbouringTerritory = territoryObject.getNeighbourTerritories().get(i);
 			if (continentOfTerritory == null && !queueForChecking.contains(neighbouringTerritory)) {
 				queueForChecking.add(neighbouringTerritory);
-				checkConnectedGraph(neighbouringTerritory, queueForChecking,
-						continentOfTerritory);
+				checkConnectedGraph(neighbouringTerritory, queueForChecking, continentOfTerritory);
 			} else if (!queueForChecking.contains(neighbouringTerritory)
 					&& neighbouringTerritory.getContinent().getName() == continentOfTerritory.getName()
 					&& neighbouringTerritory.getNeighbourTerritories().size() != 0) {
 				queueForChecking.add(neighbouringTerritory);
-				checkConnectedGraph(neighbouringTerritory, queueForChecking,
-						continentOfTerritory);
+				checkConnectedGraph(neighbouringTerritory, queueForChecking, continentOfTerritory);
 			}
 		}
 
 	}
 
 	/**
+	 * This method is used to save the created/modified map as a file.
 	 * 
-	 * @param continentTerritoriesMapping: HashMap which represent continent and
-	 *        territories mappings.
-	 * @param neighbourTerritoriesMapping: HashMap which represent mapping between
-	 *        territories.
-	 * @return true is file is saved else false.
+	 * @param file:
+	 *            File object to which file needs to be written and save.
+	 * @param continentsSet:
+	 *            Set of all the continents in map.
+	 * @param territoriesSet
+	 *            Set of all the territories in map.
+	 * @return true if file is save else false.
 	 */
 	public boolean saveMap(File file, HashSet<Continent> continentsSet, HashSet<Territory> territoriesSet) {
 
@@ -178,8 +184,9 @@ public class MapService {
 	 * 
 	 * @author Kunal
 	 *
-	 * @param                 file: This object is passed from the <u>class</u>
-	 *                        where we choose a particular map file.
+	 * @param file:
+	 *            This object is passed from the <u>class</u> where we choose a
+	 *            particular map file.
 	 * 
 	 * @return
 	 * @throws Exception
@@ -203,7 +210,7 @@ public class MapService {
 
 		while ((fileContents = bufferedReaderObject.readLine()) != null) {
 
-			if (fileContents.equals(GameConstants.CONTINENT_KEY)) {
+			if (fileContents.equals(MapService.CONTINENT_KEY)) {
 				ifContinentObject = new HashMap<>();
 				fileContents = bufferedReaderObject.readLine();
 				do {
@@ -218,7 +225,7 @@ public class MapService {
 				} while (!fileContents.isEmpty());
 			}
 
-			if (fileContents.equals(GameConstants.TERRITORY_KEY)) {
+			if (fileContents.equals(MapService.TERRITORY_KEY)) {
 				fileContents = bufferedReaderObject.readLine();
 				continentToTerritoryMap = new HashMap<>();
 				ifTerritoryObject = new HashMap<>();
@@ -258,7 +265,7 @@ public class MapService {
 							territoryObject.setNeighbourTerritories(neighbouringTerritories);
 							ifTerritoryObject.put(territoryObject.getName(), territoryObject);
 						}
-		 				if (continentToTerritoryMap.get(continentName) != null) {
+						if (continentToTerritoryMap.get(continentName) != null) {
 							continentToTerritoryMap.get(continentName).add(territoryObject);
 						} else {
 							territoryInAContinentList.add(territoryObject);
@@ -281,26 +288,27 @@ public class MapService {
 		}
 
 		MapService mapServiceObj = new MapService();
-		List<String>errorList	=	new ArrayList<>();
+		List<String> errorList = new ArrayList<>();
 		mapServiceObj.validateMap(continentObjectSet, territoryObjectSet, errorList);
-		MapController.continentsSet	=	(HashSet<Continent>) continentObjectSet;
-		MapController.territoriesSet=	(HashSet<Territory>) territoryObjectSet;
-		
+		MapController.continentsSet = (HashSet<Continent>) continentObjectSet;
+		MapController.territoriesSet = (HashSet<Territory>) territoryObjectSet;
+
 	}
-	
+
 	public static void main(String[] args) throws Exception {
-		
-		MapService obj	=	new MapService();
+
+		MapService obj = new MapService();
 		File file = new File("C:\\Coding Practice\\connected2.map");
-//	Map<String,Set> mapSetObj	=		obj.parseFile(file);
-//	List<String>errorList	=	new ArrayList<>();
-//		obj.validateMap(mapSetObj.get(GameConstants.CONTINENT_SET_KEY), mapSetObj.get(GameConstants.TERRITORY_SET_KEY),
-//				errorList);
-//		if(errorList.isEmpty()) {
-//			System.out.println("Graph is totally Connected");
-//		}
-//		for(int i=0;i<errorList.size();i++) {
-//			System.out.println(errorList.get(i));
-//		}
+		// Map<String,Set> mapSetObj = obj.parseFile(file);
+		// List<String>errorList = new ArrayList<>();
+		// obj.validateMap(mapSetObj.get(GameConstants.CONTINENT_SET_KEY),
+		// mapSetObj.get(GameConstants.TERRITORY_SET_KEY),
+		// errorList);
+		// if(errorList.isEmpty()) {
+		// System.out.println("Graph is totally Connected");
+		// }
+		// for(int i=0;i<errorList.size();i++) {
+		// System.out.println(errorList.get(i));
+		// }
 	}
 }
