@@ -374,7 +374,7 @@ public class MapController {
 			} else {
 				String errors = "Resolve below errors:";
 				for (String error : errorList)
-					errors.concat("\n-" + error);
+					errors = errors.concat("\n-" + error);
 				showError(errors);
 			}
 		}
@@ -472,7 +472,7 @@ public class MapController {
 			} else {
 				String errors = "Resolve below errors:";
 				for (String error : errorList)
-					errors.concat("\n-" + error);
+					errors = errors.concat("\n-" + error);
 				showError(errors);
 			}
 		}
