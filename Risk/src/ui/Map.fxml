@@ -34,8 +34,7 @@
 					<Label layoutX="3.0" layoutY="83.0" text="Map Path" />
 					<TextField fx:id="mapPathMapsTF" layoutX="57.0" layoutY="79.0" prefHeight="22.0" prefWidth="159.0" promptText="map file path" />
 					<Button fx:id="chooseMapsButton" layoutX="223.0" layoutY="79.0" mnemonicParsing="false" onAction="#chooseMapToModify" prefHeight="22.0" prefWidth="75.0" text="Choose ..." />
-					<Button fx:id="modifyMapButton" layoutX="308.0" layoutY="79.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="85.0" text="Modify Map" />
-					<Label fx:id="errorLabelMaps" alignment="CENTER" contentDisplay="CENTER" layoutX="13.0" layoutY="113.0" prefHeight="14.0" prefWidth="214.0" textFill="#f50202" />
+					<Button fx:id="modifyMapButton" layoutX="308.0" layoutY="79.0" mnemonicParsing="false" onAction="#modifyMap" prefHeight="22.0" prefWidth="85.0" text="Modify Map" />
 				</AnchorPane>
 				<AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="147.0" prefWidth="355.0">
 					<Label alignment="CENTER" layoutX="193.0" layoutY="14.0" prefHeight="28.0" prefWidth="46.0" text="Game" underline="true" AnchorPane.leftAnchor="175.0">
@@ -47,7 +46,6 @@
 					<TextField fx:id="mapPathGameTF" layoutX="97.0" layoutY="46.0" prefHeight="22.0" prefWidth="159.0" promptText="map file path" />
 					<Button fx:id="chooseGameButton" layoutX="270.0" layoutY="46.0" mnemonicParsing="false" onAction="#chooseMapToPlayGame" prefHeight="22.0" prefWidth="75.0" text="Choose..." />
 					<Button fx:id="startGameButton" layoutX="270.0" layoutY="88.0" mnemonicParsing="false" prefHeight="22.0" prefWidth="75.0" text="Start Game" />
-					<Label fx:id="errorLabelGame" alignment="CENTER" contentDisplay="CENTER" layoutX="24.0" layoutY="110.0" prefHeight="14.0" prefWidth="214.0" textFill="#ff0404" />
 				</AnchorPane>
 			</SplitPane>
 		</AnchorPane>
@@ -92,9 +90,6 @@
          <Label layoutX="20.0" layoutY="109.0" text="Continent Control Value" />
          <TextField fx:id="contiControlValueTF" layoutX="21.0" layoutY="132.0" prefHeight="22.0" prefWidth="60.0" promptText="numeric" />
          <Button fx:id="updateContiControlValueButton" layoutX="88.0" layoutY="132.0" mnemonicParsing="false" onAction="#updateContiControlValue" prefHeight="22.0" prefWidth="67.0" text="Update" />
-         <Label fx:id="errorLabelMapping" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutX="24.0" layoutY="416.0" prefHeight="14.0" prefWidth="572.0" textAlignment="RIGHT" textFill="#f50303" AnchorPane.leftAnchor="23.0" AnchorPane.rightAnchor="205.0" />
-         <Label fx:id="errorLabelCTM" layoutX="24.0" layoutY="166.0" prefHeight="14.0" prefWidth="131.0" textFill="#f50303" />
-         <Label fx:id="errorLabelTTM" layoutX="21.0" layoutY="308.0" prefHeight="14.0" prefWidth="131.0" textFill="#f50202" />
 		</AnchorPane>
 	</VBox>
 </AnchorPane>
