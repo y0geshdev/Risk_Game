@@ -16,7 +16,6 @@ import java.util.Set;
 
 import controller.MapController;
 import domain.Continent;
-import domain.GameConstants;
 import domain.Territory;
 
 /**
@@ -28,15 +27,18 @@ import domain.Territory;
  */
 public class MapService {
 
+	private final String CONTINENT_KEY = "[Continents]";
+	private final String TERRITORY_KEY = "[Territories]";
+
 	/**
 	 * This method is used to validate that whether the map in application memory is
 	 * valid map or not.
 	 * 
 	 * @author karanbhalla
-	 * @param continentTerritoriesMapping:
-	 *            HashMap which represent continent and territories mappings.
-	 * @param neighbourTerritoriesMapping:
-	 *            HashMap which represent mapping between territories.
+	 * @param continentsSet:
+	 *            Set which represent continent object.
+	 * @param territoriesSet:
+	 *            Set which represent territories object.
 	 * @param errorList:
 	 *            An ArrayList to store validation errors.
 	 */
@@ -154,13 +156,13 @@ public class MapService {
 			writer.println("scroll=default");
 			writer.println("author=default");
 			writer.println("warn=default\n");
-			writer.println("[Continents]");
+			writer.println(CONTINENT_KEY);
 
 			// write continent data to file.
 			for (Continent continent : continentsSet)
 				writer.println(continent + "=" + continent.getContinentArmyValue());
 
-			writer.println("\n[Territories]");
+			writer.println("\n" + TERRITORY_KEY);
 			// write territory data.
 			for (Territory parentTerritory : territoriesSet) {
 				writer.print(parentTerritory + ",0,0," + parentTerritory.getContinent());
@@ -179,16 +181,13 @@ public class MapService {
 
 	/**
 	 * This method is using the File object in order to access the file and parse
-	 * it's contents. It will call the rendering Class method which will render the
-	 * map on UI.
+	 * it's contents. It will populate {@link MapController#continentsSet} and
+	 * {@link MapController#territoriesSet}.
 	 * 
 	 * @param file:
 	 *            This object is passed from the controller where we choose a
 	 *            particular map file.
 	 * 
-	 * @param errorList:
-	 *            This list captures all the errors from validate map method and
-	 *            passed to controller class to display.
 	 * @throws FileNotFoundException:
 	 *             This exception is thrown if file is not found.
 	 * @throws IOException:
@@ -196,7 +195,7 @@ public class MapService {
 	 * @author Kunal
 	 *
 	 */
-	public void parseFile(File file, List<String> errorList) throws FileNotFoundException, IOException {
+	public void parseFile(File file) throws FileNotFoundException, IOException {
 
 		Set<Territory> territoryObjectSet = new HashSet<>();
 		Set<Continent> continentObjectSet = new HashSet<>();
@@ -214,7 +213,7 @@ public class MapService {
 
 		while ((fileContents = bufferedReaderObject.readLine()) != null) {
 
-			if (fileContents.equals(GameConstants.CONTINENT_KEY)) {
+			if (fileContents.equals(CONTINENT_KEY)) {
 				ifContinentObject = new HashMap<>();
 				fileContents = bufferedReaderObject.readLine();
 				do {
@@ -229,7 +228,7 @@ public class MapService {
 				} while (!fileContents.isEmpty());
 			}
 
-			if (fileContents.equals(GameConstants.TERRITORY_KEY)) {
+			if (fileContents.equals(TERRITORY_KEY)) {
 				fileContents = bufferedReaderObject.readLine();
 				continentToTerritoryMap = new HashMap<>();
 				ifTerritoryObject = new HashMap<>();
@@ -282,7 +281,7 @@ public class MapService {
 				} while (fileContents != null);
 			}
 		}
-		
+
 		bufferedReaderObject.close();
 
 		Iterator<Continent> iteratorObject = continentObjectSet.iterator();
@@ -293,7 +292,6 @@ public class MapService {
 			continentToSetTerritories.setTerritories(abc);
 		}
 
-		validateMap(continentObjectSet, territoryObjectSet, errorList);
 		MapController.continentsSet = (HashSet<Continent>) continentObjectSet;
 		MapController.territoriesSet = (HashSet<Territory>) territoryObjectSet;
 
