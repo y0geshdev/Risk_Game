@@ -306,6 +306,14 @@ public class GameController {
 		int numberOfArmiesInput = 0;
 		try {
 			numberOfArmiesInput = Integer.parseInt(numberOfArmiesPerTerritory.getText());
+			if(playersWithZeroArmies.size()!=playerList.size() && numberOfArmiesInput==0) {
+				if (playerCounter < playerList.size() - 1)
+					playerCounter++;
+				else
+					playerCounter = 0;
+				createStartUpPhase(playerList.get(playerCounter));
+				return;
+			}
 			if (numberOfArmiesInput > playerInFocus.getArmyCount()) {
 				error	= "Number of armies cannot be more than what owner owns";	
 				showError(error);
