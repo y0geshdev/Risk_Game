@@ -162,6 +162,7 @@ public class GameController {
 				TextField territoryField = new TextField();
 				gamePane.setConstraints(territoryField, colCounter, i + 3);
 				territoryField.setPromptText(territoryObj.getName());
+				territoryField.setEditable(false);
 				territoryField.setOnMouseClicked(new EventHandler<MouseEvent>() {
 
 					@Override
@@ -329,8 +330,9 @@ public class GameController {
 		} else {
 
 			obj.addArmyOfTheTerritory(numberOfArmiesInput);
-			System.out.println("Number of Armies in " + obj.getName() + " whose owner is " + obj.getOwner().getName()
-					+ " : " + obj.getArmyOfTheTerritory());
+			TextField tf	=	idTotextFieldMapping.get(obj.getName());
+			tf.setPromptText(obj.getName() + " : " + String.valueOf(obj.getArmyOfTheTerritory()));
+			
 		}
 		boolean answer = validatePlayerArmyNumber(playerInFocus);
 		if (answer)
@@ -349,7 +351,6 @@ public class GameController {
 				validateNumberOfArmiesInTerritory(errorList);
 				if (errorList.size() == 0) {
 					cleanUp();
-					showArmyOnTerritory();
 					reinforcementPhase.setVisible(true);
 				} else {
 					String errors = "Resolve below errors:";
@@ -474,19 +475,4 @@ public class GameController {
 		playersWithZeroArmies = new HashSet<>();
 	}
 
-	/**
-	 * This method is used to show the final number of armies on the territory
-	 * textfield once the startup phase is over.
-	 */
-	private void showArmyOnTerritory() {
-		Iterator<Territory> iteTerritory = MapController.territoriesSet.iterator();
-
-		while (iteTerritory.hasNext()) {
-			Territory obj = iteTerritory.next();
-			TextField tf = idTotextFieldMapping.get(obj.getName());
-			// tf.setPrText(String.valueOf(obj.getArmyOfTheTerritory()));
-			tf.setPromptText(obj.getName() + " : " + String.valueOf(obj.getArmyOfTheTerritory()));
-			tf.setEditable(false);
-		}
-	}
 }
