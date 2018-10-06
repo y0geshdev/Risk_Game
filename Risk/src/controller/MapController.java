@@ -403,6 +403,9 @@ public class MapController {
 			} catch (IOException e) {
 				showError("Error reading from file.");
 				return;
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			// if (errorList.size() == 0) {
 			List<Continent> continentsList = new ArrayList<>();
@@ -454,6 +457,9 @@ public class MapController {
 			} catch (IOException e) {
 				showError("Error reading from file.");
 				return;
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			List<String> errorList = new ArrayList<>();
 			mapService.validateMap(continentsSet, territoriesSet, errorList);

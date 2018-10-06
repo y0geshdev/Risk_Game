@@ -2,9 +2,7 @@ package service;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import controller.MapController;
 import domain.Continent;
 import domain.Territory;
@@ -27,8 +24,8 @@ import domain.Territory;
  */
 public class MapService {
 
-	private final String CONTINENT_KEY = "[Continents]";
-	private final String TERRITORY_KEY = "[Territories]";
+	private static final String CONTINENT_KEY = "[Continents]";
+	private static final String TERRITORY_KEY = "[Territories]";
 
 	/**
 	 * This method is used to validate that whether the map in application memory is
@@ -72,13 +69,20 @@ public class MapService {
 
 		}
 		// check for connected graph.
+		boolean ifNeighbourPresent=true;
 		while (iteTerritory.hasNext()) {
 			Territory territory = iteTerritory.next();
 			if (territory.getNeighbourTerritories().size() < 1) {
 				errorMessage = territory.getName() + " does not have any neighbouring territory";
 				errorList.add(errorMessage);
+				ifNeighbourPresent=false;
 			}
 		}
+		if(!ifNeighbourPresent) {
+			errorMessage = "The graph you entered is unconnected";
+			errorList.add(errorMessage);
+			return;
+			}
 		iteTerritory = territoriesSet.iterator();
 		Set<Territory> testingQueue = new HashSet<>();
 
@@ -156,13 +160,13 @@ public class MapService {
 			writer.println("scroll=default");
 			writer.println("author=default");
 			writer.println("warn=default\n");
-			writer.println(CONTINENT_KEY);
+			writer.println("[Continents]");
 
 			// write continent data to file.
 			for (Continent continent : continentsSet)
 				writer.println(continent + "=" + continent.getContinentArmyValue());
 
-			writer.println("\n" + TERRITORY_KEY);
+			writer.println("\n[Territories]");
 			// write territory data.
 			for (Territory parentTerritory : territoriesSet) {
 				writer.print(parentTerritory + ",0,0," + parentTerritory.getContinent());
@@ -181,21 +185,20 @@ public class MapService {
 
 	/**
 	 * This method is using the File object in order to access the file and parse
-	 * it's contents. It will populate {@link MapController#continentsSet} and
-	 * {@link MapController#territoriesSet}.
+	 * it's contents. It will call the rendering Class method which will render the
+	 * map on UI.
 	 * 
-	 * @param file:
-	 *            This object is passed from the controller where we choose a
-	 *            particular map file.
 	 * 
-	 * @throws FileNotFoundException:
-	 *             This exception is thrown if file is not found.
-	 * @throws IOException:
-	 *             This exception is thrown if there is some IO related exceptions.
 	 * @author Kunal
 	 *
+	 * @param file:
+	 *            This object is passed from the <u>class</u> where we choose a
+	 *            particular map file.
+	 * 
+	 * @return
+	 * @throws Exception
 	 */
-	public void parseFile(File file) throws FileNotFoundException, IOException {
+	public void parseFile(File file) throws Exception {
 
 		Set<Territory> territoryObjectSet = new HashSet<>();
 		Set<Continent> continentObjectSet = new HashSet<>();
@@ -208,12 +211,13 @@ public class MapService {
 		HashMap<String, Continent> ifContinentObject = null;
 		ArrayList<Territory> territoryInAContinentList;
 
+		Map<String, Set> continentAndTerritorySetObjectMap = new HashMap<>();
 		BufferedReader bufferedReaderObject = new BufferedReader(new FileReader(file));
 		String fileContents;
 
 		while ((fileContents = bufferedReaderObject.readLine()) != null) {
 
-			if (fileContents.equals(CONTINENT_KEY)) {
+			if (fileContents.equals(MapService.CONTINENT_KEY)) {
 				ifContinentObject = new HashMap<>();
 				fileContents = bufferedReaderObject.readLine();
 				do {
@@ -228,7 +232,7 @@ public class MapService {
 				} while (!fileContents.isEmpty());
 			}
 
-			if (fileContents.equals(TERRITORY_KEY)) {
+			if (fileContents.equals(MapService.TERRITORY_KEY)) {
 				fileContents = bufferedReaderObject.readLine();
 				continentToTerritoryMap = new HashMap<>();
 				ifTerritoryObject = new HashMap<>();
@@ -282,8 +286,6 @@ public class MapService {
 			}
 		}
 
-		bufferedReaderObject.close();
-
 		Iterator<Continent> iteratorObject = continentObjectSet.iterator();
 
 		while (iteratorObject.hasNext()) {
@@ -292,8 +294,28 @@ public class MapService {
 			continentToSetTerritories.setTerritories(abc);
 		}
 
+		MapService mapServiceObj = new MapService();
+		List<String> errorList = new ArrayList<>();
+		mapServiceObj.validateMap(continentObjectSet, territoryObjectSet, errorList);
 		MapController.continentsSet = (HashSet<Continent>) continentObjectSet;
 		MapController.territoriesSet = (HashSet<Territory>) territoryObjectSet;
 
+	}
+
+	public static void main(String[] args) throws Exception {
+
+		MapService obj = new MapService();
+		File file = new File("C:\\Coding Practice\\connected2.map");
+		// Map<String,Set> mapSetObj = obj.parseFile(file);
+		// List<String>errorList = new ArrayList<>();
+		// obj.validateMap(mapSetObj.get(GameConstants.CONTINENT_SET_KEY),
+		// mapSetObj.get(GameConstants.TERRITORY_SET_KEY),
+		// errorList);
+		// if(errorList.isEmpty()) {
+		// System.out.println("Graph is totally Connected");
+		// }
+		// for(int i=0;i<errorList.size();i++) {
+		// System.out.println(errorList.get(i));
+		// }
 	}
 }
