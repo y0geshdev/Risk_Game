@@ -13,20 +13,24 @@ public class Territory {
     private List<Territory> neighbourTerritories;
     private Continent continent;
     private Player owner;
+    private int numberOfArmies;
 
     public Territory() {
-        this.neighbourTerritories = new ArrayList<>();
+     this.neighbourTerritories = new ArrayList<>();
+     numberOfArmies	=	0;
     }
 
     public Territory(String name, Continent continent) {
         this.name = name;
         this.continent = continent;
         this.neighbourTerritories = new ArrayList<>();
+        numberOfArmies	=	0;
     }
 
     public Territory(String name){
         this.name = name;
         this.neighbourTerritories = new ArrayList<>();
+        numberOfArmies	=	0;
     }
 
     public String getName() {
@@ -60,7 +64,19 @@ public class Territory {
     public void setOwner(Player owner) {
         this.owner = owner;
     }
-
+    
+    public int getArmyOfTheTerritory() {
+    	return numberOfArmies;
+    }
+    
+    public void setArmyOfTheTerritory(int numberOfArmies) {
+    	this.numberOfArmies	=	numberOfArmies;
+    }
+    
+    public void addArmyOfTheTerritory(int numberOfArmies) {
+    	this.numberOfArmies+=numberOfArmies;
+    }
+    
 	@Override
 	public String toString() {
 		return this.name;

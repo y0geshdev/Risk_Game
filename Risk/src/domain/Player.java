@@ -9,6 +9,7 @@ import java.util.List;
 public class Player {
     private String name;
     private List<Territory> territories;
+    private int armyCount;
     
 	public String getName() {
 		return name;
@@ -21,6 +22,12 @@ public class Player {
 	}
 	public void setTerritories(List<Territory> territories) {
 		this.territories = territories;
+	}
+	public void setArmyCount(int armyCount) {
+		this.armyCount	=	armyCount;
+	}
+	public int getArmyCount() {
+		return armyCount;
 	}
 	
 	@Override
