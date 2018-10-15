@@ -1,29 +1,79 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-
-<GridPane fx:id="gamePane" hgap="10.0" vgap="8.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8.0.171" fx:controller="controller.GameController">
-   <columnConstraints>
-      <ColumnConstraints />
-      <ColumnConstraints />
-      <ColumnConstraints />
-      <ColumnConstraints />
-      <ColumnConstraints />
-   </columnConstraints>
-   <rowConstraints>
-      <RowConstraints />
-      <RowConstraints />
-      <RowConstraints />
-   </rowConstraints>
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="578.0" prefWidth="964.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.GameController">
    <children>
-      <Label fx:id="numberOfPlayers" text="Number Of players" />
-      <TextField fx:id="countOfPlayers" promptText="Enter Player Number" GridPane.columnIndex="1" />
-      <Button fx:id="renderGame" mnemonicParsing="false" onAction="#startGameHandler" text="Game" GridPane.columnIndex="2" />
+      <ScrollPane fx:id="mapPane" prefHeight="578.0" prefWidth="724.0" style="-fx-border-color: black;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="240.0" AnchorPane.topAnchor="0.0">
+         <content>
+            <GridPane fx:id="mapGrid">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+            </GridPane>
+         </content>
+      </ScrollPane>
+      <VBox layoutX="725.0" layoutY="1.0" prefHeight="578.0" prefWidth="239.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label fx:id="playerDetailsUI" alignment="CENTER" contentDisplay="CENTER" prefHeight="40.0" prefWidth="237.0" style="-fx-border-color: Black;" text="Player Name" textAlignment="CENTER" VBox.vgrow="ALWAYS" />
+            <AnchorPane fx:id="reinfoPhaseUI" prefHeight="177.0" prefWidth="237.0" style="-fx-border-color: black;" VBox.vgrow="ALWAYS">
+               <VBox.margin>
+                  <Insets top="2.0" />
+               </VBox.margin>
+               <children>
+                  <Label fx:id="startUpAndReinforcementId" alignment="CENTER" contentDisplay="CENTER" layoutX="66.0" layoutY="11.0" prefHeight="14.0" prefWidth="141.0" text="StartUp Phase" textAlignment="CENTER" underline="true" AnchorPane.leftAnchor="66.0" AnchorPane.rightAnchor="66.0" />
+                  <Label layoutX="15.0" layoutY="52.0" text="Total Armies :" />
+                  <Label fx:id="playerArmies" layoutX="108.0" layoutY="52.0" text="NumberOfArmies" />
+                  <Label layoutX="15.0" layoutY="71.0" text="Territories" />
+                  <TextField fx:id="numberOfArmiesPerTerritory" layoutX="148.0" layoutY="90.0" prefHeight="22.0" prefWidth="76.0" promptText="add armies" />
+                  <ComboBox fx:id="playerTerritoryList" layoutX="15.0" layoutY="90.0" prefHeight="22.0" prefWidth="103.0" />
+                  <Button fx:id="addArmies" layoutX="150.0" layoutY="144.0" mnemonicParsing="false" onAction="#addArmiesToTerritories" prefHeight="22.0" prefWidth="76.0" text="Add" />
+               </children>
+            </AnchorPane>
+            <AnchorPane fx:id="attackPhaseUI" prefHeight="177.0" prefWidth="237.0" style="-fx-border-color: black;" VBox.vgrow="ALWAYS">
+               <VBox.margin>
+                  <Insets top="2.0" />
+               </VBox.margin>
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" layoutX="11.0" layoutY="52.0" prefHeight="14.0" prefWidth="103.0" text="Attacker" textAlignment="CENTER" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" layoutX="66.0" layoutY="11.0" prefHeight="14.0" prefWidth="141.0" text="Attack Phase" textAlignment="CENTER" underline="true" AnchorPane.leftAnchor="58.0" AnchorPane.rightAnchor="62.0" />
+                  <Label alignment="CENTER" contentDisplay="CENTER" layoutX="123.0" layoutY="52.0" prefHeight="14.0" prefWidth="103.0" text="Defender" textAlignment="CENTER" />
+                  <ComboBox layoutX="11.0" layoutY="70.0" prefHeight="22.0" prefWidth="103.0" />
+                  <ComboBox layoutX="123.0" layoutY="70.0" prefHeight="22.0" prefWidth="103.0" />
+                  <Button layoutX="98.0" layoutY="144.0" mnemonicParsing="false" text="Attack" />
+                  <Button layoutX="149.0" layoutY="144.0" mnemonicParsing="false" text="Finish Phase" />
+               </children>
+            </AnchorPane>
+            <AnchorPane fx:id="fortiPhaseUI" prefHeight="176.0" prefWidth="237.0" style="-fx-border-color: black;" VBox.vgrow="ALWAYS">
+               <VBox.margin>
+                  <Insets top="2.0" />
+               </VBox.margin>
+               <children>
+                  <Label alignment="CENTER" contentDisplay="CENTER" layoutX="66.0" layoutY="11.0" prefHeight="14.0" prefWidth="141.0" text="Fortification Phase" textAlignment="CENTER" underline="true" AnchorPane.leftAnchor="66.0" AnchorPane.rightAnchor="67.0" />
+                  <Label layoutX="11.0" layoutY="45.0" prefHeight="22.0" text="From Territory" />
+                  <ComboBox layoutX="11.0" layoutY="68.0" prefHeight="22.0" prefWidth="103.0" />
+                  <ComboBox layoutX="123.0" layoutY="68.0" prefHeight="22.0" prefWidth="103.0" />
+                  <Label layoutX="123.0" layoutY="45.0" prefHeight="22.0" text="To Territory" />
+                  <Button layoutX="103.0" layoutY="143.0" mnemonicParsing="false" text="Move" />
+                  <Button layoutX="149.0" layoutY="143.0" mnemonicParsing="false" text="Finish Phase" />
+                  <Label layoutX="11.0" layoutY="95.0" prefHeight="22.0" text="Armies to move :" />
+                  <TextField layoutX="123.0" layoutY="96.0" prefHeight="22.0" prefWidth="103.0" promptText="No. of armies" />
+               </children>
+            </AnchorPane>
+         </children>
+      </VBox>
    </children>
-</GridPane>
+</AnchorPane>
