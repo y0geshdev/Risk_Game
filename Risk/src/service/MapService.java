@@ -47,6 +47,12 @@ public class MapService {
 
 		Iterator<Continent> iteContinent = continentsSet.iterator();
 		Iterator<Territory> iteTerritory = territoriesSet.iterator();
+		
+		if(continentsSet.size()<1 || territoriesSet.size()<1) {
+			errorMessage= "No Continent or Territory Exist";
+			errorList.add(errorMessage);
+			return;
+		}
 
 		while (iteContinent.hasNext()) {
 			Continent continent = iteContinent.next();
