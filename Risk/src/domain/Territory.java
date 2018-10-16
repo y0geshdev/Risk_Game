@@ -73,9 +73,6 @@ public class Territory {
     	this.numberOfArmies	=	numberOfArmies;
     }
     
-    public void addArmyOfTheTerritory(int numberOfArmies) {
-    	this.numberOfArmies+=numberOfArmies;
-    }
     
 	@Override
 	public String toString() {

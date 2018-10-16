@@ -43,10 +43,6 @@ public class Player {
 		return armyCount;
 	}
 
-	public void updateArmyCount(int armyCount) {
-		this.armyCount += armyCount;
-	}
-
 	@Override
 	public String toString() {
 		return this.name;
