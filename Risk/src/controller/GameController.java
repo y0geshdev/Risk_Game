@@ -140,10 +140,6 @@ public class GameController {
 	private static boolean ifStartUpIsComepleted = false;
 	private int maxNumberOfTerritores = Integer.MIN_VALUE;
 
-	// private final Button okButton =
-	// (Button)playerDialog.getDialogPane().lookupButton(ButtonType.OK); Might use
-	// it for Validation of Input Text of Dialog box
-
 	/**
 	 * This method forms the game map on UI, distributes territories randomly to the
 	 * players, select the player randomly to start the startup phase of the game.
@@ -154,22 +150,39 @@ public class GameController {
 		disableComponents(fortiPhaseUI);
 		disableComponents(reinfoPhaseUI);
 		playerDialog = new TextInputDialog();
-		/*
-		 * playerDialog.initModality(Modality.APPLICATION_MODAL);
-		 * playerDialog.initStyle(StageStyle.UNDECORATED);
-		 */
 		playerDialog.setTitle("Enter Number Of Players");
 		playerDialog.setContentText("Enter Number Of Players");
-		Optional<String> result = playerDialog.showAndWait();
+		while (getplayerNumber() == -1);
+		playerList = new ArrayList<>(totalNumberOfPlayers);
+		serviceObject.setTerritoriesAndArmiesToPlayers(playerList, totalNumberOfPlayers);
+		createPlayerToNumberOfTerritoryMapping();
+		currentPlayer = serviceObject.getPlayer(null, playerList);
+		enableComponents(reinfoPhaseUI);
+		startUpPhase();
 
+	}
+
+	private int getplayerNumber() {
+
+		Optional<String> result = playerDialog.showAndWait();
+		String error;
 		if (result.isPresent()) {
-			totalNumberOfPlayers = Integer.parseInt(result.get());
-			playerList = new ArrayList<>(totalNumberOfPlayers);
-			serviceObject.setTerritoriesAndArmiesToPlayers(playerList, totalNumberOfPlayers);
-			createPlayerToNumberOfTerritoryMapping();
-			currentPlayer = serviceObject.getPlayer(null, playerList);
-			enableComponents(reinfoPhaseUI);
-			startUpPhase();
+			try {
+				totalNumberOfPlayers = Integer.parseInt(result.get());
+				if (totalNumberOfPlayers < 1) {
+					error = "Number of Players cannot be less than 2";
+					showError(error);
+					return -1;
+				}
+			} catch (NumberFormatException e) {
+				error = "Enter a valid Number";
+				showError(error);
+				return -1;
+			}
+			return totalNumberOfPlayers;
+		} else {
+			error = "Enter a valid Number";
+			return -1;
 		}
 	}
 
@@ -185,11 +198,12 @@ public class GameController {
 			// current player?
 			// Null as this begins the reinforcement phase and I have selected a new random
 			// player who starts playing the game.
-			// We can surely use the current player also. Will read some rules if necessary will change it.
+			// We can surely use the current player also. Will read some rules if necessary
+			// will change it.
 			currentPlayer = serviceObject.getPlayer(null, playerList);
 			serviceObject.addArmiesForReinforcementPhase(currentPlayer);
 			reinforcementPhase();
-		}else if (currentPlayer.getArmyCount() == 0) {
+		} else if (currentPlayer.getArmyCount() == 0) {
 			currentPlayer = serviceObject.getPlayer(currentPlayer, playerList);
 			startUpPhase();
 		}
@@ -368,7 +382,7 @@ public class GameController {
 		alert.setContentText(state);
 		alert.showAndWait();
 	}
-	
+
 	/**
 	 * This method begins the reinforcement phase.
 	 */
@@ -378,8 +392,7 @@ public class GameController {
 			disableComponents(reinfoPhaseUI);
 			enableComponents(attackPhaseUI);
 			attackAttackerCB.setItems(FXCollections.observableList(currentPlayer.getTerritories()));
-			for(int i=0;i<currentPlayer.getTerritories().size();i++)
-			System.out.println("Territory is "+ currentPlayer.getTerritories().get(i));
+			for (int i = 0; i < currentPlayer.getTerritories().size(); i++)
 			attackAttackerCB.setValue(currentPlayer.getTerritories().get(0));
 			List<Territory> defenderTerritories = serviceObject
 					.attackableTerritories(currentPlayer.getTerritories().get(0));
