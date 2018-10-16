@@ -28,7 +28,7 @@
       </ScrollPane>
       <VBox layoutX="725.0" layoutY="1.0" prefHeight="578.0" prefWidth="239.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label fx:id="playerDetailsUI" alignment="CENTER" contentDisplay="CENTER" prefHeight="40.0" prefWidth="237.0" style="-fx-border-color: Black;" text="Player Name" textAlignment="CENTER" VBox.vgrow="ALWAYS" />
+            <Label fx:id="playerDetailsUI" alignment="CENTER" contentDisplay="CENTER" prefHeight="40.0" prefWidth="237.0" style="-fx-border-color: Black;" textAlignment="CENTER" VBox.vgrow="ALWAYS" />
             <AnchorPane fx:id="reinfoPhaseUI" prefHeight="177.0" prefWidth="237.0" style="-fx-border-color: black;" VBox.vgrow="ALWAYS">
                <VBox.margin>
                   <Insets top="2.0" />
@@ -51,10 +51,10 @@
                   <Label alignment="CENTER" contentDisplay="CENTER" layoutX="11.0" layoutY="52.0" prefHeight="14.0" prefWidth="103.0" text="Attacker" textAlignment="CENTER" />
                   <Label alignment="CENTER" contentDisplay="CENTER" layoutX="66.0" layoutY="11.0" prefHeight="14.0" prefWidth="141.0" text="Attack Phase" textAlignment="CENTER" underline="true" AnchorPane.leftAnchor="58.0" AnchorPane.rightAnchor="62.0" />
                   <Label alignment="CENTER" contentDisplay="CENTER" layoutX="123.0" layoutY="52.0" prefHeight="14.0" prefWidth="103.0" text="Defender" textAlignment="CENTER" />
-                  <ComboBox layoutX="11.0" layoutY="70.0" prefHeight="22.0" prefWidth="103.0" />
-                  <ComboBox layoutX="123.0" layoutY="70.0" prefHeight="22.0" prefWidth="103.0" />
-                  <Button layoutX="98.0" layoutY="144.0" mnemonicParsing="false" text="Attack" />
-                  <Button layoutX="149.0" layoutY="144.0" mnemonicParsing="false" text="Finish Phase" />
+                  <ComboBox fx:id="attackAttackerCB" layoutX="11.0" layoutY="70.0" onAction="#updateDefenderTerritories" prefHeight="22.0" prefWidth="103.0" />
+                  <ComboBox fx:id="attackDefenderCB" layoutX="123.0" layoutY="70.0" prefHeight="22.0" prefWidth="103.0" />
+                  <Button fx:id="attackButton" layoutX="98.0" layoutY="144.0" mnemonicParsing="false" onAction="#attack" text="Attack" />
+                  <Button fx:id="attackFinishButton" layoutX="149.0" layoutY="144.0" mnemonicParsing="false" onAction="#finishAttack" text="Finish Phase" />
                </children>
             </AnchorPane>
             <AnchorPane fx:id="fortiPhaseUI" prefHeight="176.0" prefWidth="237.0" style="-fx-border-color: black;" VBox.vgrow="ALWAYS">
@@ -64,13 +64,13 @@
                <children>
                   <Label alignment="CENTER" contentDisplay="CENTER" layoutX="66.0" layoutY="11.0" prefHeight="14.0" prefWidth="141.0" text="Fortification Phase" textAlignment="CENTER" underline="true" AnchorPane.leftAnchor="66.0" AnchorPane.rightAnchor="67.0" />
                   <Label layoutX="11.0" layoutY="45.0" prefHeight="22.0" text="From Territory" />
-                  <ComboBox layoutX="11.0" layoutY="68.0" prefHeight="22.0" prefWidth="103.0" />
-                  <ComboBox layoutX="123.0" layoutY="68.0" prefHeight="22.0" prefWidth="103.0" />
+                  <ComboBox fx:id="fortifyFromTerritoryCB" layoutX="11.0" layoutY="68.0" onAction="#updatefortifiableTerritories" prefHeight="22.0" prefWidth="103.0" />
+                  <ComboBox fx:id="fortifyToTerritoryCB" layoutX="123.0" layoutY="68.0" prefHeight="22.0" prefWidth="103.0" />
                   <Label layoutX="123.0" layoutY="45.0" prefHeight="22.0" text="To Territory" />
-                  <Button layoutX="103.0" layoutY="143.0" mnemonicParsing="false" text="Move" />
-                  <Button layoutX="149.0" layoutY="143.0" mnemonicParsing="false" text="Finish Phase" />
+                  <Button fx:id="fortifyMoveButton" layoutX="103.0" layoutY="143.0" mnemonicParsing="false" onAction="#doFortification" text="Move" />
+                  <Button fx:id="fortifyFinishButton" layoutX="149.0" layoutY="143.0" mnemonicParsing="false" onAction="#finishFortification" text="Finish Phase" />
                   <Label layoutX="11.0" layoutY="95.0" prefHeight="22.0" text="Armies to move :" />
-                  <TextField layoutX="123.0" layoutY="96.0" prefHeight="22.0" prefWidth="103.0" promptText="No. of armies" />
+                  <TextField fx:id="armiesNoToFortify" layoutX="123.0" layoutY="96.0" prefHeight="22.0" prefWidth="103.0" promptText="No. of armies" />
                </children>
             </AnchorPane>
          </children>

@@ -12,10 +12,12 @@ import java.util.Set;
 import domain.Continent;
 import domain.Player;
 import domain.Territory;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -26,10 +28,9 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.TextAlignment;
-import javafx.stage.Modality;
-import javafx.stage.StageStyle;
+import javafx.scene.layout.Pane;
 import service.GameService;
 
 public class GameController {
@@ -88,6 +89,42 @@ public class GameController {
 	@FXML
 	private Button addArmies;
 
+	@FXML
+	private AnchorPane reinfoPhaseUI;
+
+	@FXML
+	private AnchorPane attackPhaseUI;
+
+	@FXML
+	private ComboBox<Territory> attackAttackerCB;
+
+	@FXML
+	private ComboBox<Territory> attackDefenderCB;
+
+	@FXML
+	private Button attackButton;
+
+	@FXML
+	private Button attackFinishButton;
+
+	@FXML
+	private AnchorPane fortiPhaseUI;
+
+	@FXML
+	private ComboBox<Territory> fortifyFromTerritoryCB;
+
+	@FXML
+	private ComboBox<Territory> fortifyToTerritoryCB;
+
+	@FXML
+	private Button fortifyMoveButton;
+
+	@FXML
+	private Button fortifyFinishButton;
+
+	@FXML
+	private TextField armiesNoToFortify;
+
 	private static Map<String, TextField> idToTextFieldMapping = new HashMap<>();
 	private static final String CONTROL_VALUE_WITH_SEMICOLON = "Control Value :";
 	public static final String CONTROL_VALUE = "Control Value";
@@ -96,7 +133,7 @@ public class GameController {
 	private static List<Player> playerList = new ArrayList<>();
 	private static Set<Player> playersWithZeroArmies = new HashSet<>();
 	private static Player currentPlayer;
-	private TextInputDialog playerDialog = new TextInputDialog();
+	private TextInputDialog playerDialog;
 	private static int totalNumberOfPlayers;
 	private static boolean ifStartUpIsComepleted = false;
 
@@ -109,19 +146,17 @@ public class GameController {
 	 * players, select the player randomly to start the startup phase of the game.
 	 */
 	public void startGame() {
-		playerDialog.initModality(Modality.APPLICATION_MODAL);
-		playerDialog.initStyle(StageStyle.UNDECORATED);
+		disableComponents(attackPhaseUI);
+		disableComponents(fortiPhaseUI);
+		disableComponents(reinfoPhaseUI);
+		playerDialog = new TextInputDialog();
+		/*
+		 * playerDialog.initModality(Modality.APPLICATION_MODAL);
+		 * playerDialog.initStyle(StageStyle.UNDECORATED);
+		 */
 		playerDialog.setTitle("Enter Number Of Players");
 		playerDialog.setContentText("Enter Number Of Players");
 		Optional<String> result = playerDialog.showAndWait();
-
-		// Might use it for Validation
-		// okButton.addEventFilter(ActionEvent.ACTION, event->{
-		// if(result.isPresent() && Integer.parseInt(result.get())>0){
-		// event.consume();
-		//
-		// }
-		// });
 
 		if (result.isPresent()) {
 			totalNumberOfPlayers = Integer.parseInt(result.get());
@@ -129,6 +164,7 @@ public class GameController {
 			serviceObject.setTerritoriesAndArmiesToPlayers(playerList, totalNumberOfPlayers);
 			formMap();
 			currentPlayer = serviceObject.getPlayer(null, playerList);
+			enableComponents(reinfoPhaseUI);
 			startUpPhase();
 		}
 	}
@@ -137,11 +173,12 @@ public class GameController {
 	 * This method begins the startUp phase.
 	 */
 	private void startUpPhase() {
-
 		if (endOfStartUpPhase()) {
 			String error = "Start Up Phase Completed";
 			showError(error);
 			ifStartUpIsComepleted = true;
+			// should we call serviceObject.getPlayer(null, playerList); with null or with
+			// current player?
 			currentPlayer = serviceObject.getPlayer(null, playerList);
 			serviceObject.addArmiesForReinforcementPhase(currentPlayer);
 			reinforcementPhase();
@@ -180,8 +217,8 @@ public class GameController {
 			Integer controlValue = obj.getContinentArmyValue();
 			Label continentName = new Label(nameofTheContinent);
 			Label controlValueLabel = new Label(GameController.CONTROL_VALUE_WITH_SEMICOLON + controlValue.toString());
-			mapGrid.setConstraints(continentName, colCounter, 1);
-			mapGrid.setConstraints(controlValueLabel, colCounter, 2);
+			GridPane.setConstraints(continentName, colCounter, 1);
+			GridPane.setConstraints(controlValueLabel, colCounter, 2);
 			mapGrid.getChildren().addAll(continentName, controlValueLabel);
 			setTerritoryFields(territoryList, colCounter, true);
 			colCounter++;
@@ -210,7 +247,7 @@ public class GameController {
 			for (int i = 0; i < territoryList.size(); i++) {
 				Territory territoryObj = territoryList.get(i);
 				TextField territoryField = new TextField();
-				mapGrid.setConstraints(territoryField, colCounter, i + 3);
+				GridPane.setConstraints(territoryField, colCounter, i + 3);
 				territoryField.setPromptText(territoryObj.getName());
 				territoryField.setEditable(false);
 				territoryField.setPromptText(
@@ -336,11 +373,158 @@ public class GameController {
 	 */
 	private void reinforcementPhase() {
 		if (endOfReinforcementPhase(currentPlayer)) {
-			String error = "Reinforcement Phase Completed";
-			showError(error);
-			//TODO
-			//Add attack phase to this.
+			// set for attack phase
+			disableComponents(reinfoPhaseUI);
+			enableComponents(attackPhaseUI);
+			attackAttackerCB.setItems(FXCollections.observableList(currentPlayer.getTerritories()));
+			attackAttackerCB.setValue(currentPlayer.getTerritories().get(0));
+			List<Territory> defenderTerritories = serviceObject
+					.attackableTerritories(currentPlayer.getTerritories().get(0));
+			if (defenderTerritories.size() > 0) {
+				attackDefenderCB.setDisable(false);
+				attackDefenderCB.setItems(FXCollections.observableList(defenderTerritories));
+				attackDefenderCB.setValue(defenderTerritories.get(0));
+			} else {
+				attackDefenderCB.setValue(null);
+				attackDefenderCB.setDisable(true);
+			}
 		}
+		setPlayerInfo();
+	}
+
+	@FXML
+	void updateDefenderTerritories(ActionEvent event) {
+		Territory selectedTerritory = attackAttackerCB.getValue();
+		List<Territory> defenderTerritories = serviceObject.attackableTerritories(selectedTerritory);
+		if (defenderTerritories.size() > 0) {
+			attackDefenderCB.setDisable(false);
+			attackDefenderCB.setItems(FXCollections.observableList(defenderTerritories));
+			attackDefenderCB.setValue(defenderTerritories.get(0));
+		} else {
+			attackDefenderCB.setValue(null);
+			attackDefenderCB.setDisable(true);
+		}
+	}
+
+	@FXML
+	public void attack() {
+		Territory attackerTerritory = attackAttackerCB.getValue();
+		Territory defenderTerritory = attackDefenderCB.getValue();
+
+		if (attackerTerritory.getArmyOfTheTerritory() <= 1)
+			showError("Can not attack with one Army.");
+		else if (defenderTerritory == null) {
+			showError("Select a territory to attack to. ");
+		} else {
+			serviceObject.attack(attackerTerritory, defenderTerritory);
+
+			// Update map UI
+			TextField mapTF = idToTextFieldMapping.get(attackerTerritory.getName());
+			mapTF.setPromptText(
+					attackerTerritory.getName() + " : " + String.valueOf(attackerTerritory.getArmyOfTheTerritory()));
+			mapTF = idToTextFieldMapping.get(defenderTerritory.getName());
+			mapTF.setPromptText(
+					defenderTerritory.getName() + " : " + String.valueOf(defenderTerritory.getArmyOfTheTerritory()));
+
+			if (currentPlayer.getTerritories().size() == MapController.territoriesSet.size()) {
+				Alert alert = new Alert(AlertType.INFORMATION);
+				alert.setTitle("Information Dialog");
+				alert.setHeaderText(null);
+				alert.setContentText("Player " + currentPlayer.getName() + " won the game.");
+				alert.showAndWait();
+				Platform.exit();
+			} else {
+				//attackAttackerCB.setItems(FXCollections.observableList(currentPlayer.getTerritories()));
+				//attackAttackerCB.setValue(currentPlayer.getTerritories().get(0));
+				List<Territory> defenderTerritories = serviceObject
+						.attackableTerritories(currentPlayer.getTerritories().get(0));
+				if (defenderTerritories.size() > 0) {
+					attackDefenderCB.setItems(FXCollections.observableList(defenderTerritories));
+					attackDefenderCB.setValue(defenderTerritories.get(0));
+				} else {
+					attackDefenderCB.setDisable(true);
+					attackDefenderCB.setValue(null);
+				}
+			}
+		}
+	}
+
+	@FXML
+	public void finishAttack(ActionEvent event) {
+		disableComponents(attackPhaseUI);
+		enableComponents(fortiPhaseUI);
+		// prepare fortification UI
+		fortifyFromTerritoryCB.setItems(FXCollections.observableList(currentPlayer.getTerritories()));
+		fortifyFromTerritoryCB.setValue(currentPlayer.getTerritories().get(0));
+		List<Territory> fortifiableTerritories = serviceObject
+				.fortifiableTerritories(currentPlayer.getTerritories().get(0));
+		if (fortifiableTerritories.size() > 0) {
+			fortifyToTerritoryCB.setItems(FXCollections.observableList(fortifiableTerritories));
+			fortifyToTerritoryCB.setValue(fortifiableTerritories.get(0));
+		} else {
+			fortifyToTerritoryCB.setValue(null);
+			fortifyToTerritoryCB.setDisable(true);
+		}
+
+	}
+
+	@FXML
+	public void updatefortifiableTerritories() {
+		Territory selectedTerritory = fortifyFromTerritoryCB.getValue();
+		List<Territory> fortifiableTerritories = serviceObject.fortifiableTerritories(selectedTerritory);
+		if (fortifiableTerritories.size() > 0) {
+			fortifyToTerritoryCB.setItems(FXCollections.observableList(fortifiableTerritories));
+			fortifyToTerritoryCB.setValue(fortifiableTerritories.get(0));
+		} else {
+			fortifyToTerritoryCB.setValue(null);
+			fortifyToTerritoryCB.setDisable(true);
+		}
+	}
+
+	@FXML
+	public void doFortification(ActionEvent event) {
+
+		List<String> errorList = new ArrayList<>();
+		Territory from = fortifyFromTerritoryCB.getValue();
+		Territory to = fortifyToTerritoryCB.getValue();
+		if(to==null) {
+			showError("Select a territory to fortify.");
+			return;
+		}
+		int armiesToMove;
+		try {
+			armiesToMove = Integer.parseInt(armiesNoToFortify.getText());
+		} catch (Exception e) {
+			showError("Enter valid number.");
+			return;
+		}
+		serviceObject.fortification(from, to, armiesToMove, errorList);
+		if (errorList.size() > 0) {
+			String errors = "Cannot fortify due to:";
+			for (String error : errorList)
+				errors = errors.concat("\n-" + error);
+			showError(errors);
+		} else {
+
+			// update Map UI
+			TextField mapTF = idToTextFieldMapping.get(from.getName());
+			mapTF.setPromptText(from.getName() + " : " + String.valueOf(from.getArmyOfTheTerritory()));
+			mapTF = idToTextFieldMapping.get(to.getName());
+			mapTF.setPromptText(to.getName() + " : " + String.valueOf(to.getArmyOfTheTerritory()));
+
+			finishFortification(event);
+		}
+	}
+
+	@FXML
+	public void finishFortification(ActionEvent event) {
+		disableComponents(fortiPhaseUI);
+		enableComponents(reinfoPhaseUI);
+		currentPlayer = serviceObject.getPlayer(currentPlayer, playerList);
+		// to avoid players turn who have no territories
+		while (currentPlayer.getTerritories().size() == 0)
+			currentPlayer = serviceObject.getPlayer(currentPlayer, playerList);
+		serviceObject.addArmiesForReinforcementPhase(currentPlayer);
 		setPlayerInfo();
 	}
 
@@ -357,6 +541,20 @@ public class GameController {
 			return true;
 		} else {
 			return false;
+		}
+	}
+
+	private void disableComponents(Pane pane) {
+		List<Node> nodes = pane.getChildren();
+		for (Node n : nodes) {
+			n.setDisable(true);
+		}
+	}
+
+	private void enableComponents(Pane pane) {
+		List<Node> nodes = pane.getChildren();
+		for (Node n : nodes) {
+			n.setDisable(false);
 		}
 	}
 

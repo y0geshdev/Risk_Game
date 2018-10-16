@@ -32,16 +32,19 @@ public class GameService {
 	 */
 	public void distributeTerritories(List<Player> numberOfPlayers) {
 		List<Territory> territoryObjectList = new ArrayList<>(MapController.territoriesSet);
-
+		// variable to hold territory to work with.
+		Territory tempTerritory;
 		while (territoryObjectList.size() != 0) {
 			for (int i = 0; i < numberOfPlayers.size() && territoryObjectList.size() != 0; i++) {
 				Player onePlayer = numberOfPlayers.get(i);
 
 				int randIndex = randomIndex(0, territoryObjectList.size() - 1);
-				onePlayer.getTerritories().add(territoryObjectList.get(randIndex));
+				// avoid getting it List again and again.
+				tempTerritory = territoryObjectList.get(randIndex);
+				onePlayer.getTerritories().add(tempTerritory);
 				onePlayer.updateArmyCount(-1);
-				territoryObjectList.get(randIndex).setOwner(onePlayer);
-				territoryObjectList.get(randIndex).setArmyOfTheTerritory(1);
+				tempTerritory.setOwner(onePlayer);
+				tempTerritory.setArmyOfTheTerritory(1);
 				territoryObjectList.remove(randIndex);
 			}
 		}
@@ -132,7 +135,8 @@ public class GameService {
 			Player playerObj = new Player();
 			playerObj.setName("Player " + (i + 1));
 			playerObj.setArmyCount(armyCount);
-			playerObj.setTerritories(new ArrayList<Territory>());
+			// already added this in constructor.
+			// playerObj.setTerritories(new ArrayList<Territory>());
 			playerList.add(playerObj);
 		}
 		distributeTerritories(playerList);
@@ -271,4 +275,67 @@ public class GameService {
 		}
 	}
 
+	public List<Territory> attackableTerritories(Territory territory) {
+
+		Player player = territory.getOwner();
+		List<Territory> defenderTerritories = territory.getNeighbourTerritories();
+		for (Territory ter : player.getTerritories()) {
+			if (defenderTerritories.contains(ter))
+				defenderTerritories.remove(ter);
+		}
+		return defenderTerritories;
+	}
+
+	public void attack(Territory attackerTerritory, Territory defenderTerritory) {
+		Player attacker = attackerTerritory.getOwner();
+		Player defender = defenderTerritory.getOwner();
+
+		defender.getTerritories().remove(defenderTerritory);
+		defenderTerritory.setOwner(null);
+
+		attackerTerritory.setArmyOfTheTerritory(attackerTerritory.getArmyOfTheTerritory() - 1);
+		defenderTerritory.setArmyOfTheTerritory(1);
+
+		attacker.getTerritories().add(defenderTerritory);
+		defenderTerritory.setOwner(attacker);
+	}
+
+	/**
+	 * This method is used to do fortification in which armies are moved from one
+	 * territory to another territory.
+	 * 
+	 * @param from:
+	 *            Territory from which armies to be moved.
+	 * @param to:
+	 *            Territory to which armies to be moved.
+	 * @param armiesToMove:
+	 *            Number of armies to move.
+	 * @param errorList:
+	 *            List to hold validation errors.
+	 */
+	public void fortification(Territory from, Territory to, int armiesToMove, List<String> errorList) {
+		if (from.getArmyOfTheTerritory() <= 1) {
+			errorList.add("Don't have sufficient armies to move.");
+			return;
+		} else if (from.getArmyOfTheTerritory() <= armiesToMove) {
+			errorList.add("Can only move upto " + String.valueOf(from.getArmyOfTheTerritory() - 1) + " armies.");
+			return;
+		} else if (from == to) {
+			errorList.add("Can't move from same territory to same territory.");
+			return;
+		} else {
+			from.setArmyOfTheTerritory(from.getArmyOfTheTerritory() - armiesToMove);
+			to.setArmyOfTheTerritory(to.getArmyOfTheTerritory() + armiesToMove);
+		}
+	}
+
+	public List<Territory> fortifiableTerritories(Territory territory) {
+		Player player = territory.getOwner();
+		List<Territory> fortifiableTerritories = new ArrayList<>();
+		for (Territory terr : territory.getNeighbourTerritories()) {
+			if (player.getTerritories().contains(terr))
+				fortifiableTerritories.add(terr);
+		}
+		return fortifiableTerritories;
+	}
 }
