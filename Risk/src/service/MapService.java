@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
 import controller.MapController;
 import domain.Continent;
 import domain.Territory;
@@ -46,6 +47,12 @@ public class MapService {
 
 		Iterator<Continent> iteContinent = continentsSet.iterator();
 		Iterator<Territory> iteTerritory = territoriesSet.iterator();
+		
+		if(continentsSet.size()<1 || territoriesSet.size()<1) {
+			errorMessage= "No Continent or Territory Exist";
+			errorList.add(errorMessage);
+			return;
+		}
 
 		while (iteContinent.hasNext()) {
 			Continent continent = iteContinent.next();
@@ -69,20 +76,20 @@ public class MapService {
 
 		}
 		// check for connected graph.
-		boolean ifNeighbourPresent=true;
+		boolean ifNeighbourPresent = true;
 		while (iteTerritory.hasNext()) {
 			Territory territory = iteTerritory.next();
 			if (territory.getNeighbourTerritories().size() < 1) {
 				errorMessage = territory.getName() + " does not have any neighbouring territory";
 				errorList.add(errorMessage);
-				ifNeighbourPresent=false;
+				ifNeighbourPresent = false;
 			}
 		}
-		if(!ifNeighbourPresent) {
+		if (!ifNeighbourPresent) {
 			errorMessage = "The graph you entered is unconnected";
 			errorList.add(errorMessage);
 			return;
-			}
+		}
 		iteTerritory = territoriesSet.iterator();
 		Set<Territory> testingQueue = new HashSet<>();
 
@@ -200,6 +207,10 @@ public class MapService {
 	 */
 	public void parseFile(File file) throws Exception {
 
+		boolean isFileEmpty = (file != null) ? true : false;
+		if (!isFileEmpty) {
+			throw new Exception("File not Found");
+		}
 		Set<Territory> territoryObjectSet = new HashSet<>();
 		Set<Continent> continentObjectSet = new HashSet<>();
 		Continent continentObject;
@@ -221,6 +232,9 @@ public class MapService {
 				ifContinentObject = new HashMap<>();
 				fileContents = bufferedReaderObject.readLine();
 				do {
+					if (!fileContents.contains("=")) {
+						throw new Exception("No Continent is present in the File");
+					}
 					String[] lineContent = fileContents.split("=");
 					String continentName = lineContent[0];
 					int continentArmyValue = Integer.parseInt(lineContent[1]);
@@ -242,7 +256,12 @@ public class MapService {
 						fileContents = bufferedReaderObject.readLine();
 						continue;
 					}
+
+					if (!fileContents.contains(",")) {
+						throw new Exception("No Territory is present in the File");
+					}
 					String[] lineContent = fileContents.split(",");
+
 					String territoryName = lineContent[0];
 					String continentName;
 					if (lineContent.length > 3) {
@@ -305,7 +324,7 @@ public class MapService {
 	public static void main(String[] args) throws Exception {
 
 		MapService obj = new MapService();
-		File file = new File("C:\\Coding Practice\\connected2.map");
+		File file = new File("C:\\Users\\pc\\Desktop\\apprisk\\Asiamap.map");
 		// Map<String,Set> mapSetObj = obj.parseFile(file);
 		// List<String>errorList = new ArrayList<>();
 		// obj.validateMap(mapSetObj.get(GameConstants.CONTINENT_SET_KEY),

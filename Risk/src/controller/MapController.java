@@ -111,6 +111,7 @@ public class MapController {
 	static public HashSet<Continent> continentsSet;
 	static public HashSet<Territory> territoriesSet;
 	private MapService mapService = new MapService();
+	private GameController gameController;
 
 	/**
 	 * This method handle {@link MapController#generateMap} button event. This
@@ -467,7 +468,10 @@ public class MapController {
 			if (errorList.size() == 0) {
 				Parent root;
 				try {
-					root = FXMLLoader.load(getClass().getResource("/ui/Game.fxml"));
+					FXMLLoader loader	=	new FXMLLoader(getClass().getResource("/ui/Game.fxml"));
+					root = loader.load();
+					gameController	=	loader.getController();
+					gameController.startGame();
 				} catch (IOException e) {
 					showError("Unable to load Game.fxml file.");
 					return;
@@ -475,6 +479,7 @@ public class MapController {
 				Stage stage = new Stage();
 				stage.setScene(new Scene(root, 800, 600));
 				stage.show();
+				
 			} else {
 				String errors = "Resolve below errors:";
 				for (String error : errorList)
