@@ -32,7 +32,12 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import service.GameService;
-
+/**
+ * This controller handles Game.fxml controls and implements game driver.
+ * 
+ * @author Yogesh
+ *
+ */
 public class GameController {
 
 	@FXML
@@ -137,10 +142,7 @@ public class GameController {
 	private static int totalNumberOfPlayers;
 	private static boolean ifStartUpIsComepleted = false;
 
-	// private final Button okButton =
-	// (Button)playerDialog.getDialogPane().lookupButton(ButtonType.OK); Might use
-	// it for Validation of Input Text of Dialog box
-
+	
 	/**
 	 * This method forms the game map on UI, distributes territories randomly to the
 	 * players, select the player randomly to start the startup phase of the game.
@@ -150,10 +152,6 @@ public class GameController {
 		disableComponents(fortiPhaseUI);
 		disableComponents(reinfoPhaseUI);
 		playerDialog = new TextInputDialog();
-		/*
-		 * playerDialog.initModality(Modality.APPLICATION_MODAL);
-		 * playerDialog.initStyle(StageStyle.UNDECORATED);
-		 */
 		playerDialog.setTitle("Enter Number Of Players");
 		playerDialog.setContentText("Enter Number Of Players");
 		Optional<String> result = playerDialog.showAndWait();
@@ -177,8 +175,6 @@ public class GameController {
 			String error = "Start Up Phase Completed";
 			showError(error);
 			ifStartUpIsComepleted = true;
-			// should we call serviceObject.getPlayer(null, playerList); with null or with
-			// current player?
 			currentPlayer = serviceObject.getPlayer(null, playerList);
 			serviceObject.addArmiesForReinforcementPhase(currentPlayer);
 			reinforcementPhase();
@@ -373,21 +369,10 @@ public class GameController {
 	 */
 	private void reinforcementPhase() {
 		if (endOfReinforcementPhase(currentPlayer)) {
-			// set for attack phase
 			disableComponents(reinfoPhaseUI);
 			enableComponents(attackPhaseUI);
 			attackAttackerCB.setItems(FXCollections.observableList(currentPlayer.getTerritories()));
 			attackAttackerCB.setValue(currentPlayer.getTerritories().get(0));
-			List<Territory> defenderTerritories = serviceObject
-					.attackableTerritories(currentPlayer.getTerritories().get(0));
-			if (defenderTerritories.size() > 0) {
-				attackDefenderCB.setDisable(false);
-				attackDefenderCB.setItems(FXCollections.observableList(defenderTerritories));
-				attackDefenderCB.setValue(defenderTerritories.get(0));
-			} else {
-				attackDefenderCB.setValue(null);
-				attackDefenderCB.setDisable(true);
-			}
 		}
 		setPlayerInfo();
 	}
@@ -395,6 +380,9 @@ public class GameController {
 	@FXML
 	void updateDefenderTerritories(ActionEvent event) {
 		Territory selectedTerritory = attackAttackerCB.getValue();
+		// In case event is occured by setItems() method of comboBox.
+		if (selectedTerritory == null)
+			return;
 		List<Territory> defenderTerritories = serviceObject.attackableTerritories(selectedTerritory);
 		if (defenderTerritories.size() > 0) {
 			attackDefenderCB.setDisable(false);
@@ -418,7 +406,6 @@ public class GameController {
 		} else {
 			serviceObject.attack(attackerTerritory, defenderTerritory);
 
-			// Update map UI
 			TextField mapTF = idToTextFieldMapping.get(attackerTerritory.getName());
 			mapTF.setPromptText(
 					attackerTerritory.getName() + " : " + String.valueOf(attackerTerritory.getArmyOfTheTerritory()));
@@ -434,8 +421,9 @@ public class GameController {
 				alert.showAndWait();
 				Platform.exit();
 			} else {
-				//attackAttackerCB.setItems(FXCollections.observableList(currentPlayer.getTerritories()));
-				//attackAttackerCB.setValue(currentPlayer.getTerritories().get(0));
+				attackAttackerCB.setItems(FXCollections.observableList(currentPlayer.getTerritories()));
+				attackAttackerCB.setValue(attackAttackerCB.getItems().get(0));
+
 				List<Territory> defenderTerritories = serviceObject
 						.attackableTerritories(currentPlayer.getTerritories().get(0));
 				if (defenderTerritories.size() > 0) {
@@ -453,7 +441,7 @@ public class GameController {
 	public void finishAttack(ActionEvent event) {
 		disableComponents(attackPhaseUI);
 		enableComponents(fortiPhaseUI);
-		// prepare fortification UI
+		
 		fortifyFromTerritoryCB.setItems(FXCollections.observableList(currentPlayer.getTerritories()));
 		fortifyFromTerritoryCB.setValue(currentPlayer.getTerritories().get(0));
 		List<Territory> fortifiableTerritories = serviceObject
@@ -461,16 +449,18 @@ public class GameController {
 		if (fortifiableTerritories.size() > 0) {
 			fortifyToTerritoryCB.setItems(FXCollections.observableList(fortifiableTerritories));
 			fortifyToTerritoryCB.setValue(fortifiableTerritories.get(0));
+			fortifyToTerritoryCB.setDisable(false);
 		} else {
 			fortifyToTerritoryCB.setValue(null);
 			fortifyToTerritoryCB.setDisable(true);
 		}
-
 	}
 
 	@FXML
 	public void updatefortifiableTerritories() {
 		Territory selectedTerritory = fortifyFromTerritoryCB.getValue();
+		if (selectedTerritory == null)
+			return;
 		List<Territory> fortifiableTerritories = serviceObject.fortifiableTerritories(selectedTerritory);
 		if (fortifiableTerritories.size() > 0) {
 			fortifyToTerritoryCB.setItems(FXCollections.observableList(fortifiableTerritories));
@@ -487,7 +477,7 @@ public class GameController {
 		List<String> errorList = new ArrayList<>();
 		Territory from = fortifyFromTerritoryCB.getValue();
 		Territory to = fortifyToTerritoryCB.getValue();
-		if(to==null) {
+		if (to == null) {
 			showError("Select a territory to fortify.");
 			return;
 		}
@@ -506,7 +496,6 @@ public class GameController {
 			showError(errors);
 		} else {
 
-			// update Map UI
 			TextField mapTF = idToTextFieldMapping.get(from.getName());
 			mapTF.setPromptText(from.getName() + " : " + String.valueOf(from.getArmyOfTheTerritory()));
 			mapTF = idToTextFieldMapping.get(to.getName());
@@ -521,9 +510,11 @@ public class GameController {
 		disableComponents(fortiPhaseUI);
 		enableComponents(reinfoPhaseUI);
 		currentPlayer = serviceObject.getPlayer(currentPlayer, playerList);
+		
 		// to avoid players turn who have no territories
 		while (currentPlayer.getTerritories().size() == 0)
 			currentPlayer = serviceObject.getPlayer(currentPlayer, playerList);
+		
 		serviceObject.addArmiesForReinforcementPhase(currentPlayer);
 		setPlayerInfo();
 	}

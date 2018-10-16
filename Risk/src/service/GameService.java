@@ -278,7 +278,7 @@ public class GameService {
 	public List<Territory> attackableTerritories(Territory territory) {
 
 		Player player = territory.getOwner();
-		List<Territory> defenderTerritories = territory.getNeighbourTerritories();
+		List<Territory> defenderTerritories = new ArrayList<>(territory.getNeighbourTerritories());
 		for (Territory ter : player.getTerritories()) {
 			if (defenderTerritories.contains(ter))
 				defenderTerritories.remove(ter);

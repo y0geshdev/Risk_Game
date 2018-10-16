@@ -1,10 +1,8 @@
 package service;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.fail;
 
 import org.junit.Test;
-
-import controller.GameController;
 
 /**
  * This Junit Test Class will have all the test cases for {@link GameService}
