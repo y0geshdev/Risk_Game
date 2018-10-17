@@ -12,6 +12,7 @@ import controller.MapController;
 import domain.Continent;
 import domain.Player;
 import domain.Territory;
+import javafx.scene.control.TextField;
 
 /**
  * This class handle all the service call from {@link GameController} class and
@@ -42,9 +43,12 @@ public class GameService {
 				// avoid getting it List again and again.
 				tempTerritory = territoryObjectList.get(randIndex);
 				onePlayer.getTerritories().add(tempTerritory);
-				onePlayer.updateArmyCount(-1);
 				tempTerritory.setOwner(onePlayer);
 				tempTerritory.setArmyOfTheTerritory(1);
+				onePlayer.setArmyCount(onePlayer.getArmyCount() - 1);
+				TextField territoryField = GameController.idToTextFieldMapping.get(tempTerritory.getName());
+				territoryField.setText(
+						tempTerritory.getName() + " : " + String.valueOf(tempTerritory.getArmyOfTheTerritory()));
 				territoryObjectList.remove(randIndex);
 			}
 		}
@@ -92,10 +96,10 @@ public class GameService {
 
 		if (numberOfTerritories < 9) {
 			numberOfArmiesToAdd += 3;
-			playerInFocus.updateArmyCount(numberOfArmiesToAdd);
+			playerInFocus.setArmyCount(playerInFocus.getArmyCount() + numberOfArmiesToAdd);
 		} else {
 			numberOfArmiesToAdd += (int) Math.floor(numberOfTerritories / 3);
-			playerInFocus.updateArmyCount(numberOfArmiesToAdd);
+			playerInFocus.setArmyCount(playerInFocus.getArmyCount() + numberOfArmiesToAdd);
 		}
 	}
 
@@ -112,7 +116,7 @@ public class GameService {
 	public boolean ifContinentOccupied(List<Territory> territoriesInContinent, List<Territory> playerTerritories) {
 		boolean ifOccupied = true;
 		for (int i = 0; i < playerTerritories.size(); i++) {
-			if (!territoriesInContinent.equals(playerTerritories.get(i))) {
+			if (!territoriesInContinent.contains(playerTerritories.get(i))) {
 				ifOccupied = false;
 				break;
 			}
@@ -135,8 +139,6 @@ public class GameService {
 			Player playerObj = new Player();
 			playerObj.setName("Player " + (i + 1));
 			playerObj.setArmyCount(armyCount);
-			// already added this in constructor.
-			// playerObj.setTerritories(new ArrayList<Territory>());
 			playerList.add(playerObj);
 		}
 		distributeTerritories(playerList);
@@ -169,23 +171,6 @@ public class GameService {
 			return 15;
 
 		}
-	}
-
-	/**
-	 * This function validates if the player in focus has valid number of armies as
-	 * in if a player has 0 armies on his turn he won't be able to place any army
-	 * 
-	 * @param playerInFocus:
-	 *            Player whose turn it is to place army on his territories
-	 * @return
-	 */
-	public boolean validatePlayerArmyNumber(Player playerInFocus) {
-
-		if (playerInFocus.getArmyCount() == 0) {
-			return false;
-		}
-
-		return true;
 	}
 
 	/**
@@ -247,31 +232,32 @@ public class GameService {
 	 *            : Player who has entered the input.
 	 * @param territoryInFocus:
 	 *            territory where the player is trying to add armies.
-	 * @throws Exception
+	 * @param errorList
+	 *            : Error list containing errors related the text user input
 	 */
-	public void validateArmyInput(String inputText, Player playerInFocus, Territory territoryInFocus) throws Exception {
+	public void validateArmyInput(String inputText, Player playerInFocus, Territory territoryInFocus,
+			List<String> errorList) {
 		String error;
 		int numberOfArmiesInput;
 		try {
 			numberOfArmiesInput = Integer.parseInt(inputText);
 			if (numberOfArmiesInput > playerInFocus.getArmyCount()) {
 				error = "Number of armies cannot be more than what owner owns";
-				throw new Exception(error);
+				errorList.add(error);
 
 			} else if (numberOfArmiesInput < 1) {
 				error = "Number of Armies cannot be less than 1";
-				throw new Exception(error);
-
+				errorList.add(error);
 			}
 
 		} catch (NumberFormatException exception) {
 			error = "Please, Enter a valid number";
-			throw new Exception(error);
+			errorList.add(error);
 
 		}
 		if (territoryInFocus == null) {
 			error = "Please select at least one territory";
-			throw new Exception(error);
+			errorList.add(error);
 		}
 	}
 
@@ -291,7 +277,7 @@ public class GameService {
 		Player defender = defenderTerritory.getOwner();
 
 		defender.getTerritories().remove(defenderTerritory);
-		defenderTerritory.setOwner(null);
+		// defenderTerritory.setOwner(null);
 
 		attackerTerritory.setArmyOfTheTerritory(attackerTerritory.getArmyOfTheTerritory() - 1);
 		defenderTerritory.setArmyOfTheTerritory(1);
@@ -338,4 +324,5 @@ public class GameService {
 		}
 		return fortifiableTerritories;
 	}
+
 }

@@ -32,6 +32,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import service.GameService;
+
 /**
  * This controller handles Game.fxml controls and implements game driver.
  * 
@@ -130,10 +131,12 @@ public class GameController {
 	@FXML
 	private TextField armiesNoToFortify;
 
-	private static Map<String, TextField> idToTextFieldMapping = new HashMap<>();
+	public static Map<String, TextField> idToTextFieldMapping = new HashMap<>();
+	public static Map<String, Label> idToLabelMapping = new HashMap<>();
 	private static final String CONTROL_VALUE_WITH_SEMICOLON = "Control Value :";
 	public static final String CONTROL_VALUE = "Control Value";
-	public static final String TEXTFIELD_BORDER_COLOUR = "-fx-text-box-border: red;";
+	public static final String TEXTFIELD_BORDER_COLOUR_DEFENDER_TERRITORY = "-fx-text-box-border: red;";
+	public static final String TEXTFIELD_BORDER_COLOUR_OWN_TERRITORY = "-fx-text-box-border: darkgreen;";
 	private static GameService serviceObject = new GameService();
 	private static List<Player> playerList = new ArrayList<>();
 	private static Set<Player> playersWithZeroArmies = new HashSet<>();
@@ -141,29 +144,52 @@ public class GameController {
 	private TextInputDialog playerDialog;
 	private static int totalNumberOfPlayers;
 	private static boolean ifStartUpIsComepleted = false;
+	private int maxNumberOfTerritores = Integer.MIN_VALUE;
 
-	
 	/**
 	 * This method forms the game map on UI, distributes territories randomly to the
 	 * players, select the player randomly to start the startup phase of the game.
 	 */
 	public void startGame() {
+		formMap();
 		disableComponents(attackPhaseUI);
 		disableComponents(fortiPhaseUI);
 		disableComponents(reinfoPhaseUI);
 		playerDialog = new TextInputDialog();
 		playerDialog.setTitle("Enter Number Of Players");
 		playerDialog.setContentText("Enter Number Of Players");
-		Optional<String> result = playerDialog.showAndWait();
+		while (getplayerNumber() == -1)
+			;
+		playerList = new ArrayList<>(totalNumberOfPlayers);
+		serviceObject.setTerritoriesAndArmiesToPlayers(playerList, totalNumberOfPlayers);
+		createPlayerToNumberOfTerritoryMapping();
+		currentPlayer = serviceObject.getPlayer(null, playerList);
+		enableComponents(reinfoPhaseUI);
+		startUpPhase();
 
+	}
+
+	private int getplayerNumber() {
+
+		Optional<String> result = playerDialog.showAndWait();
+		String error;
 		if (result.isPresent()) {
-			totalNumberOfPlayers = Integer.parseInt(result.get());
-			playerList = new ArrayList<>(totalNumberOfPlayers);
-			serviceObject.setTerritoriesAndArmiesToPlayers(playerList, totalNumberOfPlayers);
-			formMap();
-			currentPlayer = serviceObject.getPlayer(null, playerList);
-			enableComponents(reinfoPhaseUI);
-			startUpPhase();
+			try {
+				totalNumberOfPlayers = Integer.parseInt(result.get());
+				if (totalNumberOfPlayers < 1) {
+					error = "Number of Players cannot be less than 2";
+					showError(error);
+					return -1;
+				}
+			} catch (NumberFormatException e) {
+				error = "Enter a valid Number";
+				showError(error);
+				return -1;
+			}
+			return totalNumberOfPlayers;
+		} else {
+			error = "Enter a valid Number";
+			return -1;
 		}
 	}
 
@@ -172,12 +198,15 @@ public class GameController {
 	 */
 	private void startUpPhase() {
 		if (endOfStartUpPhase()) {
-			String error = "Start Up Phase Completed";
-			showError(error);
+			String state = "Start Up Phase Completed";
+			showGameState(state);
 			ifStartUpIsComepleted = true;
 			currentPlayer = serviceObject.getPlayer(null, playerList);
 			serviceObject.addArmiesForReinforcementPhase(currentPlayer);
 			reinforcementPhase();
+		} else if (currentPlayer.getArmyCount() == 0) {
+			currentPlayer = serviceObject.getPlayer(currentPlayer, playerList);
+			startUpPhase();
 		}
 		setPlayerInfo();
 	}
@@ -202,7 +231,7 @@ public class GameController {
 	 * 
 	 */
 	@FXML
-	private void formMap() {
+	public void formMap() {
 
 		Iterator<Continent> ite = MapController.continentsSet.iterator();
 		int colCounter = 0;
@@ -216,58 +245,38 @@ public class GameController {
 			GridPane.setConstraints(continentName, colCounter, 1);
 			GridPane.setConstraints(controlValueLabel, colCounter, 2);
 			mapGrid.getChildren().addAll(continentName, controlValueLabel);
-			setTerritoryFields(territoryList, colCounter, true);
-			colCounter++;
-		}
-		mapPane.setContent(mapGrid);
-	}
-
-	/**
-	 * This method set the text fields on the basis of territories.This is also
-	 * adding the Mouse Click event on the text fields to show their
-	 * NeighbouringTerritories by clicking the TextField twice and highlighting it's
-	 * Neighbour's border by red.
-	 * 
-	 * 
-	 * @param territoryList
-	 *            : This is the territory list of a continent.
-	 * @param colCounter:
-	 *            This is the column in which text fields are to be place according
-	 *            to the continent.
-	 * @param ifSetUp:
-	 *            This tells if this is being called while setting up the UI or not.
-	 */
-	private void setTerritoryFields(List<Territory> territoryList, int colCounter, boolean ifSetUp) {
-
-		if (ifSetUp) {
+			if (maxNumberOfTerritores < territoryList.size()) {
+				maxNumberOfTerritores = territoryList.size();
+			}
 			for (int i = 0; i < territoryList.size(); i++) {
 				Territory territoryObj = territoryList.get(i);
 				TextField territoryField = new TextField();
 				GridPane.setConstraints(territoryField, colCounter, i + 3);
 				territoryField.setPromptText(territoryObj.getName());
 				territoryField.setEditable(false);
-				territoryField.setPromptText(
-						territoryObj.getName() + " : " + String.valueOf(territoryObj.getArmyOfTheTerritory()));
-				territoryField.setOnMouseClicked(new EventHandler<MouseEvent>() {
+				territoryField.setOnMouseEntered(new EventHandler<MouseEvent>() {
 
 					@Override
 					public void handle(MouseEvent event) {
-						if (event.getClickCount() == 2)
-							highlightNeighbouringTerritoriesHelper(territoryObj.getNeighbourTerritories(),
-									event.getClickCount());
-						highlightNeighbouringTerritoriesHelper(territoryObj.getNeighbourTerritories(),
-								event.getClickCount());
+						// TODO Auto-generated method stub
+						highlightNeighbouringTerritoriesHelper(territoryObj.getNeighbourTerritories(), true);
 					}
 				});
+				territoryField.setOnMouseExited(new EventHandler<MouseEvent>() {
 
+					@Override
+					public void handle(MouseEvent event) {
+						// TODO Auto-generated method stub
+						highlightNeighbouringTerritoriesHelper(territoryObj.getNeighbourTerritories(), false);
+					}
+				});
 				idToTextFieldMapping.put(territoryObj.getName(), territoryField);
 				mapGrid.getChildren().add(territoryField);
-			}
-		} else {
-			// To add the generic addition, why? can't we use idToTextFieldMapping for all
-			// the updates??
-		}
 
+			}
+			colCounter++;
+		}
+		mapPane.setContent(mapGrid);
 	}
 
 	/**
@@ -281,16 +290,19 @@ public class GameController {
 	 * @param clickCount
 	 *            : This gives the count of the clicks on the textfield.
 	 */
-	private void highlightNeighbouringTerritoriesHelper(List<Territory> neighbouringCountries, int clickCount) {
+	private void highlightNeighbouringTerritoriesHelper(List<Territory> neighbouringCountries, boolean isEntered) {
 
 		for (int i = 0; i < neighbouringCountries.size(); i++) {
-			Territory t = neighbouringCountries.get(i);
-			TextField tf = idToTextFieldMapping.get(t.getName());
-			if (clickCount == 2) {
-				tf.setStyle(GameController.TEXTFIELD_BORDER_COLOUR);
-			} else {
+			Territory terr = neighbouringCountries.get(i);
+			TextField tf = idToTextFieldMapping.get(terr.getName());
+			if (isEntered) {
+				if (!currentPlayer.getTerritories().contains(terr)) {
+					tf.setStyle(GameController.TEXTFIELD_BORDER_COLOUR_DEFENDER_TERRITORY);
+				} else {
+					tf.setStyle(GameController.TEXTFIELD_BORDER_COLOUR_OWN_TERRITORY);
+				}
+			} else
 				tf.setStyle("");
-			}
 		}
 
 	}
@@ -307,23 +319,22 @@ public class GameController {
 		// TODO
 		Territory selectedTerritory = playerTerritoryList.getValue();
 		String armyInput = numberOfArmiesPerTerritory.getText();
+		List<String> errorList = new ArrayList<>();
 
-		try {
-			serviceObject.validateArmyInput(armyInput, currentPlayer, selectedTerritory);
-		} catch (Exception exception) {
-			showError(exception.getMessage());
+		serviceObject.validateArmyInput(armyInput, currentPlayer, selectedTerritory, errorList);
+		if (errorList.size() != 0) {
+			String errors = "Resolve below errors:";
+			for (String error : errorList)
+				errors = errors.concat("\n-" + error);
+			showError(errors);
 			return;
 		}
 		int numberOfArmiesInput = Integer.parseInt(armyInput);
-		selectedTerritory.addArmyOfTheTerritory(numberOfArmiesInput);
+		selectedTerritory.setArmyOfTheTerritory(selectedTerritory.getArmyOfTheTerritory() + numberOfArmiesInput);
 		TextField tf = idToTextFieldMapping.get(selectedTerritory.getName());
-		tf.setPromptText(
-				selectedTerritory.getName() + " : " + String.valueOf(selectedTerritory.getArmyOfTheTerritory()));
-
-		boolean answer = serviceObject.validatePlayerArmyNumber(currentPlayer);
-		if (answer)
-			currentPlayer.setArmyCount(
-					currentPlayer.getArmyCount() - Integer.parseInt(numberOfArmiesPerTerritory.getText()));
+		tf.setText(selectedTerritory.getName() + " : " + String.valueOf(selectedTerritory.getArmyOfTheTerritory()));
+		currentPlayer
+				.setArmyCount(currentPlayer.getArmyCount() - Integer.parseInt(numberOfArmiesPerTerritory.getText()));
 
 		if (!ifStartUpIsComepleted) {
 			if (currentPlayer.getArmyCount() == 0) {
@@ -361,6 +372,15 @@ public class GameController {
 		alert.setTitle("Error");
 		alert.setHeaderText(null);
 		alert.setContentText(error);
+		alert.showAndWait();
+	}
+
+	private void showGameState(String state) {
+
+		Alert alert = new Alert(AlertType.INFORMATION);
+		alert.setTitle("Game Information");
+		alert.setHeaderText(null);
+		alert.setContentText(state);
 		alert.showAndWait();
 	}
 
@@ -407,18 +427,14 @@ public class GameController {
 			serviceObject.attack(attackerTerritory, defenderTerritory);
 
 			TextField mapTF = idToTextFieldMapping.get(attackerTerritory.getName());
-			mapTF.setPromptText(
+			mapTF.setText(
 					attackerTerritory.getName() + " : " + String.valueOf(attackerTerritory.getArmyOfTheTerritory()));
 			mapTF = idToTextFieldMapping.get(defenderTerritory.getName());
-			mapTF.setPromptText(
+			mapTF.setText(
 					defenderTerritory.getName() + " : " + String.valueOf(defenderTerritory.getArmyOfTheTerritory()));
 
 			if (currentPlayer.getTerritories().size() == MapController.territoriesSet.size()) {
-				Alert alert = new Alert(AlertType.INFORMATION);
-				alert.setTitle("Information Dialog");
-				alert.setHeaderText(null);
-				alert.setContentText("Player " + currentPlayer.getName() + " won the game.");
-				alert.showAndWait();
+				showGameState("Player " + currentPlayer.getName() + " won the game.");
 				Platform.exit();
 			} else {
 				attackAttackerCB.setItems(FXCollections.observableList(currentPlayer.getTerritories()));
@@ -441,7 +457,7 @@ public class GameController {
 	public void finishAttack(ActionEvent event) {
 		disableComponents(attackPhaseUI);
 		enableComponents(fortiPhaseUI);
-		
+
 		fortifyFromTerritoryCB.setItems(FXCollections.observableList(currentPlayer.getTerritories()));
 		fortifyFromTerritoryCB.setValue(currentPlayer.getTerritories().get(0));
 		List<Territory> fortifiableTerritories = serviceObject
@@ -459,6 +475,7 @@ public class GameController {
 	@FXML
 	public void updatefortifiableTerritories() {
 		Territory selectedTerritory = fortifyFromTerritoryCB.getValue();
+		// In case event is occured by setItems() method of comboBox.
 		if (selectedTerritory == null)
 			return;
 		List<Territory> fortifiableTerritories = serviceObject.fortifiableTerritories(selectedTerritory);
@@ -497,9 +514,9 @@ public class GameController {
 		} else {
 
 			TextField mapTF = idToTextFieldMapping.get(from.getName());
-			mapTF.setPromptText(from.getName() + " : " + String.valueOf(from.getArmyOfTheTerritory()));
+			mapTF.setText(from.getName() + " : " + String.valueOf(from.getArmyOfTheTerritory()));
 			mapTF = idToTextFieldMapping.get(to.getName());
-			mapTF.setPromptText(to.getName() + " : " + String.valueOf(to.getArmyOfTheTerritory()));
+			mapTF.setText(to.getName() + " : " + String.valueOf(to.getArmyOfTheTerritory()));
 
 			finishFortification(event);
 		}
@@ -510,11 +527,11 @@ public class GameController {
 		disableComponents(fortiPhaseUI);
 		enableComponents(reinfoPhaseUI);
 		currentPlayer = serviceObject.getPlayer(currentPlayer, playerList);
-		
+
 		// to avoid players turn who have no territories
 		while (currentPlayer.getTerritories().size() == 0)
 			currentPlayer = serviceObject.getPlayer(currentPlayer, playerList);
-		
+
 		serviceObject.addArmiesForReinforcementPhase(currentPlayer);
 		setPlayerInfo();
 	}
@@ -549,4 +566,20 @@ public class GameController {
 		}
 	}
 
+	private void createPlayerToNumberOfTerritoryMapping() {
+		Label playerName = new Label("Player Name");
+		Label totalNumberOfTerritories = new Label("Territory Count");
+		GridPane.setConstraints(playerName, 0, maxNumberOfTerritores + 4);
+		GridPane.setConstraints(totalNumberOfTerritories, 1, maxNumberOfTerritores + 4);
+		mapGrid.getChildren().addAll(playerName, totalNumberOfTerritories);
+		for (int i = 0; i < playerList.size(); i++) {
+			playerName = new Label(playerList.get(i).getName());
+			totalNumberOfTerritories = new Label(String.valueOf(playerList.get(i).getTerritories().size()));
+			idToLabelMapping.put(playerList.get(i).getName(), totalNumberOfTerritories);
+			GridPane.setConstraints(playerName, 0, maxNumberOfTerritores + i + 5);
+			GridPane.setConstraints(totalNumberOfTerritories, 1, maxNumberOfTerritores + i + 5);
+			mapGrid.getChildren().addAll(playerName, totalNumberOfTerritories);
+		}
+		mapPane.setContent(mapGrid);
+	}
 }
