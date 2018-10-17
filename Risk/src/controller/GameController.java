@@ -259,7 +259,7 @@ public class GameController {
 					@Override
 					public void handle(MouseEvent event) {
 						// TODO Auto-generated method stub
-						highlightNeighbouringTerritoriesHelper(territoryObj.getNeighbourTerritories(), true);
+						highlightNeighbouringTerritoriesHelper(territoryObj, true);
 					}
 				});
 				territoryField.setOnMouseExited(new EventHandler<MouseEvent>() {
@@ -267,7 +267,7 @@ public class GameController {
 					@Override
 					public void handle(MouseEvent event) {
 						// TODO Auto-generated method stub
-						highlightNeighbouringTerritoriesHelper(territoryObj.getNeighbourTerritories(), false);
+						highlightNeighbouringTerritoriesHelper(territoryObj, false);
 					}
 				});
 				idToTextFieldMapping.put(territoryObj.getName(), territoryField);
@@ -290,13 +290,15 @@ public class GameController {
 	 * @param clickCount
 	 *            : This gives the count of the clicks on the textfield.
 	 */
-	private void highlightNeighbouringTerritoriesHelper(List<Territory> neighbouringCountries, boolean isEntered) {
-
+	private void highlightNeighbouringTerritoriesHelper(Territory territoryObj, boolean isEntered) {
+		
+		List<Territory> neighbouringCountries	=	territoryObj.getNeighbourTerritories();
+		
 		for (int i = 0; i < neighbouringCountries.size(); i++) {
 			Territory terr = neighbouringCountries.get(i);
 			TextField tf = idToTextFieldMapping.get(terr.getName());
 			if (isEntered) {
-				if (!currentPlayer.getTerritories().contains(terr)) {
+				if (terr.getOwner()!=territoryObj.getOwner()) {
 					tf.setStyle(GameController.TEXTFIELD_BORDER_COLOUR_DEFENDER_TERRITORY);
 				} else {
 					tf.setStyle(GameController.TEXTFIELD_BORDER_COLOUR_OWN_TERRITORY);

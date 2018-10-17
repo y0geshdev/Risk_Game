@@ -115,8 +115,8 @@ public class GameService {
 	 */
 	public boolean ifContinentOccupied(List<Territory> territoriesInContinent, List<Territory> playerTerritories) {
 		boolean ifOccupied = true;
-		for (int i = 0; i < playerTerritories.size(); i++) {
-			if (!territoriesInContinent.contains(playerTerritories.get(i))) {
+		for (int i = 0; i < territoriesInContinent.size(); i++) {
+			if (!playerTerritories.contains(territoriesInContinent.get(i))) {
 				ifOccupied = false;
 				break;
 			}
