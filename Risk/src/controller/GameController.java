@@ -291,14 +291,14 @@ public class GameController {
 	 *            : This gives the count of the clicks on the textfield.
 	 */
 	private void highlightNeighbouringTerritoriesHelper(Territory territoryObj, boolean isEntered) {
-		
-		List<Territory> neighbouringCountries	=	territoryObj.getNeighbourTerritories();
-		
+
+		List<Territory> neighbouringCountries = territoryObj.getNeighbourTerritories();
+
 		for (int i = 0; i < neighbouringCountries.size(); i++) {
 			Territory terr = neighbouringCountries.get(i);
 			TextField tf = idToTextFieldMapping.get(terr.getName());
 			if (isEntered) {
-				if (terr.getOwner()!=territoryObj.getOwner()) {
+				if (terr.getOwner() != territoryObj.getOwner()) {
 					tf.setStyle(GameController.TEXTFIELD_BORDER_COLOUR_DEFENDER_TERRITORY);
 				} else {
 					tf.setStyle(GameController.TEXTFIELD_BORDER_COLOUR_OWN_TERRITORY);
@@ -514,12 +514,9 @@ public class GameController {
 				errors = errors.concat("\n-" + error);
 			showError(errors);
 		} else {
-
-			TextField mapTF = idToTextFieldMapping.get(from.getName());
-			mapTF.setText(from.getName() + " : " + String.valueOf(from.getArmyOfTheTerritory()));
-			mapTF = idToTextFieldMapping.get(to.getName());
-			mapTF.setText(to.getName() + " : " + String.valueOf(to.getArmyOfTheTerritory()));
-
+			
+			updateTerritoryFields(from);
+			updateTerritoryFields(to);
 			finishFortification(event);
 		}
 	}
@@ -584,4 +581,12 @@ public class GameController {
 		}
 		mapPane.setContent(mapGrid);
 	}
+
+	public void updateTerritoryFields(Territory terrObj) {
+
+		TextField territoryField = idToTextFieldMapping.get(terrObj.getName());
+		territoryField.setText(terrObj.getName() + " : " + String.valueOf(terrObj.getArmyOfTheTerritory()));
+
+	}
+
 }

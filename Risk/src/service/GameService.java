@@ -24,7 +24,8 @@ import javafx.scene.control.TextField;
 public class GameService {
 
 	private Map<Integer, List<Player>> randomPlayerTurnHelper = new LinkedHashMap<>();
-
+	GameController gameController	=	new GameController();
+	
 	/**
 	 * This method is used to allocate armies to different players randomly.
 	 * 
@@ -46,9 +47,7 @@ public class GameService {
 				tempTerritory.setOwner(onePlayer);
 				tempTerritory.setArmyOfTheTerritory(1);
 				onePlayer.setArmyCount(onePlayer.getArmyCount() - 1);
-				TextField territoryField = GameController.idToTextFieldMapping.get(tempTerritory.getName());
-				territoryField.setText(
-						tempTerritory.getName() + " : " + String.valueOf(tempTerritory.getArmyOfTheTerritory()));
+				gameController.updateTerritoryFields(tempTerritory);
 				territoryObjectList.remove(randIndex);
 			}
 		}
