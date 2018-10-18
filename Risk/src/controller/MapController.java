@@ -438,7 +438,7 @@ public class MapController {
 	@FXML
 	public void startGame(ActionEvent event) {
 
-		String filePath = "C:\\Users\\Naresh\\Desktop\\temp.map";// mapPathGameTF.getText();
+		String filePath = mapPathGameTF.getText();
 		if (filePath.trim().length() == 0)
 			showError("Choose a map to start game.");
 		else {

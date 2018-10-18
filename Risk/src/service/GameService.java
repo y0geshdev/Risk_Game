@@ -3,8 +3,10 @@ package service;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Random;
 
 import controller.GameController;
@@ -287,10 +289,21 @@ public class GameService {
 	public List<Territory> getFortifiableTerritories(Territory territory) {
 		Player player = territory.getOwner();
 		List<Territory> fortifiableTerritories = new ArrayList<>();
-		for (Territory terr : territory.getNeighbourTerritories()) {
-			if (player.getTerritories().contains(terr))
-				fortifiableTerritories.add(terr);
+		
+		Queue<Territory> queue = new LinkedList<>();
+		queue.add(territory);
+		Territory t;
+		while(queue.size()>0) {
+			t=queue.poll();
+			for(Territory neighbours : t.getNeighbourTerritories()) {
+				if(neighbours.getOwner()==player && !fortifiableTerritories.contains(neighbours)) {
+					fortifiableTerritories.add(neighbours);
+					queue.add(neighbours);
+				}
+			}
 		}
+		if(fortifiableTerritories.contains(territory))
+			fortifiableTerritories.remove(territory);
 		return fortifiableTerritories;
 	}
 
