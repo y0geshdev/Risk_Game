@@ -36,11 +36,11 @@
                <children>
                   <Label fx:id="startUpAndReinforcementId" alignment="CENTER" contentDisplay="CENTER" layoutX="66.0" layoutY="11.0" prefHeight="14.0" prefWidth="141.0" text="StartUp Phase" textAlignment="CENTER" underline="true" AnchorPane.leftAnchor="66.0" AnchorPane.rightAnchor="66.0" />
                   <Label layoutX="15.0" layoutY="52.0" text="Total Armies :" />
-                  <Label fx:id="playerArmies" layoutX="108.0" layoutY="52.0" text="NumberOfArmies" />
+                  <Label fx:id="playerArmies" layoutX="108.0" layoutY="52.0" />
                   <Label layoutX="15.0" layoutY="71.0" text="Territories" />
-                  <TextField fx:id="numberOfArmiesPerTerritory" layoutX="148.0" layoutY="90.0" prefHeight="22.0" prefWidth="76.0" promptText="add armies" />
+                  <TextField fx:id="numberOfArmiesPerTerritory" layoutX="140.0" layoutY="90.0" prefHeight="22.0" prefWidth="84.0" promptText="No. of armies" />
                   <ComboBox fx:id="playerTerritoryList" layoutX="15.0" layoutY="90.0" prefHeight="22.0" prefWidth="103.0" />
-                  <Button fx:id="addArmies" layoutX="150.0" layoutY="144.0" mnemonicParsing="false" onAction="#addArmiesToTerritories" prefHeight="22.0" prefWidth="76.0" text="Add" />
+                  <Button fx:id="addArmies" layoutX="150.0" layoutY="144.0" mnemonicParsing="false" onAction="#addReinforcement" prefHeight="22.0" prefWidth="76.0" text="Add" />
                </children>
             </AnchorPane>
             <AnchorPane fx:id="attackPhaseUI" prefHeight="177.0" prefWidth="237.0" style="-fx-border-color: black;" VBox.vgrow="ALWAYS">
@@ -64,7 +64,7 @@
                <children>
                   <Label alignment="CENTER" contentDisplay="CENTER" layoutX="66.0" layoutY="11.0" prefHeight="14.0" prefWidth="141.0" text="Fortification Phase" textAlignment="CENTER" underline="true" AnchorPane.leftAnchor="66.0" AnchorPane.rightAnchor="67.0" />
                   <Label layoutX="11.0" layoutY="45.0" prefHeight="22.0" text="From Territory" />
-                  <ComboBox fx:id="fortifyFromTerritoryCB" layoutX="11.0" layoutY="68.0" onAction="#updatefortifiableTerritories" prefHeight="22.0" prefWidth="103.0" />
+                  <ComboBox fx:id="fortifyFromTerritoryCB" layoutX="11.0" layoutY="68.0" onAction="#updateFortifiableTerritories" prefHeight="22.0" prefWidth="103.0" />
                   <ComboBox fx:id="fortifyToTerritoryCB" layoutX="123.0" layoutY="68.0" prefHeight="22.0" prefWidth="103.0" />
                   <Label layoutX="123.0" layoutY="45.0" prefHeight="22.0" text="To Territory" />
                   <Button fx:id="fortifyMoveButton" layoutX="103.0" layoutY="143.0" mnemonicParsing="false" onAction="#doFortification" text="Move" />

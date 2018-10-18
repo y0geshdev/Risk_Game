@@ -1,5 +1,6 @@
 /**
- * Bootstrapping the application and UI related classes and files are under this package.
+ * This package contains UI related classes and logic to bootstrap the application.
+ * 
  * @author Yogesh
  *
  */

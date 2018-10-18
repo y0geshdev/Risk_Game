@@ -1,5 +1,6 @@
 /**
- * It contains business rules and classes for application logic.
+ * This package contains service layer classes which implement all the business logic.
+ * 
  * @author Yogesh
  *
  */

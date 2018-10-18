@@ -56,13 +56,11 @@ public class MapService {
 
 		while (iteContinent.hasNext()) {
 			Continent continent = iteContinent.next();
-			// checking that each continent have atleast one territory in it.
 			if (continent.getTerritories().size() < 1) {
 				errorMessage = continent.getName() + " Does Not Have Any Territory in it";
 				errorList.add(errorMessage);
 			}
 			List<Territory> territoryList = continent.getTerritories();
-			// checking that each territory is in single continent.
 			for (int i = 0; i < territoryList.size(); i++) {
 				if (ifTerritoryInContinent.get(territoryList.get(i).getName()) != null) {
 					errorMessage = "Territory " + territoryList.get(i).getName()
@@ -75,7 +73,6 @@ public class MapService {
 			}
 
 		}
-		// check for connected graph.
 		boolean ifNeighbourPresent = true;
 		while (iteTerritory.hasNext()) {
 			Territory territory = iteTerritory.next();
@@ -152,15 +149,16 @@ public class MapService {
 	 *            File object to which file needs to be written and save.
 	 * @param continentsSet:
 	 *            Set of all the continents in map.
-	 * @param territoriesSet
+	 * @param territoriesSet:
 	 *            Set of all the territories in map.
-	 * @return true if file is save else false.
+	 * @return boolean: 
+	 * 				true if file is save else false.
 	 */
 	public boolean saveMap(File file, HashSet<Continent> continentsSet, HashSet<Territory> territoriesSet) {
 
 		try {
 			PrintWriter writer = new PrintWriter(file);
-			// static content to maintain map file format.
+
 			writer.println("[Map]");
 			writer.println("image=default.bmp");
 			writer.println("wrap=default");
@@ -169,12 +167,10 @@ public class MapService {
 			writer.println("warn=default\n");
 			writer.println("[Continents]");
 
-			// write continent data to file.
 			for (Continent continent : continentsSet)
 				writer.println(continent + "=" + continent.getContinentArmyValue());
 
 			writer.println("\n[Territories]");
-			// write territory data.
 			for (Territory parentTerritory : territoriesSet) {
 				writer.print(parentTerritory + ",0,0," + parentTerritory.getContinent());
 				for (Territory childTerritory : parentTerritory.getNeighbourTerritories())
@@ -201,9 +197,6 @@ public class MapService {
 	 * @param file:
 	 *            This object is passed from the <u>class</u> where we choose a
 	 *            particular map file.
-	 * 
-	 * @return
-	 * @throws Exception
 	 */
 	public void parseFile(File file) throws Exception {
 
@@ -319,22 +312,5 @@ public class MapService {
 		MapController.continentsSet = (HashSet<Continent>) continentObjectSet;
 		MapController.territoriesSet = (HashSet<Territory>) territoryObjectSet;
 
-	}
-
-	public static void main(String[] args) throws Exception {
-
-		MapService obj = new MapService();
-		File file = new File("C:\\Users\\pc\\Desktop\\apprisk\\Asiamap.map");
-		// Map<String,Set> mapSetObj = obj.parseFile(file);
-		// List<String>errorList = new ArrayList<>();
-		// obj.validateMap(mapSetObj.get(GameConstants.CONTINENT_SET_KEY),
-		// mapSetObj.get(GameConstants.TERRITORY_SET_KEY),
-		// errorList);
-		// if(errorList.isEmpty()) {
-		// System.out.println("Graph is totally Connected");
-		// }
-		// for(int i=0;i<errorList.size();i++) {
-		// System.out.println(errorList.get(i));
-		// }
 	}
 }

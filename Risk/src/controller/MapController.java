@@ -343,19 +343,15 @@ public class MapController {
 	@FXML
 	public void saveMap(ActionEvent event) {
 
-		// select path to save file.
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters().add(new ExtensionFilter(".map file", "*.map"));
 		File file = fileChooser.showSaveDialog(null);
 
 		if (file != null) {
 			List<String> errorList = new ArrayList();
-			// validate the map.
 			mapService.validateMap(continentsSet, territoriesSet, errorList);
 
-			// check for validation errors and proceed or notify user accordingly.
 			if (errorList.size() == 0) {
-				// if file is saved, inform user or show error.
 				if (mapService.saveMap(file, continentsSet, territoriesSet)) {
 					Alert alert = new Alert(AlertType.INFORMATION);
 					alert.setTitle("INFORMATION");
@@ -404,10 +400,9 @@ public class MapController {
 				showError("Error reading from file.");
 				return;
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			// if (errorList.size() == 0) {
+
 			List<Continent> continentsList = new ArrayList<>();
 			List<Territory> territoriesList = new ArrayList<>();
 			if (continentsSet != null && continentsSet.size() > 0) {
@@ -429,7 +424,6 @@ public class MapController {
 			allTerritoriesTTMapping.setItems(FXCollections.observableList(territoriesList));
 			mappedTerritoriesTTMapping
 					.setItems(FXCollections.observableList(territoriesList.get(0).getNeighbourTerritories()));
-			// }
 		}
 
 	}
@@ -444,7 +438,7 @@ public class MapController {
 	@FXML
 	public void startGame(ActionEvent event) {
 
-		String filePath = mapPathGameTF.getText();
+		String filePath = "C:\\Users\\Naresh\\Desktop\\temp.map";// mapPathGameTF.getText();
 		if (filePath.trim().length() == 0)
 			showError("Choose a map to start game.");
 		else {
@@ -458,7 +452,6 @@ public class MapController {
 				showError("Error reading from file.");
 				return;
 			} catch (Exception e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			List<String> errorList = new ArrayList<>();
@@ -468,7 +461,7 @@ public class MapController {
 				Parent root;
 				GameController gameController;
 				try {
-					FXMLLoader loader =	new FXMLLoader(getClass().getResource("/ui/Game.fxml"));
+					FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/Game.fxml"));
 					root = loader.load();
 					gameController = loader.getController();
 				} catch (IOException e) {
@@ -479,7 +472,7 @@ public class MapController {
 				stage.setScene(new Scene(root, 800, 600));
 				stage.show();
 				gameController.startGame();
-				
+
 			} else {
 				String errors = "Resolve below errors:";
 				for (String error : errorList)
