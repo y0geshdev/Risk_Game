@@ -25,7 +25,14 @@ import domain.Territory;
  */
 public class MapService {
 
+	/**
+	 * This variable holds the constant value to used while parsing the file.
+	 */
 	private static final String CONTINENT_KEY = "[Continents]";
+
+	/**
+	 * This variable holds the constant value to used while parsing the file.
+	 */
 	private static final String TERRITORY_KEY = "[Territories]";
 
 	/**

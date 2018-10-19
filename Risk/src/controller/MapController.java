@@ -36,80 +36,182 @@ import service.MapService;
  */
 public class MapController {
 
+	/**
+	 * This variable is the id of the text field that holds the value of the number
+	 * of continents entered by the user.
+	 */
 	@FXML
 	private TextField contsNoTF;
 
+	/**
+	 * This variable is the id of the text field holds the value of the number of
+	 * territories entered by the user.
+	 */
 	@FXML
 	private TextField terrsNoTF;
-
+	
+	/**
+	 * This variable is the id of the button that generates the map options in the
+	 * territory and continent combo box.
+	 */
 	@FXML
 	private Button generateMapButton;
-
+	
+	/**
+	 * This variable is the id of the text field that holds the value of the path of
+	 * the selected file.
+	 */
 	@FXML
 	private TextField mapPathMapsTF;
-
+	
+	/**
+	 * This variable is the id of the button that helps in choosing the map for
+	 * modification.
+	 */
 	@FXML
 	private Button chooseMapsButton;
-
+	
+	/**
+	 * This variable is the id of the button that populates the values of the chosen
+	 * map in territory and continent combo box.
+	 */
 	@FXML
 	private Button modifyMapButton;
-
+	
+	/**
+	 * This variable is the id the of the text field that holds the value of the
+	 * path of the map chosen for playing the game on.
+	 */
 	@FXML
 	private TextField mapPathGameTF;
-
+	
+	/**
+	 * This variable is the id of the button that helps in choosing the map for
+	 * playing game on.
+	 */
 	@FXML
 	private Button chooseGameButton;
-
+	
+	/**
+	 * This variable is the id of the button that helps in starting the game.
+	 */
 	@FXML
 	private Button startGameButton;
-
+	
+	/**
+	 * This variable is the id of the AnchorPane which holds the UI for editing the
+	 * map.
+	 */
 	@FXML
 	private AnchorPane lowerAP;
-
+	
+	/**
+	 * This variable is the id of the combo box that holds the continent values.
+	 */
 	@FXML
 	private ComboBox<Continent> contsCB;
-
+	
+	/**
+	 * This variable is the id of the list view that holds the values of the
+	 * territories to be mapped with the selected continent.
+	 */
 	@FXML
 	private ListView<Territory> allTerritoriesCTMapping;
-
+	
+	/**
+	 * This variable is the id of the list view that holds the values of the
+	 * territories that are mapped to the selected continent.
+	 */
 	@FXML
 	private ListView<Territory> mappedTerritoriesCTMapping;
-
+	
+	/**
+	 * This variable is the id of the button that removes the selected territory
+	 * from the selected continent mapping.
+	 */
 	@FXML
 	private Button removeTerrsToContsButton;
-
+	
+	/**
+	 * This variable is the id of the button that add the selected territory to the
+	 * selected continent mapping.
+	 */
 	@FXML
 	private Button addTerrsToContsButton;
-
+	
+	/**
+	 * This variable is the id of the combo box that holds the territory values.
+	 */
 	@FXML
 	private ComboBox<Territory> terrsCB;
-
+	
+	/**
+	 * This variable is the id of the list view that holds the values of the
+	 * territories to be mapped with the selected territory.
+	 */
 	@FXML
 	private ListView<Territory> allTerritoriesTTMapping;
-
+	
+	/**
+	 * This variable is the id of the list view that holds the values of the
+	 * territories that are mapped to the selected territory.
+	 */
 	@FXML
 	private ListView<Territory> mappedTerritoriesTTMapping;
-
+	
+	/**
+	 * This variable is the id of the button that add the selected territory to the
+	 * selected territory mapping.
+	 */
 	@FXML
 	private Button addTerrsToTerrsButton;
-
+	
+	/**
+	 * This variable is the id of the button that removes the selected territory
+	 * from the selected territory mapping.
+	 */
 	@FXML
 	private Button removeTerrsToTerrsButton;
-
+	
+	/**
+	 * This variable is the id of the button that shows the configured map.
+	 */
 	@FXML
 	private Button showMapButton;
-
+	
+	/**
+	 * This variable is the id of the button that saves the configured map.
+	 */
 	@FXML
 	private Button saveMapButton;
-
+	
+	/**
+	 * This variable is the id of the text field that holds the control value for a
+	 * selected continent.
+	 */
 	@FXML
 	private TextField contiControlValueTF;
-
+	
+	/**
+	 * This variable is the id of the button that updates the control value of the
+	 * continent.
+	 */
 	@FXML
 	private Button updateContiControlValueButton;
-
+	
+	/**
+	 * This variable stores the continent object.
+	 */
 	static public HashSet<Continent> continentsSet;
+	
+	/**
+	 * This variable stores the territory object.
+	 */
 	static public HashSet<Territory> territoriesSet;
+	
+	/**
+	 * This variable is to call map service functions.
+	 */
 	private MapService mapService = new MapService();
 
 	/**
@@ -205,7 +307,8 @@ public class MapController {
 	@FXML
 	public void updateTerritoriesPerContinent(ActionEvent event) {
 		Continent selectedContinent = contsCB.getValue();
-		if(selectedContinent==null) return;
+		if (selectedContinent == null)
+			return;
 		mappedTerritoriesCTMapping.setItems(FXCollections.observableList(selectedContinent.getTerritories()));
 		contiControlValueTF.setText(String.valueOf(selectedContinent.getContinentArmyValue()));
 	}
@@ -262,7 +365,8 @@ public class MapController {
 	@FXML
 	public void updateTerritoriesPerTerritory(ActionEvent event) {
 		Territory selectedTerritory = terrsCB.getValue();
-		if(selectedTerritory==null) return;
+		if (selectedTerritory == null)
+			return;
 		mappedTerritoriesTTMapping.setItems(FXCollections.observableList(selectedTerritory.getNeighbourTerritories()));
 	}
 
