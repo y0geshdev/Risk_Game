@@ -24,17 +24,20 @@ import domain.Territory;
  */
 public class GameService {
 
+	/**
+	 * It hold data for player turns.
+	 */
 	private Map<Integer, List<Player>> randomPlayerTurnHelper = new LinkedHashMap<>();
-	
+
 	/**
 	 * This method is used to allocate territories to different players randomly.
 	 * 
 	 * @param numberOfPlayers:
-	 *            			It has all the player object.
+	 *            It has all the player object.
 	 */
 	public void assignTerritories(List<Player> numberOfPlayers) {
 		List<Territory> territoryObjectList = new ArrayList<>(MapController.territoriesSet);
-		
+
 		Territory tempTerritory;
 		while (territoryObjectList.size() != 0) {
 			for (int i = 0; i < numberOfPlayers.size() && territoryObjectList.size() != 0; i++) {
@@ -53,8 +56,8 @@ public class GameService {
 	}
 
 	/**
-	 * This method calculate the number of armies which needs to be given to a player for
-	 * reinforcement phase.
+	 * This method calculate the number of armies which needs to be given to a
+	 * player for reinforcement phase.
 	 * 
 	 * @param playerInFocus:
 	 *            Player who is currently in reinforcement phase
@@ -88,11 +91,11 @@ public class GameService {
 	 * not.
 	 * 
 	 * @param territoriesInContinent:
-	 *            				List of territories present in a continent.
+	 *            List of territories present in a continent.
 	 * @param playerTerritories:
-	 *            			List of territories player has currently.
-	 * @return boolean: 
-	 * 				true if player owns all the territory of territoriesInContinent else false.
+	 *            List of territories player has currently.
+	 * @return boolean: true if player owns all the territory of
+	 *         territoriesInContinent else false.
 	 */
 	public boolean ifContinentOccupied(List<Territory> territoriesInContinent, List<Territory> playerTerritories) {
 		boolean ifOccupied = true;
@@ -130,11 +133,10 @@ public class GameService {
 	 * fetched form the palyerList.
 	 * 
 	 * @param prevPlayer:
-	 *            	player who has completed his turn
+	 *            player who has completed his turn
 	 * @param playerList:
-	 *            	List of players in the game.
-	 * @return Player:
-	 * 				player who will be having next turn.
+	 *            List of players in the game.
+	 * @return Player: player who will be having next turn.
 	 */
 	public Player getNextPlayer(Player prevPlayer, List<Player> playerList) {
 		int diceNumber;
@@ -213,11 +215,13 @@ public class GameService {
 	}
 
 	/**
-	 * This method will return a list of territories on which given territories can attack.
+	 * This method will return a list of territories on which given territories can
+	 * attack.
+	 * 
 	 * @param territory:
-	 * 				territory for which attackable territories needs to be found.
-	 * @return List:
-	 * 			a list of all the territories on which given territory can attack.
+	 *            territory for which attackable territories needs to be found.
+	 * @return List: a list of all the territories on which given territory can
+	 *         attack.
 	 */
 	public List<Territory> getAttackableTerritories(Territory territory) {
 
@@ -232,10 +236,11 @@ public class GameService {
 
 	/**
 	 * This method perform attack from attacker to defender territory.
+	 * 
 	 * @param attackerTerritory:
-	 * 						attacking territory object.
+	 *            attacking territory object.
 	 * @param defenderTerritory:
-	 * 						defending territory object.
+	 *            defending territory object.
 	 */
 	public void attack(Territory attackerTerritory, Territory defenderTerritory) {
 		Player attacker = attackerTerritory.getOwner();
@@ -246,7 +251,7 @@ public class GameService {
 		defenderTerritory.setOwner(attacker);
 		attackerTerritory.setArmyCount(attackerTerritory.getArmyCount() - 1);
 		attacker.getTerritories().add(defenderTerritory);
-		
+
 	}
 
 	/**
@@ -279,30 +284,31 @@ public class GameService {
 	}
 
 	/**
-	 * This method will return a list of territories can be fortified by a given territory.
+	 * This method will return a list of territories can be fortified by a given
+	 * territory.
 	 * 
 	 * @param territory:
-	 * 				territory for which fortifiable territories needs to be found.
-	 * @return List:
-	 * 			a list of all the territories on which given territory can fortify.
+	 *            territory for which fortifiable territories needs to be found.
+	 * @return List: a list of all the territories on which given territory can
+	 *         fortify.
 	 */
 	public List<Territory> getFortifiableTerritories(Territory territory) {
 		Player player = territory.getOwner();
 		List<Territory> fortifiableTerritories = new ArrayList<>();
-		
+
 		Queue<Territory> queue = new LinkedList<>();
 		queue.add(territory);
 		Territory t;
-		while(queue.size()>0) {
-			t=queue.poll();
-			for(Territory neighbours : t.getNeighbourTerritories()) {
-				if(neighbours.getOwner()==player && !fortifiableTerritories.contains(neighbours)) {
+		while (queue.size() > 0) {
+			t = queue.poll();
+			for (Territory neighbours : t.getNeighbourTerritories()) {
+				if (neighbours.getOwner() == player && !fortifiableTerritories.contains(neighbours)) {
 					fortifiableTerritories.add(neighbours);
 					queue.add(neighbours);
 				}
 			}
 		}
-		if(fortifiableTerritories.contains(territory))
+		if (fortifiableTerritories.contains(territory))
 			fortifiableTerritories.remove(territory);
 		return fortifiableTerritories;
 	}
@@ -323,14 +329,14 @@ public class GameService {
 		Random randIndex = new Random();
 		return randIndex.nextInt((max - min) + 1) + min;
 	}
-	
+
 	/**
 	 * This method is used to get the number of armies according to the number of
 	 * players
 	 * 
 	 * @param playerCount:
 	 *            Number of player playing the game
-	 * @return
+	 * @return int number of armies per player according to total number of players playing game.
 	 */
 	private int getArmyCount(int playerCount) {
 		switch (playerCount) {

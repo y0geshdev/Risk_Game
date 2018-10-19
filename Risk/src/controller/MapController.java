@@ -205,6 +205,7 @@ public class MapController {
 	@FXML
 	public void updateTerritoriesPerContinent(ActionEvent event) {
 		Continent selectedContinent = contsCB.getValue();
+		if(selectedContinent==null) return;
 		mappedTerritoriesCTMapping.setItems(FXCollections.observableList(selectedContinent.getTerritories()));
 		contiControlValueTF.setText(String.valueOf(selectedContinent.getContinentArmyValue()));
 	}
@@ -261,6 +262,7 @@ public class MapController {
 	@FXML
 	public void updateTerritoriesPerTerritory(ActionEvent event) {
 		Territory selectedTerritory = terrsCB.getValue();
+		if(selectedTerritory==null) return;
 		mappedTerritoriesTTMapping.setItems(FXCollections.observableList(selectedTerritory.getNeighbourTerritories()));
 	}
 

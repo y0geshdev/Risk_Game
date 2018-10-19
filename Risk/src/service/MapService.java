@@ -47,9 +47,9 @@ public class MapService {
 
 		Iterator<Continent> iteContinent = continentsSet.iterator();
 		Iterator<Territory> iteTerritory = territoriesSet.iterator();
-		
-		if(continentsSet.size()<1 || territoriesSet.size()<1) {
-			errorMessage= "No Continent or Territory Exist";
+
+		if (continentsSet.size() < 1 || territoriesSet.size() < 1) {
+			errorMessage = "No Continent or Territory Exist";
 			errorList.add(errorMessage);
 			return;
 		}
@@ -151,8 +151,7 @@ public class MapService {
 	 *            Set of all the continents in map.
 	 * @param territoriesSet:
 	 *            Set of all the territories in map.
-	 * @return boolean: 
-	 * 				true if file is save else false.
+	 * @return boolean: true if file is save else false.
 	 */
 	public boolean saveMap(File file, HashSet<Continent> continentsSet, HashSet<Territory> territoriesSet) {
 
@@ -197,6 +196,8 @@ public class MapService {
 	 * @param file:
 	 *            This object is passed from the <u>class</u> where we choose a
 	 *            particular map file.
+	 *  @throws Exception:
+	 *  				Throw file not found and other custom exceptions.
 	 */
 	public void parseFile(File file) throws Exception {
 

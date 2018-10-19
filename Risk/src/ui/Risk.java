@@ -21,9 +21,9 @@ public class Risk extends Application {
 	 * @param primaryStage:
 	 *            primaryStage is a JavaFx container which provide base for creating
 	 *            JavaFx application.
+	 *  
 	 * @throws Exception:
 	 *             for exception handling.
-	 *
 	 */
 	@Override
 	public void start(Stage primaryStage) throws Exception {

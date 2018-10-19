@@ -2,7 +2,6 @@ package service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -11,7 +10,6 @@ import java.util.List;
 import java.util.Set;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import controller.MapController;
@@ -43,8 +41,11 @@ public class MapServiceTest {
 	String errorMessage_unconnectedGraph;
 	File nullFileObject, correctFileObject, wrongFileObject;
 
+	/**
+	 * This method setup require common context before every test is run.
+	 */
 	@Before
-	public void beforEachTestCase() {
+	public void setUp() {
 		errorMessage_noContinent_terrExists = new String();
 		errorMessage_hasOneTerritory = new String();
 		errorMessage_terrPresentInMultipleContinents = new String();
@@ -63,16 +64,17 @@ public class MapServiceTest {
 		continent1 = new Continent("Asia");
 		continent2 = new Continent("Africa");
 		nullFileObject = null;
-		correctFileObject = new File("C:\\Users\\pc\\Desktop\\apprisk\\Asiamap.map");
-		wrongFileObject = new File("C:\\Users\\pc\\Desktop\\apprisk\\WrongFormatMap.map");
+		correctFileObject = new File("resource\\Asiamap.map");
+		wrongFileObject = new File("resource\\WrongFormatMap.map");
 	}
-	/**
-	 * Test Method to test that each Continent has at least 1 territory in it.
-	 * 
-	 */
 
+	/**
+	 * This Test method validate map and check for logic where
+	 * {@link MapService#validateMap(Set, Set, List)} method validate that each
+	 * continent have one territory atleast.
+	 */
 	@Test
-	public void testTerritoriesinContinent() {
+	public void testValidateMapCaseOne() {
 		territoryList1.add(territory1);
 		territoryList1.add(territory2);
 		territoryList2.add(territory3);
@@ -90,11 +92,13 @@ public class MapServiceTest {
 	}
 
 	/**
-	 * Test Method to test that each territory is present in only one Continent.
+	 * This Test method validate map and check for logic where
+	 * {@link MapService#validateMap(Set, Set, List)} method validate that each
+	 * territory is in single continent.
 	 * 
 	 */
 	@Test
-	public void territoryinSingleContinent() {
+	public void testValidateMapCaseTwo() {
 
 		territoryList1.add(territory1);
 		territoriesSet.addAll(territoryList1);
@@ -109,10 +113,12 @@ public class MapServiceTest {
 	}
 
 	/**
-	 * Test Method to validate the condition when no Continent or territory exist.
+	 * This Test method validate map and check for logic where
+	 * {@link MapService#validateMap(Set, Set, List)} method validate that whether
+	 * there is any continent or territory exits or not.
 	 */
 	@Test
-	public void noContinents_territoriesExist() {
+	public void testValidateMapCaseThree() {
 		errorMessage_noContinent_terrExists = "No Continent or Territory Exist";
 		mapserviceObj.validateMap(continentsSet, territoriesSet, errorList);
 
@@ -120,11 +126,12 @@ public class MapServiceTest {
 	}
 
 	/**
-	 * Test method to validate that each territory should have a neighbouring
-	 * territory.
+	 * This Test method validate map and check for logic where
+	 * {@link MapService#validateMap(Set, Set, List)} method validate that each
+	 * territory have atleast one neighbor.
 	 */
 	@Test
-	public void testIsNeighbouringTerritoryPresent() {
+	public void testValidateMapCaseFour() {
 		territoryList1.add(territory1);
 		territoriesSet.addAll(territoryList1);
 		continentsSet.add(continent1);
@@ -137,10 +144,12 @@ public class MapServiceTest {
 	}
 
 	/**
-	 * Test method to check that whether the graph is connected or not.
+	 * This Test method validate map and check for logic where
+	 * {@link MapService#validateMap(Set, Set, List)} method validate that map is
+	 * connected or not.
 	 */
 	@Test
-	public void testGraphIsConnected() {
+	public void testValidateMapCaseFive() {
 		territoryList1.add(territory1);
 		territoryList1.add(territory2);
 		territoryList2.add(territory3);
@@ -159,55 +168,35 @@ public class MapServiceTest {
 
 	}
 
-
-	@Ignore
-	public void testValidateMap() {
-		fail("Not yet implemented");
-	}
-
-	@Ignore
-	public void testSaveMap() {
-		fail("Not yet implemented");
-	}
-
 	/**
 	 * Tests parseFile() method for different type of map file Objects
-	 * @param errorMessage represents display message for different errors
-	 */ 
- 
-@Test
+	 * 
+	 */
+	@Test
 	public void testParseFile() {
-		MapService mp = new MapService();
+		String errorMessage = "File not Found";
 		try {
-			mp.parseFile(nullFileObject);
+			mapserviceObj.parseFile(nullFileObject);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			String errorMessage = "File not Found";
 			assertEquals(errorMessage, e.getMessage());
-			e.printStackTrace();
 		}
 
 		try {
-			mp.parseFile(correctFileObject);
+			mapserviceObj.parseFile(correctFileObject);
 			assertTrue(MapController.continentsSet.size() >= 1);
 			assertTrue(MapController.territoriesSet.size() >= 1);
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		try {
-			mp.parseFile(wrongFileObject);
+			mapserviceObj.parseFile(wrongFileObject);
 
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			String errorMessageForZeroContinent = "No Continent is present in the File";
-			assertEquals(errorMessageForZeroContinent, e.getMessage());
-			String errorMessageForZeroTerritory = "No Territory is present in the File";
+		} catch (Exception e) { 
+			String errorMessageForZeroTerritory = "No Continent is present in the File";
 			assertEquals(errorMessageForZeroTerritory, e.getMessage());
-
-			e.printStackTrace();
 		}
+
 	}
 
 }

@@ -2,6 +2,7 @@ package controller;
 
 import static org.junit.Assert.fail;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -13,6 +14,7 @@ import org.junit.Test;
  */
 public class GameControllerTest {
 
+	@Ignore
 	@Test
 	public void testStartGameHandler() {
 		fail("Not yet implemented");
