@@ -20,17 +20,17 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import service.GameService;
 
 /**
@@ -474,7 +474,10 @@ public class GameController {
 	private void displayMap() {
 		Iterator<Continent> ite = MapController.continentsSet.iterator();
 		int colCounter = 0;
+		ColumnConstraints widthCol = new ColumnConstraints();
+		widthCol.setHgrow(Priority.ALWAYS);
 		while (ite.hasNext()) {
+			mapGrid.getColumnConstraints().add(widthCol);
 			Continent obj = ite.next();
 			String nameofTheContinent = obj.getName();
 			List<Territory> territoryList = obj.getTerritories();
@@ -493,6 +496,7 @@ public class GameController {
 				GridPane.setConstraints(territoryField, colCounter, i + 3);
 				territoryField.setPromptText(territoryObj.getName());
 				territoryField.setEditable(false);
+				territoryField.setMinWidth(150);
 				territoryField.setOnMouseEntered(new EventHandler<MouseEvent>() {
 
 					@Override
@@ -553,6 +557,13 @@ public class GameController {
 	 * of game UI.
 	 */
 	private void displayPlayerStats() {
+		Label statLabel = new Label("Game Stats");
+		statLabel.setMinWidth(150);;
+		statLabel.setUnderline(true);
+		GridPane.setConstraints(statLabel, 0, maxNumberOfTerritores + 4);
+		mapGrid.getChildren().addAll(statLabel);
+		maxNumberOfTerritores+=2;
+		
 		Label playerName = new Label("Player Name");
 		Label totalNumberOfTerritories = new Label("Territory Count");
 		GridPane.setConstraints(playerName, 0, maxNumberOfTerritores + 4);
@@ -671,9 +682,11 @@ public class GameController {
 	 *            territory object for which values needs to be updated on UI.
 	 */
 	private void updateTerritoryFields(Territory terrObj) {
-
+		String playerName = "";
+		if (terrObj.getOwner() != null)
+			playerName = terrObj.getOwner().getName();
 		TextField territoryField = territoriesToTFMapping.get(terrObj.getName());
-		territoryField.setText(terrObj.getName() + " : " + String.valueOf(terrObj.getArmyCount()));
+		territoryField.setText(terrObj.getName() + " : " + String.valueOf(terrObj.getArmyCount()) + " - ("+playerName+")");
 
 	}
 

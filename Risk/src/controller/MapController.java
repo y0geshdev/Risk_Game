@@ -575,6 +575,7 @@ public class MapController {
 					return;
 				}
 				Stage stage = new Stage();
+				stage.setTitle("Risk Game");
 				stage.setScene(new Scene(root, 800, 600));
 				stage.show();
 				gameController.startGame();

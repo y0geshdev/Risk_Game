@@ -28,7 +28,7 @@ public class Risk extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		Parent root = FXMLLoader.load(getClass().getResource("Map.fxml"));
-		primaryStage.setTitle("RISK");
+		primaryStage.setTitle("Risk Map Editor");
 		primaryStage.setScene(new Scene(root, 800, 600));
 		primaryStage.setResizable(false);
 		primaryStage.show();

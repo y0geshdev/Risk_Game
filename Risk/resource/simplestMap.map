@@ -1,0 +1,17 @@
+[Map]
+image=default.bmp
+wrap=default
+scroll=default
+author=default
+warn=default
+
+[Continents]
+Continent 1=5
+Continent 2=4
+
+[Territories]
+Territory 3,0,0,Continent 2,Territory 2,Territory 4
+Territory 4,0,0,Continent 2,Territory 3,Territory 5
+Territory 5,0,0,Continent 2,Territory 1,Territory 4
+Territory 2,0,0,Continent 1,Territory 1,Territory 3
+Territory 1,0,0,Continent 1,Territory 2,Territory 5
