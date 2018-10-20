@@ -62,7 +62,7 @@ public class GameService {
 	 * @param playerInFocus:
 	 *            Player who is currently in reinforcement phase
 	 */
-	public void calcArmiesForFortification(Player playerInFocus) {
+	public void calcArmiesForReinforcement(Player playerInFocus) {
 
 		List<Territory> playerTerritories = playerInFocus.getTerritories();
 		int numberOfTerritories = playerInFocus.getTerritories().size();

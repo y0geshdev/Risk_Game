@@ -433,7 +433,7 @@ public class GameController {
 		while (currentPlayer.getTerritories().size() == 0)
 			currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);
 
-		gameService.calcArmiesForFortification(currentPlayer);
+		gameService.calcArmiesForReinforcement(currentPlayer);
 		displayPlayerInfo();
 	}
 
@@ -446,7 +446,7 @@ public class GameController {
 			showInformation(state);
 			ifStartUpIsComepleted = true;
 			currentPlayer = gameService.getNextPlayer(null, playersList);
-			gameService.calcArmiesForFortification(currentPlayer);
+			gameService.calcArmiesForReinforcement(currentPlayer);
 			reinforcementPhase();
 		} else if (currentPlayer.getArmyCount() == 0) {
 			currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);

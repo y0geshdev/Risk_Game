@@ -108,22 +108,22 @@ public class GameServiceTest {
 
 	/**
 	 * This method is use to test the functionality of
-	 * {@link GameService#calcArmiesForFortification(Player)} method that whether it
+	 * {@link GameService#calcArmiesForReinforcement(Player)} method that whether it
 	 * calculate armies for a given player as per game rules or not.
 	 */
 	@Test
-	public void testCalcArmiesForFortification() {
+	public void testCalcArmiesForReinforcement() {
 
 		// case where player occupy whole continent.
 		Player playerOne = new Player();
 		Collections.addAll(playerOne.getTerritories(), territoryList.get(0), territoryList.get(1));
-		gameService.calcArmiesForFortification(playerOne);
+		gameService.calcArmiesForReinforcement(playerOne);
 		assertEquals(8, playerOne.getArmyCount());
 
 		// case where player doesn't occupy whole continent.
 		Player p2 = new Player();
 		Collections.addAll(p2.getTerritories(), territoryList.get(0));
-		gameService.calcArmiesForFortification(p2);
+		gameService.calcArmiesForReinforcement(p2);
 		assertEquals(3, p2.getArmyCount());
 	}
 
