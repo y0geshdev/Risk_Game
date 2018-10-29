@@ -578,7 +578,7 @@ public class MapController {
 				stage.setTitle("Risk Game");
 				stage.setScene(new Scene(root, 800, 600));
 				stage.show();
-				gameController.startGame();
+				gameController.startGame(continentsSet, territoriesSet);
 
 			} else {
 				String errors = "Resolve below errors:";
