@@ -14,6 +14,7 @@ import org.junit.Test;
 
 import controller.MapController;
 import domain.Continent;
+import domain.Player;
 import domain.Territory;
 
 /**
@@ -39,7 +40,7 @@ public class MapServiceTest {
 	String errorMessage_terrPresentInMultipleContinents;
 	String errorMessage_noNeighbouringTerritory;
 	String errorMessage_unconnectedGraph;
-	File nullFileObject, correctFileObject, wrongFileObject;
+	File nullFileObject, correctFileObject, wrongFileObject, wrongFileObjectNoTerritory;
 
 	/**
 	 * This method setup require common context before every test is run.
@@ -66,6 +67,7 @@ public class MapServiceTest {
 		nullFileObject = null;
 		correctFileObject = new File("resource\\Asiamap.map");
 		wrongFileObject = new File("resource\\WrongFormatMap.map");
+		wrongFileObjectNoTerritory = new File("C:\\Users\\pc\\Desktop\\apprisk\\WrongFormatMapNoTerritory.map");
 	}
 
 	/**
@@ -174,29 +176,29 @@ public class MapServiceTest {
 	 */
 	@Test
 	public void testParseFile() {
-		String errorMessage = "File not Found";
-		try {
-			mapserviceObj.parseFile(nullFileObject);
-		} catch (Exception e) {
-			assertEquals(errorMessage, e.getMessage());
+		
+		//check if file is not found		
+		List<String> errorList = new ArrayList<>();
+		String errorString = "File not Found";
+		mapserviceObj.parseFile(nullFileObject, errorList);
+		assertTrue(errorList.contains(errorString));
+				
+		//Check if all checks pass
+		errorList = new ArrayList<>();
+		mapserviceObj.parseFile(correctFileObject, errorList);
+		assertTrue(MapController.continentsSet.size() >= 1);
+		assertTrue(MapController.territoriesSet.size() >= 1);
+		
+		//Checks if file doesn't contain continent and territories
+		
+		errorList = new ArrayList<>();
+		mapserviceObj.parseFile(wrongFileObject, errorList);
+		String errorMessageForZeroContinent = "No Continent is present in the File";
+		String errorMessageForZeroTerritory = "No Territory is present in the File";
+		assertTrue(errorList.contains(errorMessageForZeroContinent));
+		
+		
+		
 		}
-
-		try {
-			mapserviceObj.parseFile(correctFileObject);
-			assertTrue(MapController.continentsSet.size() >= 1);
-			assertTrue(MapController.territoriesSet.size() >= 1);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		try {
-			mapserviceObj.parseFile(wrongFileObject);
-
-		} catch (Exception e) { 
-			String errorMessageForZeroTerritory = "No Continent is present in the File";
-			assertEquals(errorMessageForZeroTerritory, e.getMessage());
-		}
-
-	}
 
 }

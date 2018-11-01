@@ -497,39 +497,47 @@ public class MapController {
 			showError("Choose a file to load map.");
 		else {
 			File file = new File(filePath);
-			try {
-				mapService.parseFile(file);
-			} catch (FileNotFoundException e) {
-				showError("Unable to find selected File.");
-				return;
-			} catch (IOException e) {
-				showError("Error reading from file.");
-				return;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+			/*
+			 * try { mapService.parseFile(file); } catch (FileNotFoundException e) {
+			 * showError("Unable to find selected File."); return; } catch (IOException e) {
+			 * showError("Error reading from file."); return; } catch (Exception e) {
+			 * e.printStackTrace(); }
+			 */
 
-			List<Continent> continentsList = new ArrayList<>();
-			List<Territory> territoriesList = new ArrayList<>();
-			if (continentsSet != null && continentsSet.size() > 0) {
-				for (Continent continent : continentsSet)
-					continentsList.add(continent);
-			}
-			if (territoriesSet != null && territoriesSet.size() > 0) {
-				for (Territory territory : territoriesSet)
-					territoriesList.add(territory);
-			}
-			contsCB.setItems(FXCollections.observableList(continentsList));
-			contsCB.setValue(continentsList.get(0));
-			contiControlValueTF.setText(String.valueOf(continentsList.get(0).getContinentArmyValue()));
-			allTerritoriesCTMapping.setItems(FXCollections.observableList(territoriesList));
-			mappedTerritoriesCTMapping.setItems(FXCollections.observableList(continentsList.get(0).getTerritories()));
+			List<String> errorList = new ArrayList<>();
+			mapService.parseFile(file, errorList);
+			if (errorList.size() > 0) {
+				String errors = "Resolve below errors:";
+				for (String error : errorList) {
+					errors = errors.concat("\n-" + error);
+				}
+				showError(errors);
+				return;
+			} else {
 
-			terrsCB.setItems(FXCollections.observableList(territoriesList));
-			terrsCB.setValue(territoriesList.get(0));
-			allTerritoriesTTMapping.setItems(FXCollections.observableList(territoriesList));
-			mappedTerritoriesTTMapping
-					.setItems(FXCollections.observableList(territoriesList.get(0).getNeighbourTerritories()));
+				List<Continent> continentsList = new ArrayList<>();
+				List<Territory> territoriesList = new ArrayList<>();
+				if (continentsSet != null && continentsSet.size() > 0) {
+					for (Continent continent : continentsSet)
+						continentsList.add(continent);
+				}
+				if (territoriesSet != null && territoriesSet.size() > 0) {
+					for (Territory territory : territoriesSet)
+						territoriesList.add(territory);
+				}
+				contsCB.setItems(FXCollections.observableList(continentsList));
+				contsCB.setValue(continentsList.get(0));
+				contiControlValueTF.setText(String.valueOf(continentsList.get(0).getContinentArmyValue()));
+				allTerritoriesCTMapping.setItems(FXCollections.observableList(territoriesList));
+				mappedTerritoriesCTMapping
+						.setItems(FXCollections.observableList(continentsList.get(0).getTerritories()));
+
+				terrsCB.setItems(FXCollections.observableList(territoriesList));
+				terrsCB.setValue(territoriesList.get(0));
+				allTerritoriesTTMapping.setItems(FXCollections.observableList(territoriesList));
+				mappedTerritoriesTTMapping
+						.setItems(FXCollections.observableList(territoriesList.get(0).getNeighbourTerritories()));
+			}
 		}
 
 	}
@@ -549,7 +557,7 @@ public class MapController {
 			showError("Choose a map to start game.");
 		else {
 			File file = new File(filePath);
-			try {
+			/*try {
 				mapService.parseFile(file);
 			} catch (FileNotFoundException e) {
 				showError("Unable to find selected File.");
@@ -559,8 +567,9 @@ public class MapController {
 				return;
 			} catch (Exception e) {
 				e.printStackTrace();
-			}
+			}*/
 			List<String> errorList = new ArrayList<>();
+			mapService.parseFile(file, errorList);
 			mapService.validateMap(continentsSet, territoriesSet, errorList);
 
 			if (errorList.size() == 0) {

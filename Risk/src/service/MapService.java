@@ -2,7 +2,9 @@ package service;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -203,15 +205,24 @@ public class MapService {
 	 * @param file:
 	 *            This object is passed from the <u>class</u> where we choose a
 	 *            particular map file.
-	 *  @throws Exception:
-	 *  				Throw file not found and other custom exceptions.
+	 *
+	 * @param modifyOrPlay:
+	 *            true if this method is called for modifying the exisiting map else
+	 *            false if called to play.
+	 *
+	 * @throws Exception:
+	 *             Throw file not found and other custom exceptions.
 	 */
-	public void parseFile(File file) throws Exception {
-
+	public void parseFile(File file, List<String> errorList/*, boolean modifyOrPlay*/) {
+		String errormessage = new String();
 		boolean isFileEmpty = (file != null) ? true : false;
 		if (!isFileEmpty) {
-			throw new Exception("File not Found");
+			errormessage = "File not Found";
+			errorList.add(errormessage);
+			return;
+			// throw new Exception("File not Found");
 		}
+
 		Set<Territory> territoryObjectSet = new HashSet<>();
 		Set<Continent> continentObjectSet = new HashSet<>();
 		Continent continentObject;
@@ -224,101 +235,138 @@ public class MapService {
 		ArrayList<Territory> territoryInAContinentList;
 
 		Map<String, Set> continentAndTerritorySetObjectMap = new HashMap<>();
-		BufferedReader bufferedReaderObject = new BufferedReader(new FileReader(file));
-		String fileContents;
+		BufferedReader bufferedReaderObject;
+		try {
 
-		while ((fileContents = bufferedReaderObject.readLine()) != null) {
+			bufferedReaderObject = new BufferedReader(new FileReader(file));
 
-			if (fileContents.equals(MapService.CONTINENT_KEY)) {
-				ifContinentObject = new HashMap<>();
-				fileContents = bufferedReaderObject.readLine();
-				do {
-					if (!fileContents.contains("=")) {
-						throw new Exception("No Continent is present in the File");
-					}
-					String[] lineContent = fileContents.split("=");
-					String continentName = lineContent[0];
-					int continentArmyValue = Integer.parseInt(lineContent[1]);
-					continentObject = new Continent(continentName, continentArmyValue);
-					continentObjectSet.add(continentObject);
-					ifContinentObject.put(continentName, continentObject);
-					fileContents = bufferedReaderObject.readLine();
+			String fileContents;
 
-				} while (!fileContents.isEmpty());
-			}
+			try {
+				while ((fileContents = bufferedReaderObject.readLine()) != null) {
 
-			if (fileContents.equals(MapService.TERRITORY_KEY)) {
-				fileContents = bufferedReaderObject.readLine();
-				continentToTerritoryMap = new HashMap<>();
-				ifTerritoryObject = new HashMap<>();
-
-				do {
-					if (fileContents.isEmpty()) {
+					if (fileContents.equals(MapService.CONTINENT_KEY)) {
+						ifContinentObject = new HashMap<>();
 						fileContents = bufferedReaderObject.readLine();
-						continue;
+						do {
+							if (!fileContents.contains("=")) {
+								// throw new Exception("No Continent is present in the File");
+								errormessage = "No Continent is present in the File";
+								errorList.add(errormessage);
+								return;
+							}
+							String[] lineContent = fileContents.split("=");
+							String continentName = lineContent[0];
+							int continentArmyValue = Integer.parseInt(lineContent[1]);
+							continentObject = new Continent(continentName, continentArmyValue);
+							continentObjectSet.add(continentObject);
+							ifContinentObject.put(continentName, continentObject);
+							fileContents = bufferedReaderObject.readLine();
+
+						} while (!fileContents.isEmpty());
 					}
 
-					if (!fileContents.contains(",")) {
-						throw new Exception("No Territory is present in the File");
-					}
-					String[] lineContent = fileContents.split(",");
+					if (fileContents.equals(MapService.TERRITORY_KEY)) {
+						fileContents = bufferedReaderObject.readLine();
+						continentToTerritoryMap = new HashMap<>();
+						ifTerritoryObject = new HashMap<>();
 
-					String territoryName = lineContent[0];
-					String continentName;
-					if (lineContent.length > 3) {
-						continentName = lineContent[3];
-						neighbouringTerritories = new ArrayList<>();
-						territoryInAContinentList = new ArrayList<Territory>();
-
-						for (int i = 4; i < lineContent.length; i++) {
-							tempTerritoryObject = new Territory(lineContent[i]);
-							if (ifTerritoryObject.get(tempTerritoryObject.getName()) == null) {
-								ifTerritoryObject.put(tempTerritoryObject.getName(), tempTerritoryObject);
-								neighbouringTerritories.add(tempTerritoryObject);
-							} else {
-								neighbouringTerritories.add(ifTerritoryObject.get(tempTerritoryObject.getName()));
+						do {
+							if (fileContents.isEmpty()) {
+								fileContents = bufferedReaderObject.readLine();
+								continue;
 							}
 
-						}
-						territoryObject = new Territory(territoryName);
-						if (ifTerritoryObject.get(territoryObject.getName()) != null) {
-							territoryObject = ifTerritoryObject.get(territoryObject.getName());
-							territoryObject.setContinent(ifContinentObject.get(continentName));
-							territoryObject.setNeighbourTerritories(neighbouringTerritories);
+							if (!fileContents.contains(",")) {
+								// throw new Exception("No Territory is present in the File");
+								errormessage = "No Territory is present in the File";
+								errorList.add(errormessage);
+								return;
+							}
+							String[] lineContent = fileContents.split(",");
 
-						} else {
-							territoryObject.setName(territoryName);
-							territoryObject.setContinent(ifContinentObject.get(continentName));
-							territoryObject.setNeighbourTerritories(neighbouringTerritories);
-							ifTerritoryObject.put(territoryObject.getName(), territoryObject);
-						}
-						if (continentToTerritoryMap.get(continentName) != null) {
-							continentToTerritoryMap.get(continentName).add(territoryObject);
-						} else {
-							territoryInAContinentList.add(territoryObject);
-							continentToTerritoryMap.put(continentName, territoryInAContinentList);
-						}
-						territoryObjectSet.add(territoryObject);
+							String territoryName = lineContent[0];
+							String continentName;
+							if (lineContent.length > 3) {
+								continentName = lineContent[3];
+								neighbouringTerritories = new ArrayList<>();
+								territoryInAContinentList = new ArrayList<Territory>();
+
+								for (int i = 4; i < lineContent.length; i++) {
+									tempTerritoryObject = new Territory(lineContent[i]);
+									if (ifTerritoryObject.get(tempTerritoryObject.getName()) == null) {
+										ifTerritoryObject.put(tempTerritoryObject.getName(), tempTerritoryObject);
+										neighbouringTerritories.add(tempTerritoryObject);
+									} else {
+										neighbouringTerritories
+												.add(ifTerritoryObject.get(tempTerritoryObject.getName()));
+									}
+
+								}
+								territoryObject = new Territory(territoryName);
+								if (ifTerritoryObject.get(territoryObject.getName()) != null) {
+									territoryObject = ifTerritoryObject.get(territoryObject.getName());
+									territoryObject.setContinent(ifContinentObject.get(continentName));
+									territoryObject.setNeighbourTerritories(neighbouringTerritories);
+
+								} else {
+									territoryObject.setName(territoryName);
+									territoryObject.setContinent(ifContinentObject.get(continentName));
+									territoryObject.setNeighbourTerritories(neighbouringTerritories);
+									ifTerritoryObject.put(territoryObject.getName(), territoryObject);
+								}
+								if (continentToTerritoryMap.get(continentName) != null) {
+									continentToTerritoryMap.get(continentName).add(territoryObject);
+								} else {
+									territoryInAContinentList.add(territoryObject);
+									continentToTerritoryMap.put(continentName, territoryInAContinentList);
+								}
+								territoryObjectSet.add(territoryObject);
+							}
+							fileContents = bufferedReaderObject.readLine();
+
+						} while (fileContents != null);
 					}
-					fileContents = bufferedReaderObject.readLine();
-
-				} while (fileContents != null);
+				}
+			} catch (NumberFormatException e) {
+				errorList.add("Unable to parse string to number for continent control value.");
+				e.printStackTrace();
+				return;
+			} catch (IOException e) {
+				errorList.add("Problem reading provided file.");
+				e.printStackTrace();
+				return;
 			}
+
+			Iterator<Continent> iteratorObject = continentObjectSet.iterator();
+
+			while (iteratorObject.hasNext()) {
+				Continent continentToSetTerritories = iteratorObject.next();
+				List<Territory> abc = continentToTerritoryMap.get(continentToSetTerritories.getName());
+				continentToSetTerritories.setTerritories(abc);
+			}
+
+			MapService mapServiceObj = new MapService();
+			// During file parsing do we have to validate map
+			// and if we do then what action should we have to take next
+			/*List<String> errorList = new ArrayList<>();
+			mapServiceObj.validateMap(continentObjectSet, territoryObjectSet, errorList);*/
+			MapController.continentsSet = (HashSet<Continent>) continentObjectSet;
+			MapController.territoriesSet = (HashSet<Territory>) territoryObjectSet;
+
+		} catch (FileNotFoundException e) {
+			errorList.add("Unable to find given file to parse.");
+			e.printStackTrace();
+			return;
 		}
-
-		Iterator<Continent> iteratorObject = continentObjectSet.iterator();
-
-		while (iteratorObject.hasNext()) {
-			Continent continentToSetTerritories = iteratorObject.next();
-			List<Territory> abc = continentToTerritoryMap.get(continentToSetTerritories.getName());
-			continentToSetTerritories.setTerritories(abc);
-		}
-
-		MapService mapServiceObj = new MapService();
-		List<String> errorList = new ArrayList<>();
-		mapServiceObj.validateMap(continentObjectSet, territoryObjectSet, errorList);
-		MapController.continentsSet = (HashSet<Continent>) continentObjectSet;
-		MapController.territoriesSet = (HashSet<Territory>) territoryObjectSet;
-
+	}
+	public static void main(String[] args) {
+			ArrayList<String> errorList = new ArrayList<String>();
+			MapService mp = new MapService();
+			File file = new File("C:\\Users\\pc\\Desktop\\apprisk\\WrongFormatMapNoTerritory.map");
+			mp.parseFile(file, errorList);
+			System.out.println(errorList);
 	}
 }
+
+
