@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CardExchangeViewController">
+   <children>
+      <GridPane fx:id="exchangeViewPane" prefHeight="90.0" prefWidth="317.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Label text="PlayerName" />
+            <Label text="Total Cards" GridPane.columnIndex="1" />
+            <Label text="Card Type 1" GridPane.columnIndex="2" />
+            <Label text="Card Type 2" GridPane.columnIndex="3" />
+            <Label text="Card Type 3" GridPane.columnIndex="4" />
+            <Label fx:id="playerNameForCardExchange" text="Label" GridPane.rowIndex="1" />
+            <Label fx:id="totalNumberOfCards" layoutX="10.0" layoutY="47.0" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label fx:id="cardTypeOne" layoutX="73.0" layoutY="47.0" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <Label fx:id="cardTypeTwo" layoutX="10.0" layoutY="17.0" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+            <Label fx:id="cardTypeThree" layoutX="10.0" layoutY="17.0" text="Label" GridPane.columnIndex="4" GridPane.rowIndex="1" />
+            <Button fx:id="handIn" mnemonicParsing="false" onAction="#exchangeCards" text="HandIn" GridPane.columnIndex="4" GridPane.rowIndex="3" />
+            <TextField fx:id="typeOneInput" promptText="Enter Card Number" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <TextField fx:id="typeTwoInput" promptText="Enter Card Number" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+            <TextField fx:id="typeThreeInput" promptText="Enter Card Number" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+         </children>
+      </GridPane>
+   </children>
+</AnchorPane>

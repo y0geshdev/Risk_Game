@@ -30,7 +30,7 @@ public class Risk extends Application {
 		Parent root = FXMLLoader.load(getClass().getResource("Map.fxml"));
 		primaryStage.setTitle("Risk Map Editor");
 		primaryStage.setScene(new Scene(root, 800, 600));
-		primaryStage.setResizable(false);
+		primaryStage.setResizable(true);
 		primaryStage.show();
 	}
 

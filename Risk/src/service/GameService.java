@@ -1,6 +1,7 @@
 package service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -11,6 +12,8 @@ import java.util.Random;
 
 import controller.GameController;
 import controller.MapController;
+import domain.Card;
+import domain.CardExchangeViewModel;
 import domain.Continent;
 import domain.Player;
 import domain.Territory;
@@ -28,6 +31,12 @@ public class GameService {
 	 * It hold data for player turns.
 	 */
 	private Map<Integer, List<Player>> randomPlayerTurnHelper = new LinkedHashMap<>();
+
+	private CardExchangeViewModel model = new CardExchangeViewModel();
+
+	public static final String INFANTRY_ARMY = "Infantry";
+	public static final String CAVALRY_ARMY = "Cavalry";
+	public static final String ARTILLERY_ARMY = "Artillery";
 
 	/**
 	 * This method is used to allocate territories to different players randomly.
@@ -251,7 +260,136 @@ public class GameService {
 		defenderTerritory.setOwner(attacker);
 		attackerTerritory.setArmyCount(attackerTerritory.getArmyCount() - 1);
 		attacker.getTerritories().add(defenderTerritory);
+		/*
+		 * If the player wins at least one territory during his attack phase he is
+		 * entitled to get One card else keep the possibility of drawing the card to
+		 * false
+		 */
+		model.setIfPlayerGetsCard(true);
+	}
 
+	/*
+	 * This function can be used to call the attack after user has entered the input
+	 */
+	public void attack(Territory attackerTerritory, Territory defenderTerritory, int attackerDiceNumber,
+			int defenderDiceNumber) {
+		List<Integer> attackerNumberList = new ArrayList<>();
+		List<Integer> defenderNumberList = new ArrayList<>();
+
+		while (attackerDiceNumber != 0) {
+			int rand = randomIndex(0, 6);
+			attackerNumberList.add(rand);
+			attackerDiceNumber--;
+		}
+
+		while (defenderDiceNumber != 0) {
+			int rand = randomIndex(0, 6);
+			defenderNumberList.add(rand);
+			defenderDiceNumber--;
+		}
+
+		Collections.sort(attackerNumberList, Collections.reverseOrder());
+		Collections.sort(defenderNumberList, Collections.reverseOrder());
+
+		List<Integer> chances = chancesWonByAttacker(attackerNumberList, defenderNumberList);
+
+		int win = chances.get(0);
+		int loss = chances.get(1);
+
+		attackerTerritory.setArmyCount(attackerTerritory.getArmyCount() - loss);
+		defenderTerritory.setArmyCount(defenderTerritory.getArmyCount() - win);
+
+		if (defenderTerritory.getArmyCount() == 0) {
+			Player attacker = attackerTerritory.getOwner();
+			Player defender = defenderTerritory.getOwner();
+
+			defender.getTerritories().remove(defenderTerritory);
+			defenderTerritory.setOwner(attacker);
+			attacker.getTerritories().add(defenderTerritory);
+			/*
+			 * If the player wins at least one territory during his attack phase he is
+			 * entitled to get One card else keep the possibility of drawing the card to
+			 * false
+			 */
+			model.setIfPlayerGetsCard(true);
+		}
+	}
+
+	/*
+	 * This method is used to decide how many chances have been won by the attacker
+	 * by comparing the list of numbers turned up on the dice for both defender and
+	 * attacker
+	 */
+	public List<Integer> chancesWonByAttacker(List<Integer> attackerNumberList, List<Integer> defenderNumberList) {
+
+		int win = 0, loss = 0;
+		List<Integer> result = new ArrayList<>();
+		for (int i = 0; i < attackerNumberList.size(); i++) {
+			int attackerNumber = attackerNumberList.get(i);
+			int defenderNumber = -1;
+			if (i < defenderNumberList.size()) {
+				defenderNumber = defenderNumberList.get(i);
+				if (attackerNumber > defenderNumber) {
+					win++;
+				} else {
+					loss++;
+				}
+			}
+		}
+		result.add(win);
+		result.add(loss);
+		return result;
+	}
+
+	/*
+	 * This method is used to get the valid number of dices that defender and
+	 * attacker can use for defending and attacking respectively.
+	 * 
+	 * @param playerTerritory
+	 * 
+	 * @param playerType
+	 * 
+	 * @return
+	 */
+	public int getNumberOfDiceToRoll(Territory playerTerritory, String playerType) {
+		int armyCountOnTerritory = playerTerritory.getArmyCount();
+
+		if (playerType.equalsIgnoreCase("Attacker")) {
+			if (armyCountOnTerritory > 3) {
+				return 3;
+			} else if (armyCountOnTerritory == 3) {
+				return 2;
+			} else if (armyCountOnTerritory == 2) {
+				return 1;
+			} else {
+				return -1;
+			}
+
+		} else {
+			if (armyCountOnTerritory >= 2) {
+				return 2;
+			} else {
+				return 1;
+			}
+		}
+	}
+
+	/**
+	 * This method is used to give the top card of the deck to the player who has
+	 * won at least one territory during his attack phase
+	 * 
+	 * @param attacker
+	 */
+	public void assignCardToAPlayer(Player attacker) {
+		Queue<Card> allCards = model.getAllCards();
+		Queue<Card> playerCards = model.getCurrentPlayerCards(attacker);
+		Card topCard = allCards.remove();
+		if (!playerCards.isEmpty()) {
+			playerCards.add(topCard);
+		} else {
+			playerCards.add(topCard);
+		}
+		model.setCurrentPlayerCards(attacker, playerCards);
 	}
 
 	/**
@@ -336,7 +474,8 @@ public class GameService {
 	 * 
 	 * @param playerCount:
 	 *            Number of player playing the game
-	 * @return int number of armies per player according to total number of players playing game.
+	 * @return int number of armies per player according to total number of players
+	 *         playing game.
 	 */
 	private int getArmyCount(int playerCount) {
 		switch (playerCount) {
@@ -353,6 +492,25 @@ public class GameService {
 		default:
 			return 15;
 		}
+	}
+
+	/**
+	 * This method sets the initial deck of the cards as per the number of
+	 * territories.
+	 */
+	public void setCards() {
+		String[] cardtype = { GameService.INFANTRY_ARMY, GameService.CAVALRY_ARMY, GameService.CAVALRY_ARMY };
+		Queue<Card> allCards = new LinkedList<>();
+
+		Iterator<Territory> ite = MapController.territoriesSet.iterator();
+		while (ite.hasNext()) {
+			Territory cardTerritory = ite.next();
+			int randIndx = randomIndex(0, 2);
+			String cardType = cardtype[randIndx];
+			Card card = new Card(cardType, cardTerritory);
+			allCards.add(card);
+		}
+		model.setAllCards(allCards);
 	}
 
 }
