@@ -9,6 +9,7 @@ import java.util.Queue;
 import domain.Card;
 import domain.CardExchangeViewModel;
 import domain.Player;
+import domain.Territory;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -17,7 +18,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
-import service.GameService;
 
 public class CardExchangeViewController implements Observer {
 
@@ -117,6 +117,8 @@ public class CardExchangeViewController implements Observer {
 	 */
 	Boolean ifPlayerHasCardTerritory = false;
 
+	Territory cardAndOwnedTerritory;
+	
 	/**
 	 * This methods updated the ui when called by the Subject
 	 */
@@ -133,9 +135,9 @@ public class CardExchangeViewController implements Observer {
 		int cardType3 = 0;
 
 		while (!playerCards.isEmpty()) {
-			if (playerCards.peek().getCardType().equalsIgnoreCase(GameService.INFANTRY_ARMY)) {
+			if (playerCards.peek().getCardType().equalsIgnoreCase(CardExchangeViewModel.INFANTRY_ARMY)) {
 				cardType1++;
-			} else if (playerCards.peek().getCardType().equalsIgnoreCase(GameService.CAVALRY_ARMY)) {
+			} else if (playerCards.peek().getCardType().equalsIgnoreCase(CardExchangeViewModel.CAVALRY_ARMY)) {
 				cardType2++;
 			} else {
 				cardType3++;
@@ -171,13 +173,14 @@ public class CardExchangeViewController implements Observer {
 				removeCardsFromPlayer();
 				model.setTotalNumberOfExchanges(model.getTotalNumberOfExchanges() + 1);
 				if (ifPlayerHasCardTerritory) {
-					model.setPlayerArmyCount(currentPlayer, 2);
+					model.setPlayerArmyCount(currentPlayer, 2,cardAndOwnedTerritory);
 				} else {
-					model.setPlayerArmyCount(currentPlayer, 0);
+					model.setPlayerArmyCount(currentPlayer, 0,null);
 				}
 				String info = "Cards Exchanged";
 				showInformation(info);
 				model.setViewForCurrentPlayer(currentPlayer);
+				model.setCardAndOwnedTerritory(cardAndOwnedTerritory);
 			} else {
 				String error = "Enter Valid Input";
 				showError(error);
@@ -201,9 +204,10 @@ public class CardExchangeViewController implements Observer {
 		while (ite.hasNext()) {
 			Card card = ite.next();
 			if (cardType1Input > 0) {
-				if (card.getCardType().equalsIgnoreCase(GameService.INFANTRY_ARMY)) {
+				if (card.getCardType().equalsIgnoreCase(CardExchangeViewModel.INFANTRY_ARMY)) {
 					if (currentPlayer.getTerritories().contains(card.getCardTerritory())) {
 						ifPlayerHasCardTerritory = true;
+						cardAndOwnedTerritory	=	card.getCardTerritory();
 					}
 					cardType1Input--;
 					removedCards.add(card);
@@ -212,9 +216,10 @@ public class CardExchangeViewController implements Observer {
 
 			}
 			if (cardType2Input > 0) {
-				if (card.getCardType().equalsIgnoreCase(GameService.CAVALRY_ARMY)) {
+				if (card.getCardType().equalsIgnoreCase(CardExchangeViewModel.CAVALRY_ARMY)) {
 					if (currentPlayer.getTerritories().contains(card.getCardTerritory())) {
 						ifPlayerHasCardTerritory = true;
+						cardAndOwnedTerritory	=	card.getCardTerritory();
 					}
 					cardType2Input--;
 					removedCards.add(card);
@@ -223,9 +228,10 @@ public class CardExchangeViewController implements Observer {
 
 			}
 			if (cardType3Input > 0) {
-				if (card.getCardType().equalsIgnoreCase(GameService.ARTILLERY_ARMY)) {
+				if (card.getCardType().equalsIgnoreCase(CardExchangeViewModel.ARTILLERY_ARMY)) {
 					if (currentPlayer.getTerritories().contains(card.getCardTerritory())) {
 						ifPlayerHasCardTerritory = true;
+						cardAndOwnedTerritory	=	card.getCardTerritory();
 					}
 					cardType3Input--;
 					removedCards.add(card);

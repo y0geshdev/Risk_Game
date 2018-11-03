@@ -13,7 +13,6 @@ public class Player {
 	private String name;
 	private List<Territory> territories;
 	private int armyCount;
-
 	/**
 	 * default constructor for Player
 	 */
