@@ -262,4 +262,24 @@ public class GameServiceTest {
 		assertEquals(3, gameService.getFortifiableTerritories(territoryList.get(0)).size());
 	}
 
+	
+	@Test
+	public void testGetNextPlayer() {
+	
+		List<Player> playerList = new ArrayList<>();
+		int numberOfplayers = 5;
+		gameService.createPlayers(playerList, numberOfplayers);
+		
+		Player currPlayer	=	gameService.getNextPlayer(null, playerList);
+		
+		int currPlayerIndex	=	playerList.indexOf(currPlayer);
+		
+		Player nextPlayer	=	gameService.getNextPlayer(currPlayer, playerList);
+		
+		if(currPlayerIndex!=playerList.size()-1) {
+			assertEquals(playerList.get(currPlayerIndex+1), nextPlayer);
+		}else {
+			assertEquals(playerList.get(0), nextPlayer);
+		}
+	}
 }

@@ -148,28 +148,20 @@ public class GameService {
 	 * @return Player: player who will be having next turn.
 	 */
 	public Player getNextPlayer(Player prevPlayer, List<Player> playerList) {
+
 		int diceNumber;
 		Player nextPlayer = null;
+		Integer maxNumber = Integer.MIN_VALUE;
+
 		if (prevPlayer == null) {
 			for (int i = 0; i < playerList.size(); i++) {
-				List<Player> playerListForTurn = new ArrayList<>();
 				diceNumber = randomIndex(1, 6);
-				if (randomPlayerTurnHelper.get(diceNumber) != null) {
-					randomPlayerTurnHelper.get(diceNumber).add(playerList.get(i));
-				} else {
-					playerListForTurn.add(playerList.get(i));
-					randomPlayerTurnHelper.put(diceNumber, playerListForTurn);
+				if (maxNumber <= diceNumber) {
+					maxNumber = diceNumber;
+					nextPlayer = playerList.get(i);
 				}
 			}
-			int counter = 6;
 
-			while (counter != 0) {
-				if (randomPlayerTurnHelper.get(counter) != null) {
-					nextPlayer = randomPlayerTurnHelper.get(counter)
-							.get(randomPlayerTurnHelper.get(counter).size() - 1);
-				}
-				counter--;
-			}
 			return nextPlayer;
 
 		} else {
