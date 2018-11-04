@@ -346,7 +346,6 @@ public class MapService {
 				continentToSetTerritories.setTerritories(abc);
 			}
 
-			MapService mapServiceObj = new MapService();
 			// During file parsing do we have to validate map
 			// and if we do then what action should we have to take next
 			/*List<String> errorList = new ArrayList<>();

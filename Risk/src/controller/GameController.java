@@ -149,11 +149,6 @@ public class GameController {
 	private static final String CONTROL_VALUE_WITH_SEMICOLON = "Control Value :";
 
 	/**
-	 * Game constant for CONTROL_VALUE string.
-	 */
-	private static final String CONTROL_VALUE = "Control Value";
-
-	/**
 	 * Game constant for TEXTFIELD_BORDER_COLOUR_DEFENDER_TERRITORY string.
 	 */
 	private static final String TEXTFIELD_BORDER_COLOUR_DEFENDER_TERRITORY = "-fx-text-box-border: red;";
@@ -167,11 +162,6 @@ public class GameController {
 	 * Map to hold mapping for territory objects and their corresponding textfields.
 	 */
 	private static Map<String, TextField> territoriesToTFMapping = new HashMap<>();
-
-	/**
-	 * Map to hold mapping for player objects and their corresponding labels.
-	 */
-	private static Map<String, Label> playersToStatLabelMapping = new HashMap<>();
 
 	/**
 	 * Game service object to call methods on.

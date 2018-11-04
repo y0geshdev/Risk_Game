@@ -1,7 +1,6 @@
 package controller;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -454,7 +453,7 @@ public class MapController {
 		File file = fileChooser.showSaveDialog(null);
 
 		if (file != null) {
-			List<String> errorList = new ArrayList();
+			List<String> errorList = new ArrayList<String>();
 			mapService.validateMap(continentsSet, territoriesSet, errorList);
 
 			if (errorList.size() == 0) {
