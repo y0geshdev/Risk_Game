@@ -1,21 +1,28 @@
 package domain;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Queue;
+import java.util.Random;
+
+import controller.MapController;
 
 public class CardExchangeViewModel extends Observable {
 
 	Player currentPlayer;
 	Card card;
-	static Map<Player, Queue<Card>> playerToCardMapping;
-	static Queue<Card> allCards;
-	static int totalNumberOfExchanges;
-	static boolean ifPlayerGetsCard;
-
-	/**
+	Map<Player, Queue<Card>> playerToCardMapping;
+	Queue<Card> allCards;
+	int totalNumberOfExchanges;
+	boolean ifPlayerGetsCard;
+	public static final String INFANTRY_ARMY = "Infantry";
+	public static final String CAVALRY_ARMY = "Cavalry";
+	public static final String ARTILLERY_ARMY = "Artillery";
+	private static Territory cardAndOwnedTerritory;
+	/**	
 	 * default constructor for CardExchangeViewModel.
 	 */
 	public CardExchangeViewModel() {
@@ -23,6 +30,8 @@ public class CardExchangeViewModel extends Observable {
 		ifPlayerGetsCard = false;
 		totalNumberOfExchanges = 0;
 		allCards = new LinkedList<>();
+		cardAndOwnedTerritory	=	null;
+		setCards();
 	}
 
 	/**
@@ -71,7 +80,7 @@ public class CardExchangeViewModel extends Observable {
 	 *            : card objects having territory and card type values.
 	 */
 	public void setAllCards(Queue<Card> allCards) {
-		CardExchangeViewModel.allCards = allCards;
+		this.allCards = allCards;
 	}
 
 	/**
@@ -118,7 +127,7 @@ public class CardExchangeViewModel extends Observable {
 	 * @param totalNumberOfExchanges
 	 */
 	public void setTotalNumberOfExchanges(int totalNumberOfExchanges) {
-		CardExchangeViewModel.totalNumberOfExchanges = totalNumberOfExchanges;
+		this.totalNumberOfExchanges = totalNumberOfExchanges;
 	}
 
 	/**
@@ -140,7 +149,7 @@ public class CardExchangeViewModel extends Observable {
 	 *            : number is 2 if the any of the excahnged card was of the
 	 *            territory owned by the player else 0
 	 */
-	public void setPlayerArmyCount(Player currentPlayer, int cardOfPlayerTerritoryExchanged) {
+	public void setPlayerArmyCount(Player currentPlayer, int cardOfPlayerTerritoryExchanged,Territory cardAndOwnedTerritory) {
 		int armyCount = getArmyCount();
 		armyCount += cardOfPlayerTerritoryExchanged;
 		if (totalNumberOfExchanges <= 6) {
@@ -150,9 +159,18 @@ public class CardExchangeViewModel extends Observable {
 				armyCount += 5;
 			}
 			currentPlayer.setArmyCount(currentPlayer.getArmyCount() + armyCount);
+			
 		}
 	}
 
+	public Territory getCardAndOwnedTerritory() {
+		return cardAndOwnedTerritory;
+	}
+	
+	public void setCardAndOwnedTerritory(Territory cardAndOwnedTerritory) {
+		CardExchangeViewModel.cardAndOwnedTerritory=cardAndOwnedTerritory;
+	}
+	
 	/**
 	 * This method returns the valid number of armies based on the totalNumber of
 	 * exchanges that have happened during the game as per Risk Rules
@@ -204,4 +222,58 @@ public class CardExchangeViewModel extends Observable {
 	public void setIfPlayerGetsCard(boolean ifPossible) {
 		ifPlayerGetsCard = ifPossible;
 	}
+	
+	/**
+	 * This method sets the initial deck of the cards as per the number of
+	 * territories.
+	 */
+	public void setCards() {
+		String[] cardtype = { INFANTRY_ARMY, CAVALRY_ARMY,ARTILLERY_ARMY };
+		Queue<Card> allCards = new LinkedList<>();
+
+		Iterator<Territory> ite = MapController.territoriesSet.iterator();
+		while (ite.hasNext()) {
+			Territory cardTerritory = ite.next();
+			int randIndx = randomIndex(0, 2);
+			String cardType = cardtype[randIndx];
+			Card card = new Card(cardType, cardTerritory);
+			allCards.add(card);
+		}
+		setAllCards(allCards);
+	}
+	
+	 /** This method is used to give the top card of the deck to the player who has
+	 * won at least one territory during his attack phase
+	 * 
+	 * @param attacker
+	 */
+	public void assignCardToAPlayer(Player attacker) {
+		Queue<Card> allCards = getAllCards();
+		Queue<Card> playerCards = getCurrentPlayerCards(attacker);
+		Card topCard = allCards.remove();
+		if (!playerCards.isEmpty()) {
+			playerCards.add(topCard);
+		} else {
+			playerCards.add(topCard);
+		}
+		setCurrentPlayerCards(attacker, playerCards);
+	}
+
+
+	/** This method is used to get a random number which will be between 0 and size
+	 * of list of territories.
+	 * 
+	 * @param min
+	 *            : lower range of the random number generated
+	 * @param max
+	 *            : upper range of the random number generated.
+	 * 
+	 * @return : returns the random number generated between the range.
+	 * 
+	 */
+	private int randomIndex(int min, int max) {
+		Random randIndex = new Random();
+		return randIndex.nextInt((max - min) + 1) + min;
+	}
+
 }

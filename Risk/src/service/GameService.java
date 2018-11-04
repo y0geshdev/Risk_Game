@@ -28,17 +28,6 @@ import domain.Territory;
 public class GameService {
 
 	/**
-	 * It hold data for player turns.
-	 */
-	private Map<Integer, List<Player>> randomPlayerTurnHelper = new LinkedHashMap<>();
-
-	private CardExchangeViewModel model = new CardExchangeViewModel();
-
-	public static final String INFANTRY_ARMY = "Infantry";
-	public static final String CAVALRY_ARMY = "Cavalry";
-	public static final String ARTILLERY_ARMY = "Artillery";
-
-	/**
 	 * This method is used to allocate territories to different players randomly.
 	 * 
 	 * @param numberOfPlayers:
@@ -243,7 +232,7 @@ public class GameService {
 	 * @param defenderTerritory:
 	 *            defending territory object.
 	 */
-	public void attack(Territory attackerTerritory, Territory defenderTerritory) {
+	public boolean attack(Territory attackerTerritory, Territory defenderTerritory) {
 		Player attacker = attackerTerritory.getOwner();
 		Player defender = defenderTerritory.getOwner();
 
@@ -257,13 +246,13 @@ public class GameService {
 		 * entitled to get One card else keep the possibility of drawing the card to
 		 * false
 		 */
-		model.setIfPlayerGetsCard(true);
+		return true;
 	}
 
 	/*
 	 * This function can be used to call the attack after user has entered the input
 	 */
-	public void attack(Territory attackerTerritory, Territory defenderTerritory, int attackerDiceNumber,
+	public boolean attack(Territory attackerTerritory, Territory defenderTerritory, int attackerDiceNumber,
 			int defenderDiceNumber) {
 		List<Integer> attackerNumberList = new ArrayList<>();
 		List<Integer> defenderNumberList = new ArrayList<>();
@@ -303,8 +292,9 @@ public class GameService {
 			 * entitled to get One card else keep the possibility of drawing the card to
 			 * false
 			 */
-			model.setIfPlayerGetsCard(true);
+
 		}
+		return true;
 	}
 
 	/*
@@ -364,24 +354,6 @@ public class GameService {
 				return 1;
 			}
 		}
-	}
-
-	/**
-	 * This method is used to give the top card of the deck to the player who has
-	 * won at least one territory during his attack phase
-	 * 
-	 * @param attacker
-	 */
-	public void assignCardToAPlayer(Player attacker) {
-		Queue<Card> allCards = model.getAllCards();
-		Queue<Card> playerCards = model.getCurrentPlayerCards(attacker);
-		Card topCard = allCards.remove();
-		if (!playerCards.isEmpty()) {
-			playerCards.add(topCard);
-		} else {
-			playerCards.add(topCard);
-		}
-		model.setCurrentPlayerCards(attacker, playerCards);
 	}
 
 	/**
@@ -484,25 +456,6 @@ public class GameService {
 		default:
 			return 15;
 		}
-	}
-
-	/**
-	 * This method sets the initial deck of the cards as per the number of
-	 * territories.
-	 */
-	public void setCards() {
-		String[] cardtype = { GameService.INFANTRY_ARMY, GameService.CAVALRY_ARMY, GameService.CAVALRY_ARMY };
-		Queue<Card> allCards = new LinkedList<>();
-
-		Iterator<Territory> ite = MapController.territoriesSet.iterator();
-		while (ite.hasNext()) {
-			Territory cardTerritory = ite.next();
-			int randIndx = randomIndex(0, 2);
-			String cardType = cardtype[randIndx];
-			Card card = new Card(cardType, cardTerritory);
-			allCards.add(card);
-		}
-		model.setAllCards(allCards);
 	}
 
 	/**
