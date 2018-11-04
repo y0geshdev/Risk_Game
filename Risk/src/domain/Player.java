@@ -84,4 +84,30 @@ public class Player {
 		return this.name;
 	}
 
+	/**
+	 * This method have logic to do reinforcement for current player.
+	 * @param selectedTerritory:
+	 * 							Territory to which armies is to be added for reinforcement.
+	 * @param numberOfArmies:
+	 * 						number of armies to add to a territory as reinforcement.
+	 */
+	public void reinforcement(Territory selectedTerritory, int numberOfArmies) {
+		selectedTerritory.setArmyCount(selectedTerritory.getArmyCount() + numberOfArmies);
+		this.setArmyCount(this.getArmyCount() - numberOfArmies);
+	}
+
+	/**
+	 * This method have the logic to fortify one territory from other territory.
+	 * @param from:
+	 * 			Territoty from which armies to be moved.
+	 * @param to:
+	 * 			Territory to which armies to be moved.
+	 * @param armiesToMove:
+	 * 					Number of armies to move.
+	 */
+	public void fortify(Territory from, Territory to, int armiesToMove) {
+		from.setArmyCount(from.getArmyCount() - armiesToMove);
+		to.setArmyCount(to.getArmyCount() + armiesToMove);
+	}
+
 }

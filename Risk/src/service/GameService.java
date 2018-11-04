@@ -408,8 +408,8 @@ public class GameService {
 			errorList.add("Can't move from same territory to same territory.");
 			return;
 		} else {
-			from.setArmyCount(from.getArmyCount() - armiesToMove);
-			to.setArmyCount(to.getArmyCount() + armiesToMove);
+			Player player = from.getOwner();
+			player.fortify(from, to, armiesToMove);
 		}
 	}
 
@@ -503,6 +503,20 @@ public class GameService {
 			allCards.add(card);
 		}
 		model.setAllCards(allCards);
+	}
+
+	/**
+	 * This method current player's reinforcement method to add reinforcement armies to selected territory.
+	 * @param selectedTerritory:
+	 * 							Territory to which armies is to be added for reinforcement.
+	 * @param numberOfArmies:
+	 * 						number of armies to add to a territory as reinforcement.
+	 */
+	public void addReinforcement(Territory selectedTerritory, int numberOfArmies) {
+		
+		Player player = selectedTerritory.getOwner();
+		player.reinforcement(selectedTerritory,numberOfArmies);
+		
 	}
 
 }

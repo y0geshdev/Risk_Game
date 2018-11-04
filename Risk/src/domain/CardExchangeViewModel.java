@@ -13,7 +13,7 @@ public class CardExchangeViewModel extends Observable {
 	static Map<Player, Queue<Card>> playerToCardMapping;
 	static Queue<Card> allCards;
 	static int totalNumberOfExchanges;
-	static Boolean ifPlayerGetsCard;
+	static boolean ifPlayerGetsCard;
 
 	/**
 	 * default constructor for CardExchangeViewModel.
