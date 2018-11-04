@@ -22,7 +22,7 @@ public class CardExchangeViewModel extends Observable {
 	public static final String INFANTRY_ARMY = "Infantry";
 	public static final String CAVALRY_ARMY = "Cavalry";
 	public static final String ARTILLERY_ARMY = "Artillery";
-	private static Territory cardAndOwnedTerritory;
+	private Territory cardAndOwnedTerritory;
 	/**	
 	 * default constructor for CardExchangeViewModel.
 	 */
@@ -170,7 +170,7 @@ public class CardExchangeViewModel extends Observable {
 	}
 	
 	public void setCardAndOwnedTerritory(Territory cardAndOwnedTerritory) {
-		CardExchangeViewModel.cardAndOwnedTerritory=cardAndOwnedTerritory;
+		this.cardAndOwnedTerritory=cardAndOwnedTerritory;
 	}
 	
 	/**
