@@ -527,7 +527,6 @@ public class GameController {
 		 * This is how the exchange view is being displayed every time after the
 		 * fortification phase is finished.
 		 */
-		if(cardExchangeViewModel.getCurrentPlayerCards(currentPlayer).size()>0)
 		setUpCardExchangeView();
 		while (cardExchangeViewModel.getCurrentPlayerCards(currentPlayer).size() >= 5) {
 			setUpCardExchangeView();
@@ -594,6 +593,7 @@ public class GameController {
 			ifStartUpIsComepleted = true;
 			currentPlayer = gameService.getNextPlayer(null, playersList);
 			gameService.calcArmiesForReinforcement(currentPlayer);
+			setUpCardExchangeView();
 			reinforcementPhase();
 		} else if (currentPlayer.getArmyCount() == 0) {
 			currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);

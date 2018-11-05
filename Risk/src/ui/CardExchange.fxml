@@ -1,45 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
 
 <AnchorPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.CardExchangeViewController">
    <children>
-      <GridPane fx:id="exchangeViewPane" prefHeight="90.0" prefWidth="317.0">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-        </columnConstraints>
-        <rowConstraints>
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        </rowConstraints>
+      <HBox prefHeight="100.0" prefWidth="200.0">
          <children>
-            <Label text="PlayerName" />
-            <Label text="Total Cards" GridPane.columnIndex="1" />
-            <Label text="Card Type 1" GridPane.columnIndex="2" />
-            <Label text="Card Type 2" GridPane.columnIndex="3" />
-            <Label text="Card Type 3" GridPane.columnIndex="4" />
-            <Label fx:id="playerNameForCardExchange" text="Label" GridPane.rowIndex="1" />
-            <Label fx:id="totalNumberOfCards" layoutX="10.0" layoutY="47.0" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Label fx:id="cardTypeOne" layoutX="73.0" layoutY="47.0" text="Label" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <Label fx:id="cardTypeTwo" layoutX="10.0" layoutY="17.0" text="Label" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-            <Label fx:id="cardTypeThree" layoutX="10.0" layoutY="17.0" text="Label" GridPane.columnIndex="4" GridPane.rowIndex="1" />
-            <Button fx:id="handIn" mnemonicParsing="false" onAction="#exchangeCards" text="HandIn" GridPane.columnIndex="4" GridPane.rowIndex="3" />
-            <TextField fx:id="typeOneInput" promptText="Enter Card Number" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-            <TextField fx:id="typeTwoInput" promptText="Enter Card Number" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-            <TextField fx:id="typeThreeInput" promptText="Enter Card Number" GridPane.columnIndex="4" GridPane.rowIndex="2" />
+            <VBox prefHeight="200.0" prefWidth="100.0">
+            <VBox.margin>
+                  <Insets top="2.0" />
+               </VBox.margin>
+               <children>
+                  <Label minWidth="75.0" text="Player Name" />
+                  <Label fx:id="playerNameForCardExchange" minWidth="75.0" text="Label" />
+               </children>
+            </VBox>
+            <VBox prefHeight="200.0" prefWidth="100.0">
+            <VBox.margin>
+                  <Insets top="2.0" />
+               </VBox.margin>
+               <children>
+                  <Label prefWidth="75.0" text="Total Cards" />
+                  <Label fx:id="totalNumberOfCards" minWidth="75.0" text="Label">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin></Label>
+               </children>
+            </VBox>
+            <VBox prefHeight="200.0" prefWidth="100.0">
+            <VBox.margin>
+                  <Insets top="2.0" />
+               </VBox.margin>
+               <children>
+                  <Label minWidth="75.0" text="Player Cards" />
+                  <ListView fx:id="playerCardsList" minHeight="158.0" minWidth="172.0" prefHeight="158.0" prefWidth="158.0">
+                     <VBox.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </VBox.margin></ListView>
+                  <Button fx:id="addCard" minWidth="75.0" mnemonicParsing="false" onAction="#addSelectedCard" text="Add" />
+               </children>
+               <HBox.margin>
+                  <Insets left="10.0" right="10.0" />
+               </HBox.margin>
+            </VBox>
+            <VBox prefHeight="200.0" prefWidth="100.0">
+            <VBox.margin>
+                  <Insets top="2.0" />
+               </VBox.margin>
+               <children>
+                  <Label minWidth="80.0" text="Selected Cards" />
+                  <ListView fx:id="selectedCardsList" minHeight="158.0" minWidth="172.0" prefHeight="158.0" prefWidth="172.0">
+                     <VBox.margin>
+                        <Insets bottom="5.0" top="5.0" />
+                     </VBox.margin></ListView>
+                  <Button fx:id="removeCard" minWidth="75.0" mnemonicParsing="false" onAction="#removeSelectedCard" text="Remove" />
+               </children>
+               <HBox.margin>
+                  <Insets left="5.0" right="5.0" />
+               </HBox.margin>
+            </VBox>
+            <Button fx:id="handIn" layoutX="10.0" layoutY="10.0" minWidth="75.0" mnemonicParsing="false" onAction="#exchangeCards" prefHeight="20.0" prefWidth="100.0" text="HandIn">
+               <HBox.margin>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </HBox.margin></Button>
          </children>
-      </GridPane>
+      </HBox>
    </children>
 </AnchorPane>
