@@ -575,7 +575,7 @@ public class MapController {
 				Parent root;
 				GameController gameController;
 				try {
-					FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/Game_Copy.fxml"));
+					FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/Game.fxml"));
 					root = loader.load();
 					gameController = loader.getController();
 				} catch (IOException e) {

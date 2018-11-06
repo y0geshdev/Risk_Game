@@ -1,7 +1,6 @@
 package service;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -14,6 +13,7 @@ import domain.Continent;
 import domain.PhaseViewModel;
 import domain.Player;
 import domain.Territory;
+import javafx.util.Pair;
 
 /**
  * This class handle all the service call from {@link GameController} class and
@@ -222,109 +222,95 @@ public class GameService {
 	}
 
 	/**
-	 * This method perform attack from attacker to defender territory.
-	 * @param phaseViewModel 
+	 * This method delegate attack from controller to player class.
 	 * 
 	 * @param attackerTerritory:
-	 *            attacking territory object.
+	 *            Territory from which attack is performed.
 	 * @param defenderTerritory:
-	 *            defending territory object.
+	 *            Territory to which attack is performed.
+	 * @param isAllOutMode:
+	 *            true if current attack is of All-Out mode else false.
+	 * @param totalAttackerDice:
+	 *            Number of dice to roll for attacker if current mode of attack is
+	 *            normal mode.
+	 * @param totalDefenderDice:
+	 *            Number of dice to roll for defender if current mode of attack is
+	 *            normal mode.
+	 * @param phaseViewModel:
+	 *            PhaseViewModel instance to update information on phase view with
+	 *            each step of attack.
+	 * @return A {@link Pair} class which hold data as Boolean and Integer
+	 *         representing attack outcome and minimum troops to move.
 	 */
-	public boolean attack(Territory attackerTerritory, Territory defenderTerritory, PhaseViewModel phaseViewModel) {
-		//boolean isWon;
+	public Pair<Boolean, Integer> attack(Territory attackerTerritory, Territory defenderTerritory, boolean isAllOutMode,
+			int totalAttackerDice, int totalDefenderDice, PhaseViewModel phaseViewModel) {
 		Player attacker = attackerTerritory.getOwner();
 		Player defender = defenderTerritory.getOwner();
-		
-		return attacker.attack(attackerTerritory,defenderTerritory,defender, phaseViewModel);
-		
-		/*defender.getTerritories().remove(defenderTerritory);
-		defenderTerritory.setArmyCount(1);
-		defenderTerritory.setOwner(attacker);
-		attackerTerritory.setArmyCount(attackerTerritory.getArmyCount() - 1);
-		attacker.getTerritories().add(defenderTerritory);*/
-		/*
-		 * If the player wins at least one territory during his attack phase he is
-		 * entitled to get One card else keep the possibility of drawing the card to
-		 * false
-		 */
-		//return true;
+
+		return attacker.attack(attackerTerritory, defenderTerritory, defender, isAllOutMode, totalAttackerDice,
+				totalDefenderDice, phaseViewModel);
+
 	}
 
-	/*
+	/**
 	 * This function can be used to call the attack after user has entered the input
 	 */
-	public boolean attack(Territory attackerTerritory, Territory defenderTerritory, int attackerDiceNumber,
-			int defenderDiceNumber) {
-		List<Integer> attackerNumberList = new ArrayList<>();
-		List<Integer> defenderNumberList = new ArrayList<>();
-
-		while (attackerDiceNumber != 0) {
-			int rand = randomIndex(0, 6);
-			attackerNumberList.add(rand);
-			attackerDiceNumber--;
-		}
-
-		while (defenderDiceNumber != 0) {
-			int rand = randomIndex(0, 6);
-			defenderNumberList.add(rand);
-			defenderDiceNumber--;
-		}
-
-		Collections.sort(attackerNumberList, Collections.reverseOrder());
-		Collections.sort(defenderNumberList, Collections.reverseOrder());
-
-		List<Integer> chances = chancesWonByAttacker(attackerNumberList, defenderNumberList);
-
-		int win = chances.get(0);
-		int loss = chances.get(1);
-
-		attackerTerritory.setArmyCount(attackerTerritory.getArmyCount() - loss);
-		defenderTerritory.setArmyCount(defenderTerritory.getArmyCount() - win);
-
-		if (defenderTerritory.getArmyCount() == 0) {
-			Player attacker = attackerTerritory.getOwner();
-			Player defender = defenderTerritory.getOwner();
-
-			defender.getTerritories().remove(defenderTerritory);
-			defenderTerritory.setOwner(attacker);
-			attacker.getTerritories().add(defenderTerritory);
-			/*
-			 * If the player wins at least one territory during his attack phase he is
-			 * entitled to get One card else keep the possibility of drawing the card to
-			 * false
-			 */
-
-		}
-		return true;
-	}
-
 	/*
+	 * public boolean attack(Territory attackerTerritory, Territory
+	 * defenderTerritory, int attackerDiceNumber, int defenderDiceNumber) {
+	 * List<Integer> attackerNumberList = new ArrayList<>(); List<Integer>
+	 * defenderNumberList = new ArrayList<>();
+	 * 
+	 * while (attackerDiceNumber != 0) { int rand = randomIndex(0, 6);
+	 * attackerNumberList.add(rand); attackerDiceNumber--; }
+	 * 
+	 * while (defenderDiceNumber != 0) { int rand = randomIndex(0, 6);
+	 * defenderNumberList.add(rand); defenderDiceNumber--; }
+	 * 
+	 * Collections.sort(attackerNumberList, Collections.reverseOrder());
+	 * Collections.sort(defenderNumberList, Collections.reverseOrder());
+	 * 
+	 * List<Integer> chances = chancesWonByAttacker(attackerNumberList,
+	 * defenderNumberList);
+	 * 
+	 * int win = chances.get(0); int loss = chances.get(1);
+	 * 
+	 * attackerTerritory.setArmyCount(attackerTerritory.getArmyCount() - loss);
+	 * defenderTerritory.setArmyCount(defenderTerritory.getArmyCount() - win);
+	 * 
+	 * if (defenderTerritory.getArmyCount() == 0) { Player attacker =
+	 * attackerTerritory.getOwner(); Player defender = defenderTerritory.getOwner();
+	 * 
+	 * defender.getTerritories().remove(defenderTerritory);
+	 * defenderTerritory.setOwner(attacker);
+	 * attacker.getTerritories().add(defenderTerritory);
+	 * 
+	 * If the player wins at least one territory during his attack phase he is
+	 * entitled to get One card else keep the possibility of drawing the card to
+	 * false
+	 * 
+	 * 
+	 * } return true; }
+	 */
+
+	/**
 	 * This method is used to decide how many chances have been won by the attacker
 	 * by comparing the list of numbers turned up on the dice for both defender and
 	 * attacker
 	 */
-	public List<Integer> chancesWonByAttacker(List<Integer> attackerNumberList, List<Integer> defenderNumberList) {
-
-		int win = 0, loss = 0;
-		List<Integer> result = new ArrayList<>();
-		for (int i = 0; i < attackerNumberList.size(); i++) {
-			int attackerNumber = attackerNumberList.get(i);
-			int defenderNumber = -1;
-			if (i < defenderNumberList.size()) {
-				defenderNumber = defenderNumberList.get(i);
-				if (attackerNumber > defenderNumber) {
-					win++;
-				} else {
-					loss++;
-				}
-			}
-		}
-		result.add(win);
-		result.add(loss);
-		return result;
-	}
-
 	/*
+	 * public List<Integer> chancesWonByAttacker(List<Integer> attackerNumberList,
+	 * List<Integer> defenderNumberList) {
+	 * 
+	 * int win = 0, loss = 0; List<Integer> result = new ArrayList<>(); for (int i =
+	 * 0; i < attackerNumberList.size(); i++) { int attackerNumber =
+	 * attackerNumberList.get(i); int defenderNumber = -1; if (i <
+	 * defenderNumberList.size()) { defenderNumber = defenderNumberList.get(i); if
+	 * (attackerNumber > defenderNumber) { win++; } else { loss++; } } }
+	 * result.add(win); result.add(loss); return result; }
+	 */
+
+	/**
 	 * This method is used to get the valid number of dices that defender and
 	 * attacker can use for defending and attacking respectively.
 	 * 
@@ -334,28 +320,16 @@ public class GameService {
 	 * 
 	 * @return
 	 */
-	public int getNumberOfDiceToRoll(Territory playerTerritory, String playerType) {
-		int armyCountOnTerritory = playerTerritory.getArmyCount();
-
-		if (playerType.equalsIgnoreCase("Attacker")) {
-			if (armyCountOnTerritory > 3) {
-				return 3;
-			} else if (armyCountOnTerritory == 3) {
-				return 2;
-			} else if (armyCountOnTerritory == 2) {
-				return 1;
-			} else {
-				return -1;
-			}
-
-		} else {
-			if (armyCountOnTerritory >= 2) {
-				return 2;
-			} else {
-				return 1;
-			}
-		}
-	}
+	/*
+	 * public int getNumberOfDiceToRoll(Territory playerTerritory, String
+	 * playerType) { int armyCountOnTerritory = playerTerritory.getArmyCount();
+	 * 
+	 * if (playerType.equalsIgnoreCase("Attacker")) { if (armyCountOnTerritory > 3)
+	 * { return 3; } else if (armyCountOnTerritory == 3) { return 2; } else if
+	 * (armyCountOnTerritory == 2) { return 1; } else { return -1; }
+	 * 
+	 * } else { if (armyCountOnTerritory >= 2) { return 2; } else { return 1; } } }
+	 */
 
 	/**
 	 * This method is used to do fortification in which armies are moved from one
@@ -460,17 +434,43 @@ public class GameService {
 	}
 
 	/**
-	 * This method current player's reinforcement method to add reinforcement armies to selected territory.
+	 * This method current player's reinforcement method to add reinforcement armies
+	 * to selected territory.
+	 * 
 	 * @param selectedTerritory:
-	 * 							Territory to which armies is to be added for reinforcement.
+	 *            Territory to which armies is to be added for reinforcement.
 	 * @param numberOfArmies:
-	 * 						number of armies to add to a territory as reinforcement.
+	 *            number of armies to add to a territory as reinforcement.
 	 */
 	public void addReinforcement(Territory selectedTerritory, int numberOfArmies) {
-		
+
 		Player player = selectedTerritory.getOwner();
-		player.reinforcement(selectedTerritory,numberOfArmies);
-		
+		player.reinforcement(selectedTerritory, numberOfArmies);
+
+	}
+
+	/**
+	 * This method check if currentPlayer can attack any further or not.
+	 * 
+	 * @param currentPlayer:
+	 *            Player to which further attacking is possible or not is checked.
+	 * @return true if this currentPlayer can attack further else false.
+	 */
+	public boolean canPlayerAttackFurther(Player currentPlayer) {
+		boolean canAttackFurther = false;
+
+		outerFor: for (Territory territory : currentPlayer.getTerritories()) {
+			if (territory.getArmyCount() > 1) {
+				for (Territory neighbourTerritory : territory.getNeighbourTerritories()) {
+					if (neighbourTerritory.getOwner() != currentPlayer) {
+						canAttackFurther = true;
+						break outerFor;
+					}
+				}
+			}
+		}
+
+		return canAttackFurther;
 	}
 
 }

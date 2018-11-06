@@ -16,6 +16,7 @@ import domain.Continent;
 import domain.PhaseViewModel;
 import domain.Player;
 import domain.Territory;
+import javafx.util.Pair;
 
 /**
  * This Junit Test Class will have all the test cases for {@link GameService}
@@ -243,8 +244,8 @@ public class GameServiceTest {
 		defenderTerritory.setOwner(playerTwo);
 		attackerTerritory.setArmyCount(10);
 		defenderTerritory.setArmyCount(5);
-		boolean isWon = gameService.attack(attackerTerritory, defenderTerritory, new PhaseViewModel());
-		if(isWon) {
+		Pair<Boolean, Integer> result = gameService.attack(attackerTerritory, defenderTerritory, true, 0, 0, new PhaseViewModel());
+		if(result.getKey()) {
 			assertEquals(defenderTerritory.getOwner(), playerOne);
 		}else {
 			assertTrue(attackerTerritory.getOwner()!=defenderTerritory.getOwner());
