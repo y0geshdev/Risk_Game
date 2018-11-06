@@ -56,4 +56,10 @@ public class Card {
 		this.cardTerritory = cardTerritory;
 	}
 
+	@Override
+	public String toString() {
+		// TODO Auto-generated method stub
+		return cardType+" "+cardTerritory.getName();
+	}
 }
+
