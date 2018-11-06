@@ -11,6 +11,7 @@ import java.util.Random;
 import controller.GameController;
 import controller.MapController;
 import domain.Continent;
+import domain.PhaseViewModel;
 import domain.Player;
 import domain.Territory;
 
@@ -222,27 +223,31 @@ public class GameService {
 
 	/**
 	 * This method perform attack from attacker to defender territory.
+	 * @param phaseViewModel 
 	 * 
 	 * @param attackerTerritory:
 	 *            attacking territory object.
 	 * @param defenderTerritory:
 	 *            defending territory object.
 	 */
-	public boolean attack(Territory attackerTerritory, Territory defenderTerritory) {
+	public boolean attack(Territory attackerTerritory, Territory defenderTerritory, PhaseViewModel phaseViewModel) {
+		//boolean isWon;
 		Player attacker = attackerTerritory.getOwner();
 		Player defender = defenderTerritory.getOwner();
-
-		defender.getTerritories().remove(defenderTerritory);
+		
+		return attacker.attack(attackerTerritory,defenderTerritory,defender, phaseViewModel);
+		
+		/*defender.getTerritories().remove(defenderTerritory);
 		defenderTerritory.setArmyCount(1);
 		defenderTerritory.setOwner(attacker);
 		attackerTerritory.setArmyCount(attackerTerritory.getArmyCount() - 1);
-		attacker.getTerritories().add(defenderTerritory);
+		attacker.getTerritories().add(defenderTerritory);*/
 		/*
 		 * If the player wins at least one territory during his attack phase he is
 		 * entitled to get One card else keep the possibility of drawing the card to
 		 * false
 		 */
-		return true;
+		//return true;
 	}
 
 	/*

@@ -4,12 +4,11 @@
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.layout.AnchorPane?>
 
-
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="121.0" prefWidth="237.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PhaseViewController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.PhaseViewController">
    <children>
-      <Label fx:id="playerNameLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="80.0" layoutY="16.0" textAlignment="CENTER" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="81.0" />
-      <Label layoutX="5.0" layoutY="41.0" text="Current Phase: " textAlignment="CENTER" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="156.0" AnchorPane.topAnchor="41.0" />
+      <Label fx:id="playerNameLabel" alignment="CENTER" contentDisplay="CENTER" layoutX="80.0" layoutY="5.0" textAlignment="CENTER" AnchorPane.leftAnchor="80.0" AnchorPane.rightAnchor="81.0" AnchorPane.topAnchor="5.0" />
+      <Label layoutX="5.0" layoutY="23.0" text="Current Phase: " textAlignment="CENTER" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="156.0" AnchorPane.topAnchor="23.0" />
       <Label fx:id="phaseNameLabel" layoutX="93.0" layoutY="41.0" prefHeight="14.0" prefWidth="111.0" />
-      <TextArea fx:id="phaseInfoTF" editable="false" layoutX="4.0" layoutY="65.0" prefHeight="51.0" prefWidth="228.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="65.0" />
+      <TextArea fx:id="phaseInfoTF" editable="false" layoutX="4.0" layoutY="40.0" prefHeight="76.0" prefWidth="228.0" AnchorPane.bottomAnchor="5.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="40.0" />
    </children>
 </AnchorPane>

@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import controller.MapController;
 import domain.Continent;
+import domain.PhaseViewModel;
 import domain.Player;
 import domain.Territory;
 
@@ -236,11 +237,19 @@ public class GameServiceTest {
 	public void testAttack() {
 		Player playerOne = new Player();
 		Player playerTwo = new Player();
-		territoryList.get(0).setOwner(playerOne);
-		territoryList.get(1).setOwner(playerTwo);
+		Territory attackerTerritory = territoryList.get(0);
+		Territory defenderTerritory = territoryList.get(1);
+		attackerTerritory.setOwner(playerOne);
+		defenderTerritory.setOwner(playerTwo);
+		attackerTerritory.setArmyCount(10);
+		defenderTerritory.setArmyCount(5);
+		boolean isWon = gameService.attack(attackerTerritory, defenderTerritory, new PhaseViewModel());
+		if(isWon) {
+			assertEquals(defenderTerritory.getOwner(), playerOne);
+		}else {
+			assertTrue(attackerTerritory.getOwner()!=defenderTerritory.getOwner());
+		}
 		
-		gameService.attack(territoryList.get(0), territoryList.get(1));
-		assertEquals(playerOne, territoryList.get(1).getOwner());
 	}
 
 	/**
