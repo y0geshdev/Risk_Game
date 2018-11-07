@@ -1,6 +1,5 @@
 package controller;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,7 +40,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.util.Pair;
 import service.GameService;
 
@@ -591,7 +589,7 @@ public class GameController {
 		 */
 		cardExchangeViewModel.setViewForCurrentPlayer(currentPlayer);
 		cardExchangeViewStage.showAndWait();
-		
+
 		while (cardExchangeViewModel.getCurrentPlayerCards(currentPlayer).size() >= 5) {
 			cardExchangeViewStage.showAndWait();
 		}
@@ -642,7 +640,7 @@ public class GameController {
 		cardExchangeViewStage.setTitle("Risk Game");
 		cardExchangeViewStage.setScene(new Scene(root));
 		//cardExchangeViewStage.showAndWait();
-
+		
 	}
 
 	/**

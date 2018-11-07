@@ -43,7 +43,7 @@ public class CardExchangeViewController implements Observer {
 	 */
 	@FXML
 	private Button handIn;
-
+	
 	@FXML
 	private Button close;
 
