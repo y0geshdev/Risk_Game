@@ -6,9 +6,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.Random;
+import java.util.Set;
 
 import controller.GameController;
 import controller.MapController;
+import domain.CardExchangeViewModel;
 import domain.Continent;
 import domain.PhaseViewModel;
 import domain.Player;
@@ -471,6 +473,38 @@ public class GameService {
 		}
 
 		return canAttackFurther;
+	}
+
+	/**
+	 * This method defines the condition to verify if startUpPhase has ended or not.
+	 * 
+	 * @return boolean: true if startUp phase is finished else false.
+	 */
+	public boolean endOfStartUpPhase(Set<Player> playersWithZeroArmies, List<Player> playersList) {
+		if (playersWithZeroArmies.size() == playersList.size()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * This method defines the condition to verify if the Reinforcement phase has
+	 * ended or not.
+	 * 
+	 * @param playerInFocus
+	 *            : Player who is doing the reinforcement currently.
+	 * @return boolean: true if reinforcement phase is finished for current player
+	 *         else false;
+	 */
+	public boolean endOfReinforcementPhase(Player playerInFocus, CardExchangeViewModel cardExchangeViewModel) {
+		if (playerInFocus.getArmyCount() == 0) {
+			cardExchangeViewModel.setCardAndOwnedTerritory(null);
+			return true;
+
+		} else {
+			return false;
+		}
 	}
 
 }

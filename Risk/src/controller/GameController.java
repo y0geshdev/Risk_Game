@@ -41,6 +41,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Pair;
 import service.GameService;
 
@@ -259,6 +260,8 @@ public class GameController {
 	 */
 	private CardExchangeViewModel cardExchangeViewModel = new CardExchangeViewModel();
 
+	private Stage cardExchangeViewStage = new Stage();
+
 	/**
 	 * This method forms the game map on UI, distributes territories randomly to the
 	 * players, select the player randomly to start the startup phase of the game.
@@ -395,8 +398,8 @@ public class GameController {
 							attackerTerritory.getArmyCount() - 1);
 				}
 				gameService.fortify(attackerTerritory, defenderTerritory, armiesToMove, new ArrayList());
-				updatePhaseInfo(null, "Attack Phase", "Moved " + armiesToMove + " armies from " + attackerTerritory.getName()
-						+ " to " + defenderTerritory.getName()+" after conquering it.");
+				updatePhaseInfo(null, "Attack Phase", "Moved " + armiesToMove + " armies from "
+						+ attackerTerritory.getName() + " to " + defenderTerritory.getName() + " after conquering it.");
 			}
 
 			updateTerritoryFields(attackerTerritory);
@@ -412,7 +415,7 @@ public class GameController {
 
 				// logic to automatically end the attack if current user can't attack anymore.
 				boolean furtherAttackPossible = gameService.canPlayerAttackFurther(currentPlayer);
-				
+
 				// If there are territories for current player from which he can attack
 				if (furtherAttackPossible) {
 					attackAttackerCB.setItems(FXCollections.observableList(currentPlayer.getTerritories()));
@@ -430,7 +433,7 @@ public class GameController {
 					}
 				}
 				// else finish attack automatically.
-				else{
+				else {
 					finishAttack(event);
 				}
 			}
@@ -585,10 +588,13 @@ public class GameController {
 		 * This is how the exchange view is being displayed every time after the
 		 * fortification phase is finished.
 		 */
-		setUpCardExchangeView();
+		cardExchangeViewModel.setViewForCurrentPlayer(currentPlayer);
+		cardExchangeViewStage.showAndWait();
+		;
 		while (cardExchangeViewModel.getCurrentPlayerCards(currentPlayer).size() >= 5) {
-			setUpCardExchangeView();
+			cardExchangeViewStage.showAndWait();
 		}
+		cardExchangeViewStage.hide();
 		setArmiesOnPlayerOwnedCardTerritory();
 		enableComponents(reinfoPhaseUI);
 		gameService.calcArmiesForReinforcement(currentPlayer);
@@ -630,10 +636,10 @@ public class GameController {
 			return;
 		}
 		cardExchangeViewModel.setViewForCurrentPlayer(currentPlayer);
-		Stage stage = new Stage();
-		stage.setTitle("Risk Game");
-		stage.setScene(new Scene(root));
-		stage.showAndWait();
+
+		cardExchangeViewStage.setTitle("Risk Game");
+		cardExchangeViewStage.setScene(new Scene(root));
+		cardExchangeViewStage.showAndWait();
 
 	}
 
@@ -642,9 +648,7 @@ public class GameController {
 	 */
 	private void startUpPhase() {
 		updatePhaseInfo(currentPlayer.getName(), "StartUp Phase", "Place armies for " + currentPlayer.getName());
-		if (endOfStartUpPhase()) {
-			String state = "Start Up Phase Completed";
-			showInformation(state);
+		if (gameService.endOfStartUpPhase(playersWithZeroArmies, playersList)) {
 			ifStartUpIsComepleted = true;
 			currentPlayer = gameService.getNextPlayer(null, playersList);
 			updatePhaseInfo(currentPlayer.getName(), "Reinforcement Phase", "Reinforcement Phase started.");
@@ -663,20 +667,20 @@ public class GameController {
 	 * This method begins the reinforcement phase.
 	 */
 	private void reinforcementPhase() {
-		if (endOfReinforcementPhase(currentPlayer)) {
-			
+		if (gameService.endOfReinforcementPhase(currentPlayer, cardExchangeViewModel)) {
+
 			disableComponents(reinfoPhaseUI);
 			// logic to automatically end the attack if current user can't attack anymore.
 			boolean furtherAttackPossible = gameService.canPlayerAttackFurther(currentPlayer);
-			
+
 			// If there are territories for current player from which he can attack
 			if (furtherAttackPossible) {
 				updatePhaseInfo(currentPlayer.getName(), "Attack Phase", "Attack Phase Started.");
-				
+
 				enableComponents(attackPhaseUI);
 				attackerTotalDiceTF.disableProperty().bind(Bindings.not(normalModeRB.selectedProperty()));
 				defenderTotalDiceTF.disableProperty().bind(Bindings.not(normalModeRB.selectedProperty()));
-				
+
 				attackAttackerCB.setItems(FXCollections.observableList(currentPlayer.getTerritories()));
 				attackAttackerCB.setValue(currentPlayer.getTerritories().get(0));
 
@@ -692,10 +696,10 @@ public class GameController {
 				}
 			}
 			// else finish attack automatically.
-			else{
+			else {
 				finishAttack(null);
 			}
-			
+
 		}
 		displayPlayerInfo();
 	}
@@ -824,38 +828,6 @@ public class GameController {
 				tf.setStyle("");
 		}
 
-	}
-
-	/**
-	 * This method defines the condition to verify if startUpPhase has ended or not.
-	 * 
-	 * @return boolean: true if startUp phase is finished else false.
-	 */
-	private boolean endOfStartUpPhase() {
-		if (playersWithZeroArmies.size() == playersList.size()) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	/**
-	 * This method defines the condition to verify if the Reinforcement phase has
-	 * ended or not.
-	 * 
-	 * @param playerInFocus
-	 *            : Player who is doing the reinforcement currently.
-	 * @return boolean: true if reinforcement phase is finished for current player
-	 *         else false;
-	 */
-	private boolean endOfReinforcementPhase(Player playerInFocus) {
-		if (playerInFocus.getArmyCount() == 0) {
-			cardExchangeViewModel.setCardAndOwnedTerritory(null);
-			return true;
-
-		} else {
-			return false;
-		}
 	}
 
 	/**

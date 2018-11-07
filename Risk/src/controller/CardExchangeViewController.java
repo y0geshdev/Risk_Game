@@ -15,12 +15,14 @@ import domain.Territory;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Window;
 
 public class CardExchangeViewController implements Observer {
 
@@ -41,6 +43,9 @@ public class CardExchangeViewController implements Observer {
 	 */
 	@FXML
 	private Button handIn;
+	
+	@FXML
+	private Button close;
 
 	/**
 	 * Variable for reference for GridPane in CardExchange.fxml.
@@ -116,6 +121,12 @@ public class CardExchangeViewController implements Observer {
 			showError(error);
 		}
 
+	}
+	
+	public void closeCardExchangeView(ActionEvent event) {
+		Node source	=	(Node) event.getSource();
+		Window stage	=	source.getScene().getWindow();
+		stage.hide();
 	}
 
 	public void addSelectedCard(ActionEvent event) {

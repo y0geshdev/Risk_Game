@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -228,11 +229,10 @@ public class GameServiceTest {
 		assertEquals(errorString, errorList.get(0));
 
 	}
-	
+
 	/**
-	 * This test checks if the
-	 * {@link GameService#attack(Territory, Territory)} method attack
-	 * given territory or not.
+	 * This test checks if the {@link GameService#attack(Territory, Territory)}
+	 * method attack given territory or not.
 	 */
 	@Test
 	public void testAttack() {
@@ -244,13 +244,14 @@ public class GameServiceTest {
 		defenderTerritory.setOwner(playerTwo);
 		attackerTerritory.setArmyCount(10);
 		defenderTerritory.setArmyCount(5);
-		Pair<Boolean, Integer> result = gameService.attack(attackerTerritory, defenderTerritory, true, 0, 0, new PhaseViewModel());
-		if(result.getKey()) {
+		Pair<Boolean, Integer> result = gameService.attack(attackerTerritory, defenderTerritory, true, 0, 0,
+				new PhaseViewModel());
+		if (result.getKey()) {
 			assertEquals(defenderTerritory.getOwner(), playerOne);
-		}else {
-			assertTrue(attackerTerritory.getOwner()!=defenderTerritory.getOwner());
+		} else {
+			assertTrue(attackerTerritory.getOwner() != defenderTerritory.getOwner());
 		}
-		
+
 	}
 
 	/**
@@ -272,24 +273,48 @@ public class GameServiceTest {
 		assertEquals(3, gameService.getFortifiableTerritories(territoryList.get(0)).size());
 	}
 
-	
+	/**
+	 * This test checks if the {@link GameService#getNextPlayer()} method returns
+	 * valid player whose turn it is as per round robin fashion for choosing player
+	 * turn
+	 */
 	@Test
 	public void testGetNextPlayer() {
-	
+
 		List<Player> playerList = new ArrayList<>();
 		int numberOfplayers = 5;
 		gameService.createPlayers(playerList, numberOfplayers);
-		
-		Player currPlayer	=	gameService.getNextPlayer(null, playerList);
-		
-		int currPlayerIndex	=	playerList.indexOf(currPlayer);
-		
-		Player nextPlayer	=	gameService.getNextPlayer(currPlayer, playerList);
-		
-		if(currPlayerIndex!=playerList.size()-1) {
-			assertEquals(playerList.get(currPlayerIndex+1), nextPlayer);
-		}else {
+
+		Player currPlayer = gameService.getNextPlayer(null, playerList);
+
+		int currPlayerIndex = playerList.indexOf(currPlayer);
+
+		Player nextPlayer = gameService.getNextPlayer(currPlayer, playerList);
+
+		if (currPlayerIndex != playerList.size() - 1) {
+			assertEquals(playerList.get(currPlayerIndex + 1), nextPlayer);
+		} else {
 			assertEquals(playerList.get(0), nextPlayer);
 		}
+	}
+	
+	/**
+	 * This test checks if the {@link GameService#endOfStartUpPhase()} method returns
+	 * valid boolean to check if the startUp phase is completed or not.
+	 */
+	@Test
+	public void testEndOfStartUpPhase() {
+		Set<Player> playersWithZeroArmies = new HashSet<>();
+		List<Player> playerList = new ArrayList<>();
+		int numberOfPlayers = 5;
+		gameService.createPlayers(playerList, numberOfPlayers);
+
+		assertTrue(!gameService.endOfStartUpPhase(playersWithZeroArmies, playerList));
+
+		for (int i = 0; i < playerList.size(); i++) {
+			playersWithZeroArmies.add(playerList.get(i));
+		}
+
+		assertTrue(gameService.endOfStartUpPhase(playersWithZeroArmies, playerList));
 	}
 }
