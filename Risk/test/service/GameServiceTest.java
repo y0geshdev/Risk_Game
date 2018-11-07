@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -318,14 +319,72 @@ public class GameServiceTest {
 		}
 	}
 	
-	@Test
-	public void testAddReinforcement() {}
+	/**
+	 * This test checks if the {@link GameService#addReinforcement()} method 
+	 * add correct number of reinforcement armies to current player's selected
+	 * territory
+	 */
 	
 	@Test
-	public void testCanPlayerAttackFurther() {}
+	public void testAddReinforcement() {
+
+		Player player = new Player();
+		player.setArmyCount(40);
+		Territory testTerritory = territoryList.get(0);
+		testTerritory.setOwner(player);
+
+		gameService.addReinforcement(testTerritory, 3);
+
+		int finalArmy = testTerritory.getArmyCount();
+
+		assertEquals(3, finalArmy);
+
+		gameService.addReinforcement(testTerritory, 3);
+
+		finalArmy = testTerritory.getArmyCount();
+		assertEquals(6, finalArmy);
+
+	}
+
+	/**
+	 * This test check if the method {@link GameService#canPlayerAttackFurther()}
+	 *  returns correct boolean based on if current player can attack further or not
+	 */
 	
 	@Test
-	public void testIfContinentOccupied() {}
+	public void testCanPlayerAttackFurther() {
+		
+		Player player	=	new Player();
+		player.setTerritories(Arrays.asList(territoryList.get(0),territoryList.get(2),territoryList.get(4)));
+		
+		territoryList.get(0).setOwner(player);
+		territoryList.get(0).setArmyCount(3);
+		
+		territoryList.get(2).setOwner(player);
+		territoryList.get(2).setArmyCount(3);
+		
+		territoryList.get(4).setOwner(player);
+		territoryList.get(0).setArmyCount(3);
+		
+		
+		assertTrue(gameService.canPlayerAttackFurther(player));
+		
+		
+	}
+	
+	/**
+	 * This test check if the method {@link GameService#ifContinentOccupied()}
+	 * returns correct boolean based on if current player occupies all the territories
+	 * of the continent and hence occupies the continent.
+	 */
+	@Test
+	public void testIfContinentOccupied() {
+		Player player	=	new Player();
+		player.setTerritories(Arrays.asList(territoryList.get(0),territoryList.get(1)));
+		
+		assertTrue(gameService.ifContinentOccupied(continentList.get(0).getTerritories(), player.getTerritories()));
+		
+	}
 	
 	/**
 	 * This test checks if the {@link GameService#endOfStartUpPhase()} method returns
