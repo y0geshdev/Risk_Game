@@ -220,7 +220,6 @@ public class MapService {
 			errormessage = "File not Found";
 			errorList.add(errormessage);
 			return;
-			// throw new Exception("File not Found");
 		}
 
 		Set<Territory> territoryObjectSet = new HashSet<>();
@@ -250,7 +249,6 @@ public class MapService {
 						fileContents = bufferedReaderObject.readLine();
 						do {
 							if (!fileContents.contains("=")) {
-								// throw new Exception("No Continent is present in the File");
 								errormessage = "No Continent is present in the File";
 								errorList.add(errormessage);
 								return;
@@ -278,7 +276,6 @@ public class MapService {
 							}
 
 							if (!fileContents.contains(",")) {
-								// throw new Exception("No Territory is present in the File");
 								errormessage = "No Territory is present in the File";
 								errorList.add(errormessage);
 								return;
@@ -330,11 +327,9 @@ public class MapService {
 				}
 			} catch (NumberFormatException e) {
 				errorList.add("Unable to parse string to number for continent control value.");
-				e.printStackTrace();
 				return;
 			} catch (IOException e) {
 				errorList.add("Problem reading provided file.");
-				e.printStackTrace();
 				return;
 			}
 
@@ -355,17 +350,10 @@ public class MapService {
 
 		} catch (FileNotFoundException e) {
 			errorList.add("Unable to find given file to parse.");
-			e.printStackTrace();
 			return;
 		}
 	}
-	public static void main(String[] args) {
-			ArrayList<String> errorList = new ArrayList<String>();
-			MapService mp = new MapService();
-			File file = new File("C:\\Users\\pc\\Desktop\\apprisk\\WrongFormatMapNoTerritory.map");
-			mp.parseFile(file, errorList);
-			System.out.println(errorList);
-	}
+	
 }
 
 
