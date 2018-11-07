@@ -202,7 +202,7 @@ public class Player {
 	 * @return an interger representing as how many troops are survived from
 	 *         attacking territory.
 	 */
-	private int attackerHelper(Territory attackerTerritory, Territory defenderTerritory,
+	public int attackerHelper(Territory attackerTerritory, Territory defenderTerritory,
 			List<Integer> attackerDiceRolls, List<Integer> defenderDiceRolls, PhaseViewModel phaseViewModel) {
 		int remainingAttackingTroops = attackerDiceRolls.size();
 		Collections.sort(attackerDiceRolls, Collections.reverseOrder());
@@ -240,7 +240,7 @@ public class Player {
 	 *            true if this call is from attacker front else false.
 	 * @return a List<Integer> representing dice outcomes.
 	 */
-	private List<Integer> recordDiceRolls(int armySize, boolean isAttacker) {
+	public List<Integer> recordDiceRolls(int armySize, boolean isAttacker) {
 		Random random = new Random();
 		List<Integer> list = new ArrayList();
 		int noOfDices;

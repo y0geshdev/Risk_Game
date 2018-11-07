@@ -7,7 +7,11 @@ import domain.PhaseViewModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-
+/**
+ * This is a controller class for Phase View.
+ * @author Yogesh
+ *
+ */
 public class PhaseViewController implements Observer {
 
 	@FXML

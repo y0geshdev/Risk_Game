@@ -9,6 +9,7 @@ import java.util.Queue;
 import java.util.Random;
 
 import controller.MapController;
+import javafx.stage.Stage;
 
 public class CardExchangeViewModel extends Observable {
 
@@ -22,6 +23,7 @@ public class CardExchangeViewModel extends Observable {
 	public static final String CAVALRY_ARMY = "Cavalry";
 	public static final String ARTILLERY_ARMY = "Artillery";
 	private Territory cardAndOwnedTerritory;
+	
 	/**	
 	 * default constructor for CardExchangeViewModel.
 	 */

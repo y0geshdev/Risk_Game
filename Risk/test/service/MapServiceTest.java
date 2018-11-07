@@ -1,6 +1,5 @@
 package service;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -14,7 +13,6 @@ import org.junit.Test;
 
 import controller.MapController;
 import domain.Continent;
-import domain.Player;
 import domain.Territory;
 
 /**

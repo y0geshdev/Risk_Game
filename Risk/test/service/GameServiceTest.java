@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -111,18 +112,26 @@ public class GameServiceTest {
 	/**
 	 * This method is use to test the functionality of
 	 * {@link GameService#calcArmiesForReinforcement(Player)} method that whether it
-	 * calculate armies for a given player as per game rules or not.
+	 * calculate armies for a given player as per game rules or not when player occupy whole continent..
 	 */
 	@Test
-	public void testCalcArmiesForReinforcement() {
+	public void testCalcArmiesForReinforcementOne() {
 
-		// case where player occupy whole continent.
 		Player playerOne = new Player();
 		Collections.addAll(playerOne.getTerritories(), territoryList.get(0), territoryList.get(1));
 		gameService.calcArmiesForReinforcement(playerOne);
 		assertEquals(8, playerOne.getArmyCount());
 
-		// case where player doesn't occupy whole continent.
+	}
+	
+	/**
+	 * This method is use to test the functionality of
+	 * {@link GameService#calcArmiesForReinforcement(Player)} method that whether it
+	 * calculate armies for a given player as per game rules or not when player doesn't occupy whole continent.
+	 */
+	@Test
+	public void testCalcArmiesForReinforcementTwo() {
+
 		Player p2 = new Player();
 		Collections.addAll(p2.getTerritories(), territoryList.get(0));
 		gameService.calcArmiesForReinforcement(p2);
@@ -209,19 +218,31 @@ public class GameServiceTest {
 	/**
 	 * This test checks if the
 	 * {@link GameService#fortify(Territory, Territory, int, List)} method fortify
-	 * given territory according to game logic and after proper validation or not.
+	 * given territory according to game logic and after proper validation or not when armies to move is greater than from territory army count.
 	 */
 	@Test
-	public void testFortify() {
+	public void testFortifyOne() {
 		territoryList.get(0).setArmyCount(10);
 		String errorString;
 		List<String> errorList = new ArrayList<>();
 
-		// test case where armies to move is greater than from territory army count.
 		gameService.fortify(territoryList.get(0), territoryList.get(1), 11, errorList);
-		assertEquals(1, errorList.size());
-
-		// test where from territory try to move armies to itself.
+		errorString = "Can only move upto 9 armies.";
+		assertEquals(errorString, errorList.get(0));
+		
+	}
+	
+	/**
+	 * This test checks if the
+	 * {@link GameService#fortify(Territory, Territory, int, List)} method fortify
+	 * given territory according to game logic and after proper validation or not when from territory try to move armies to itself.
+	 */
+	@Test
+	public void testFortifyTwo() {
+		territoryList.get(0).setArmyCount(10);
+		String errorString;
+		List<String> errorList = new ArrayList<>();
+		
 		errorString = "Can't move from same territory to same territory.";
 		errorList = new ArrayList<>();
 		gameService.fortify(territoryList.get(0), territoryList.get(0), 5, errorList);
@@ -291,5 +312,34 @@ public class GameServiceTest {
 		}else {
 			assertEquals(playerList.get(0), nextPlayer);
 		}
+	}
+	
+	@Test
+	public void testAddReinforcement() {}
+	
+	@Test
+	public void testCanPlayerAttackFurther() {}
+	
+	@Test
+	public void testIfContinentOccupied() {}
+	
+	/**
+	 * This test checks if the {@link GameService#endOfStartUpPhase()} method returns
+	 * valid boolean to check if the startUp phase is completed or not.
+	 */
+	@Test
+	public void testEndOfStartUpPhase() {
+		Set<Player> playersWithZeroArmies = new HashSet<>();
+		List<Player> playerList = new ArrayList<>();
+		int numberOfPlayers = 5;
+		gameService.createPlayers(playerList, numberOfPlayers);
+
+		assertTrue(!gameService.endOfStartUpPhase(playersWithZeroArmies, playerList));
+
+		for (int i = 0; i < playerList.size(); i++) {
+			playersWithZeroArmies.add(playerList.get(i));
+		}
+
+		assertTrue(gameService.endOfStartUpPhase(playersWithZeroArmies, playerList));
 	}
 }
