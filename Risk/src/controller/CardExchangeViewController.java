@@ -139,6 +139,7 @@ public class CardExchangeViewController implements Observer {
 	 */
 	public void addSelectedCard(ActionEvent event) {
 		Card selectedCard = playerCardsList.getSelectionModel().getSelectedItem();
+		// Base case.
 		if (selectedCard == null) {
 			showError("Please select Card To Add");
 			return;
@@ -157,6 +158,7 @@ public class CardExchangeViewController implements Observer {
 	 */
 	public void removeSelectedCard(ActionEvent event) {
 		Card selectedCard = selectedCardsList.getSelectionModel().getSelectedItem();
+		// Base case
 		if (selectedCard == null) {
 			showError("Please select Card To Remove");
 			return;
@@ -177,7 +179,7 @@ public class CardExchangeViewController implements Observer {
 		Queue<Card> removedCards = new LinkedList<>();
 		Iterator<Card> ite = model.getCurrentPlayerCards(currentPlayer).iterator();
 		List<Card> inputCard = selectedCardsList.getItems();
-
+//Iterate over the cards that player is having
 		while (ite.hasNext()) {
 			Card playerCard = ite.next();
 			if (inputCard.contains(playerCard)) {
@@ -205,7 +207,7 @@ public class CardExchangeViewController implements Observer {
 		int cardType1 = 0;
 		int cardType2 = 0;
 		int cardType3 = 0;
-
+// gets the cards from the list of the cards and increment the count when a card of specific type is encountered.
 		for (int i = 0; i < selectedCardsList.getItems().size(); i++) {
 			Card card = selectedCardsList.getItems().get(i);
 			if (card.getCardType().equalsIgnoreCase(CardExchangeViewModel.INFANTRY_ARMY)) {
