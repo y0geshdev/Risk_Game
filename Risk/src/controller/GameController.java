@@ -360,23 +360,15 @@ public class GameController {
 			boolean isAllOutMode = (RadioButton) (attackMode.getSelectedToggle()) == allOutModeRB;
 			int totalAttackerDice = 0, totalDefenderDice = 0;
 			if (!isAllOutMode) {
-				try {
-					totalAttackerDice = Integer.parseInt(attackerTotalDiceTF.getText());
-					totalDefenderDice = Integer.parseInt(defenderTotalDiceTF.getText());
-				} catch (NumberFormatException e) {
-					showError("Enter valid number of dice for attacker and defender.");
-					return;
-				}
-				if (totalAttackerDice > 3 || totalAttackerDice < 1
-						|| totalAttackerDice > attackerTerritory.getArmyCount() - 1) {
-					showError("Selected attacker can roll min 1 and max "
-							+ (3 > attackerTerritory.getArmyCount() - 1 ? attackerTerritory.getArmyCount() - 1 : 3));
-					return;
-				}
-				if (totalDefenderDice > 2 || totalDefenderDice < 1
-						|| totalDefenderDice > defenderTerritory.getArmyCount()) {
-					showError("Selected defender can roll min 1 and max "
-							+ (2 > defenderTerritory.getArmyCount() ? defenderTerritory.getArmyCount() : 2));
+				List<String> errorList = new ArrayList<>();
+				gameService.validateSelectedDiceNumber(attackerTerritory, defenderTerritory,
+						attackerTotalDiceTF.getText(), defenderTotalDiceTF.getText(), errorList);
+				if (errorList.size() > 0) {
+					String errors = "Issue with entered dice numbers:";
+					for (String error : errorList) {
+						errors = errors.concat("\n" + error);
+					}
+					showError(errors);
 					return;
 				}
 			}
@@ -396,7 +388,7 @@ public class GameController {
 					armiesToMove = getNumberOfArmiesToMove(attackResult.getValue(),
 							attackerTerritory.getArmyCount() - 1);
 				}
-				gameService.fortify(attackerTerritory, defenderTerritory, armiesToMove, new ArrayList());
+				gameService.fortify(attackerTerritory, defenderTerritory, armiesToMove, new ArrayList<String>());
 				updatePhaseInfo(null, "Attack Phase", "Moved " + armiesToMove + " armies from "
 						+ attackerTerritory.getName() + " to " + defenderTerritory.getName() + " after conquering it.");
 			}
@@ -407,7 +399,7 @@ public class GameController {
 			if (!cardExchangeViewModel.getIfPlayerGetsCard() && ifWon)
 				cardExchangeViewModel.setIfPlayerGetsCard(ifWon);
 
-			if (currentPlayer.getTerritories().size() == MapController.territoriesSet.size()) {
+			if (gameService.isGameEnded(currentPlayer, territoriesSet.size())) {
 				showInformation("Player " + currentPlayer.getName() + " won the game.");
 				Platform.exit();
 			} else {
@@ -639,7 +631,6 @@ public class GameController {
 		cardExchangeViewStage = new Stage();
 		cardExchangeViewStage.setTitle("Risk Game");
 		cardExchangeViewStage.setScene(new Scene(root));
-		//cardExchangeViewStage.showAndWait();
 		
 	}
 
@@ -708,7 +699,7 @@ public class GameController {
 	 * This method display map in grid form on UI.
 	 */
 	private void displayMap() {
-		Iterator<Continent> ite = MapController.continentsSet.iterator();
+		Iterator<Continent> ite = continentsSet.iterator();
 		int colCounter = 0;
 		ColumnConstraints widthCol = new ColumnConstraints();
 		widthCol.setHgrow(Priority.ALWAYS);

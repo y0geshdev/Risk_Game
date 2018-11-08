@@ -10,6 +10,6 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses({ GameControllerTest.class, MapControllerTest.class })
-public class ControllerSuite {
+public class ControllerTestSuite {
 
 }

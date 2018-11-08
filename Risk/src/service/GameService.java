@@ -254,9 +254,6 @@ public class GameService {
 
 	}
 
-	
-
-
 	/**
 	 * This method is used to do fortification in which armies are moved from one
 	 * territory to another territory.
@@ -428,6 +425,59 @@ public class GameService {
 
 		} else {
 			return false;
+		}
+	}
+
+	/**
+	 * This method checks if game is won by passed player or not as if player occupy
+	 * all the territories then game is won by him.
+	 * 
+	 * @param player:
+	 *            Player instance for which check is done.
+	 * @param totalTerritoriesInMap:
+	 *            Total number of territories.
+	 * @return true if player own all the territories of map else false.
+	 */
+	public boolean isGameEnded(Player player, int totalTerritoriesInMap) {
+		boolean isGameEnded = false;
+		if (player.getTerritories().size() == totalTerritoriesInMap)
+			isGameEnded = true;
+		return isGameEnded;
+	}
+
+	/**
+	 * This method is used to validate the number of dices user have entered for
+	 * attacker and defender in normal mode.
+	 * 
+	 * @param attackerTerritory:
+	 *            Attacking territory instance.
+	 * @param defenderTerritory:
+	 *            defender territory instance.
+	 * @param attackerTotalDice:
+	 *            Number of dice attacker will roll.
+	 * @param defenderTotalDice:
+	 *            Number of dice defender will roll.
+	 * @param errorList:
+	 *            List to hold validation errors.
+	 */
+	public void validateSelectedDiceNumber(Territory attackerTerritory, Territory defenderTerritory,
+			String attackerTotalDice, String defenderTotalDice, List<String> errorList) {
+		int totalAttackerDice, totalDefenderDice;
+		try {
+			totalAttackerDice = Integer.parseInt(attackerTotalDice);
+			totalDefenderDice = Integer.parseInt(defenderTotalDice);
+		} catch (NumberFormatException e) {
+			errorList.add("Enter valid number of dice for attacker and defender.");
+			return;
+		}
+		if (totalAttackerDice > 3 || totalAttackerDice < 1
+				|| totalAttackerDice > attackerTerritory.getArmyCount() - 1) {
+			errorList.add("Selected attacker can roll min 1 and max "
+					+ (3 > attackerTerritory.getArmyCount() - 1 ? attackerTerritory.getArmyCount() - 1 : 3));
+		}
+		if (totalDefenderDice > 2 || totalDefenderDice < 1 || totalDefenderDice > defenderTerritory.getArmyCount()) {
+			errorList.add("Selected defender can roll min 1 and max "
+					+ (2 > defenderTerritory.getArmyCount() ? defenderTerritory.getArmyCount() : 2));
 		}
 	}
 

@@ -10,6 +10,6 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses({ GameServiceTest.class, MapServiceTest.class })
-public class ServiceSuite {
+public class ServiceTestSuite {
 
 }

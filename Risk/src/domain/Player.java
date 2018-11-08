@@ -199,7 +199,7 @@ public class Player {
 	 * @param phaseViewModel:
 	 *            Instance of {@link PhaseViewModel} class to update information for
 	 *            phaseView during attack.
-	 * @return an interger representing as how many troops are survived from
+	 * @return an integer representing as how many troops are survived from
 	 *         attacking territory.
 	 */
 	public int attackerHelper(Territory attackerTerritory, Territory defenderTerritory,
