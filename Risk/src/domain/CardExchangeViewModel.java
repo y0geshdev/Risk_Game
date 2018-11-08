@@ -6,24 +6,61 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Queue;
-import java.util.Random;
 
 import controller.MapController;
 
 public class CardExchangeViewModel extends Observable {
-// CardExchangeViewModel has the following attributes
-	// Player and card objects.
+
+	/**
+	 * Represents the current player object.
+	 */
 	Player currentPlayer;
+
+	/**
+	 * Represents the card object.
+	 */
 	Card card;
+
+	/**
+	 * Represents the mapping of the player and the cards he owned.
+	 */
 	Map<Player, Queue<Card>> playerToCardMapping;
+
+	/**
+	 * Represents the total number of cards.
+	 */
 	Queue<Card> allCards;
-	// An integer to co count total number of exchanges done.
+
+	/**
+	 * Represents the total Number of exchanges done in the game.
+	 */
 	int totalNumberOfExchanges;
+
+	/**
+	 * Represents if the player is entitled to get a card or not after the attack
+	 * phase.
+	 */
 	boolean ifPlayerGetsCard;
-	// types of armies have been initialized.
+
+	/**
+	 * Represents the Infantry String constant
+	 */
 	public static final String INFANTRY_ARMY = "Infantry";
+
+	/**
+	 * Represents the Cavalry String constant
+	 */
 	public static final String CAVALRY_ARMY = "Cavalry";
+
+	/**
+	 * Represents the Artillery String constant
+	 */
 	public static final String ARTILLERY_ARMY = "Artillery";
+
+	/**
+	 * Represents the common territory object of the territory owned by the player
+	 * and card exchanged by the player.
+	 */
 	private Territory cardAndOwnedTerritory;
 
 	/**
@@ -35,6 +72,7 @@ public class CardExchangeViewModel extends Observable {
 		totalNumberOfExchanges = 0;
 		allCards = new LinkedList<>();
 		cardAndOwnedTerritory = null;
+		// this initialize the total number of cards to be used in game.
 		setCards();
 	}
 
@@ -68,10 +106,13 @@ public class CardExchangeViewModel extends Observable {
 	/**
 	 * This method sets and update the view for the given player.
 	 * 
-	 * @param currentPlayer : player for whom the view is to be set.
+	 * @param currentPlayer
+	 *            : player for whom the view is to be set.
 	 */
 	public void setViewForCurrentPlayer(Player currentPlayer) {
 		this.currentPlayer = currentPlayer;
+		
+		//notify Observer
 		setChanged();
 		notifyObservers(this);
 	}
@@ -79,7 +120,8 @@ public class CardExchangeViewModel extends Observable {
 	/**
 	 * This method sets the initials deck of cards.
 	 * 
-	 * @param allCards : card objects having territory and card type values.
+	 * @param allCards
+	 *            : card objects having territory and card type values.
 	 */
 	public void setAllCards(Queue<Card> allCards) {
 		this.allCards = allCards;
@@ -97,7 +139,8 @@ public class CardExchangeViewModel extends Observable {
 	/**
 	 * This method returns the cards owned by the given player.
 	 * 
-	 * @param currentPlayer : player for whose owned cards are required.
+	 * @param currentPlayer
+	 *            : player for whose owned cards are required.
 	 * @return
 	 */
 	public Queue<Card> getCurrentPlayerCards(Player currentPlayer) {
@@ -112,8 +155,10 @@ public class CardExchangeViewModel extends Observable {
 	/**
 	 * This method sets the cards for the player.
 	 * 
-	 * @param currentPlayer      : player for whom cards are set.
-	 * @param currentPlayerCards : player owned cards queue
+	 * @param currentPlayer
+	 *            : player for whom cards are set.
+	 * @param currentPlayerCards
+	 *            : player owned cards queue
 	 */
 	public void setCurrentPlayerCards(Player currentPlayer, Queue<Card> currentPlayerCards) {
 		playerToCardMapping.put(currentPlayer, currentPlayerCards);
@@ -142,14 +187,16 @@ public class CardExchangeViewModel extends Observable {
 	/**
 	 * This method sets the army of the player who has exchanged the cards
 	 * 
-	 * @param currentPlayer                  : player whose army is being set.
-	 * @param cardOfPlayerTerritoryExchanged : number is 2 if the any of the
-	 *                                       exchanged card was of the territory
-	 *                                       owned by the player else 0
+	 * @param currentPlayer
+	 *            : player whose army is being set.
+	 * @param cardOfPlayerTerritoryExchanged
+	 *            : number is 2 if the any of the exchanged card was of the
+	 *            territory owned by the player else 0
 	 */
 	public void setPlayerArmyCount(Player currentPlayer, int cardOfPlayerTerritoryExchanged,
 			Territory cardAndOwnedTerritory) {
-		// gets the army count for the player
+		// gets the army count for the player based on the total number of exchanges
+		// that has happened in the game.
 		int armyCount = getArmyCount();
 		armyCount += cardOfPlayerTerritoryExchanged;
 		if (totalNumberOfExchanges <= 6) {
@@ -175,7 +222,7 @@ public class CardExchangeViewModel extends Observable {
 
 	/**
 	 * This method sets the card and territory owned which is associated with the
-	 * card by taking into consideration a territoty object.
+	 * card by taking into consideration a territory object.
 	 * 
 	 * @param cardAndOwnedTerritory
 	 */
@@ -228,8 +275,8 @@ public class CardExchangeViewModel extends Observable {
 	 * the card and false if not. Player is eligible if he has won at lease one
 	 * territory during the attack phase.
 	 * 
-	 * @param ifPossible : value to be set for the player's eligibility for winning
-	 *                   a card
+	 * @param ifPossible
+	 *            : value to be set for the player's eligibility for winning a card
 	 */
 	public void setIfPlayerGetsCard(boolean ifPossible) {
 		ifPlayerGetsCard = ifPossible;
@@ -244,13 +291,18 @@ public class CardExchangeViewModel extends Observable {
 		Queue<Card> allCards = new LinkedList<>();
 
 		Iterator<Territory> ite = MapController.territoriesSet.iterator();
+		int index = 0;
 		while (ite.hasNext()) {
 			Territory cardTerritory = ite.next();
-			int randIndx = randomIndex(0, 2);
-			String cardType = cardtype[randIndx];
+			if (index == 3) {
+				index = 0;
+			}
+			String cardType = cardtype[index];
 			Card card = new Card(cardType, cardTerritory);
 			allCards.add(card);
+			index++;
 		}
+		// Set the initial deck of cards.
 		setAllCards(allCards);
 	}
 
@@ -269,22 +321,8 @@ public class CardExchangeViewModel extends Observable {
 		} else {
 			playerCards.add(topCard);
 		}
+		// sets the card for the current player.
 		setCurrentPlayerCards(attacker, playerCards);
-	}
-
-	/**
-	 * This method is used to get a random number which will be between 0 and size
-	 * of list of territories.
-	 * 
-	 * @param min : lower range of the random number generated
-	 * @param max : upper range of the random number generated.
-	 * 
-	 * @return : returns the random number generated between the range.
-	 * 
-	 */
-	private int randomIndex(int min, int max) {
-		Random randIndex = new Random();
-		return randIndex.nextInt((max - min) + 1) + min;
 	}
 
 }

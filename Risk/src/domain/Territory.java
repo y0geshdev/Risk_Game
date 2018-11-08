@@ -146,7 +146,10 @@ public class Territory {
 	public void setArmyCount(int numberOfArmies) {
 		this.armyCount = numberOfArmies;
 	}
-
+	
+	/**
+	 * Overridden toString() method.
+	 */
 	@Override
 	public String toString() {
 		return this.name;

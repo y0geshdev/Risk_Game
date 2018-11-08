@@ -282,7 +282,8 @@ public class GameController {
 		disableComponents(fortiPhaseUI);
 		disableComponents(reinfoPhaseUI);
 
-		while (getPlayersCount() == -1);
+		while (getPlayersCount() == -1)
+			;
 		playersList = new ArrayList<>(playersCount);
 		gameService.createPlayers(playersList, playersCount);
 		gameService.assignTerritories(playersList);
@@ -375,11 +376,12 @@ public class GameController {
 			// if its normal attack mode.
 			if (!isAllOutMode) {
 				List<String> errorList = new ArrayList<>();
-				
-				// validate number of dice entered by user for attacker and defender for normal mode.
+
+				// validate number of dice entered by user for attacker and defender for normal
+				// mode.
 				gameService.validateSelectedDiceNumber(attackerTerritory, defenderTerritory,
 						attackerTotalDiceTF.getText(), defenderTotalDiceTF.getText(), errorList);
-				
+
 				// show if there are any validation errors.
 				if (errorList.size() > 0) {
 					String errors = "Issue with entered dice numbers:";
@@ -502,9 +504,16 @@ public class GameController {
 	public void finishAttack(ActionEvent event) {
 
 		// to check if current player is entitled to draw a card from a deck or not.
-		if (cardExchangeViewModel.getIfPlayerGetsCard())
-			cardExchangeViewModel.assignCardToAPlayer(currentPlayer);
-		cardExchangeViewModel.setIfPlayerGetsCard(false);
+
+		if (cardExchangeViewModel.getIfPlayerGetsCard()) {
+			if (cardExchangeViewModel.getAllCards().size() != 0) {
+				cardExchangeViewModel.assignCardToAPlayer(currentPlayer);
+			} else {
+				String info = "Player Won't be able to get a card as inital deck doesn't have enough cards";
+				showInformation(info);
+			}
+			cardExchangeViewModel.setIfPlayerGetsCard(false);
+		}
 
 		// update UI
 		updatePhaseInfo(null, "Fortification Phase", "Fortification Phase started.");
@@ -680,7 +689,7 @@ public class GameController {
 			e.printStackTrace();
 			return;
 		}
-		
+
 		// setup stage
 		cardExchangeViewModel.setViewForCurrentPlayer(currentPlayer);
 		cardExchangeViewStage = new Stage();
@@ -694,7 +703,7 @@ public class GameController {
 	 */
 	private void startUpPhase() {
 		updatePhaseInfo(currentPlayer.getName(), "StartUp Phase", "Place armies for " + currentPlayer.getName());
-		
+
 		// if startUp phase is ended then prepare for reinforcement phase.
 		if (gameService.endOfStartUpPhase(playersWithZeroArmies, playersList)) {
 			ifStartUpIsComepleted = true;
@@ -761,30 +770,30 @@ public class GameController {
 		int colCounter = 0;
 		ColumnConstraints widthCol = new ColumnConstraints();
 		widthCol.setHgrow(Priority.ALWAYS);
-		
+
 		// iterate over continents of map
 		while (ite.hasNext()) {
 			mapGrid.getColumnConstraints().add(widthCol);
-		
+
 			Continent obj = ite.next();
 			String nameofTheContinent = obj.getName();
 			List<Territory> territoryList = obj.getTerritories();
 			Integer controlValue = obj.getContinentArmyValue();
-			
+
 			// setup UI for current continent
 			Label continentName = new Label(nameofTheContinent);
 			Label controlValueLabel = new Label(GameController.CONTROL_VALUE_WITH_SEMICOLON + controlValue.toString());
 			GridPane.setConstraints(continentName, colCounter, 1);
 			GridPane.setConstraints(controlValueLabel, colCounter, 2);
-			
+
 			mapGrid.getChildren().addAll(continentName, controlValueLabel);
 			if (maxNumberOfTerritores < territoryList.size()) {
 				maxNumberOfTerritores = territoryList.size();
 			}
-			
+
 			// iterate over selected continents territories
 			for (int i = 0; i < territoryList.size(); i++) {
-				
+
 				// setup UI for current territory.
 				Territory territoryObj = territoryList.get(i);
 				TextField territoryField = new TextField();
@@ -876,7 +885,8 @@ public class GameController {
 
 		List<Territory> neighbouringCountries = territoryObj.getNeighbourTerritories();
 
-		// iterate over selected territoryObj's neighbor territory to highlight their connectivity.
+		// iterate over selected territoryObj's neighbor territory to highlight their
+		// connectivity.
 		for (int i = 0; i < neighbouringCountries.size(); i++) {
 			Territory terr = neighbouringCountries.get(i);
 			TextField tf = territoriesToTFMapping.get(terr.getName());
@@ -987,7 +997,7 @@ public class GameController {
 	 */
 	private int getNumberOfArmiesToMove(int minArmy, int maxArmy) {
 		int armiesToMove = -1;
-		
+
 		// prepare dialog box
 		TextInputDialog dialog = new TextInputDialog(String.valueOf(minArmy));
 		dialog.setTitle("Risk Game Dialog");
@@ -1048,7 +1058,7 @@ public class GameController {
 		Pane phaseViewPane = null;
 		PhaseViewController phaseViewController = null;
 		try {
-			
+
 			// load fxml and add its controller to corresponding model.
 			loader = new FXMLLoader(getClass().getResource("/ui/PhaseView.fxml"));
 			phaseViewPane = loader.load();
@@ -1059,7 +1069,7 @@ public class GameController {
 			e.printStackTrace();
 			return;
 		}
-		
+
 		// setup view
 		phaseViewUI.getChildren().add(phaseViewPane);
 		phaseViewPane.prefHeightProperty().bind(phaseViewUI.heightProperty());

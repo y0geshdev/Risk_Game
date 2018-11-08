@@ -1,8 +1,15 @@
 package domain;
 
 public class Card {
-
+	
+	/**
+	 * Represents the type of card.
+	 */
 	String cardType;
+	
+	/**
+	 * Represents the territory of the card. 
+	 */
 	Territory cardTerritory;
 
 	/**
@@ -55,10 +62,13 @@ public class Card {
 	public void setCardTerritory(Territory cardTerritory) {
 		this.cardTerritory = cardTerritory;
 	}
-
+	
+	/**
+	 * Overridden toString() method.
+	 */
 	@Override
 	public String toString() {
-		// TODO Auto-generated method stub
+		// returns the type and territory name of the card.
 		return cardType+" "+cardTerritory.getName();
 	}
 }

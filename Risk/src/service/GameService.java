@@ -122,6 +122,7 @@ public class GameService {
 	 */
 	public void createPlayers(List<Player> playerList, int totalNumberOfPlayers) {
 		int armyCount = getArmyCount(totalNumberOfPlayers);
+		//iterate till the total Number of players and create  that many player objects.
 		for (int i = 0; i < totalNumberOfPlayers; i++) {
 			Player playerObj = new Player();
 			playerObj.setName("Player " + (i + 1));
@@ -146,7 +147,7 @@ public class GameService {
 		int diceNumber;
 		Player nextPlayer = null;
 		Integer maxNumber = Integer.MIN_VALUE;
-
+		// At the start of the game prevPlayer will be null and player who gets the maximum number on dice roll will have the first turn 
 		if (prevPlayer == null) {
 			for (int i = 0; i < playerList.size(); i++) {
 				diceNumber = randomIndex(1, 6);
@@ -160,6 +161,7 @@ public class GameService {
 
 		} else {
 			int indexOfPreviousPlayer = playerList.indexOf(prevPlayer);
+			//if it's last player of the list the next player will be the first one in the list
 			if (indexOfPreviousPlayer == playerList.size() - 1) {
 				nextPlayer = playerList.get(0);
 				return nextPlayer;
@@ -189,6 +191,7 @@ public class GameService {
 		int numberOfArmiesInput;
 		try {
 			numberOfArmiesInput = Integer.parseInt(inputText);
+			//army input cannot be greater than the total army the player has.
 			if (numberOfArmiesInput > playerInFocus.getArmyCount()) {
 				error = "Number of armies cannot be more than what owner owns";
 				errorList.add(error);
