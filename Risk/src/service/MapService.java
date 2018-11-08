@@ -56,17 +56,16 @@ public class MapService {
 
 		Iterator<Continent> iteContinent = continentsSet.iterator();
 		Iterator<Territory> iteTerritory = territoriesSet.iterator();
-		//providing error message in case if no continent or territory present in map in application memory
+		// providing error message in case if no continent or territory present in map
+		// in application memory
 		if (continentsSet.size() < 1 || territoriesSet.size() < 1) {
 			errorMessage = "No Continent or Territory Exist";
 			errorList.add(errorMessage);
 			return;
 		}
-		/*
-		 * logic for validating if territory is present in a continent and if a territory 
-		 * is present in more than one continent
-		 */
-		
+
+		// logic for validating if territory is present in a continent and if a
+		// territory is present in more than one continent
 		while (iteContinent.hasNext()) {
 			Continent continent = iteContinent.next();
 			if (continent.getTerritories().size() < 1) {
@@ -86,7 +85,7 @@ public class MapService {
 			}
 
 		}
-		//logic for validating neighborhood territories
+		// logic for validating neighborhood territories
 		boolean ifNeighbourPresent = true;
 		while (iteTerritory.hasNext()) {
 			Territory territory = iteTerritory.next();
@@ -96,7 +95,7 @@ public class MapService {
 				ifNeighbourPresent = false;
 			}
 		}
-		
+
 		if (!ifNeighbourPresent) {
 			errorMessage = "The graph you entered is unconnected";
 			errorList.add(errorMessage);
@@ -112,7 +111,7 @@ public class MapService {
 
 		}
 		iteContinent = continentsSet.iterator();
-		//logic shows territories not connected
+		// logic shows territories not connected
 		while (iteContinent.hasNext()) {
 			testingQueue = new HashSet<>();
 			Continent contObject = iteContinent.next();
@@ -173,6 +172,7 @@ public class MapService {
 		try {
 			PrintWriter writer = new PrintWriter(file);
 
+			// writing static content to map file.
 			writer.println("[Map]");
 			writer.println("image=default.bmp");
 			writer.println("wrap=default");
@@ -181,9 +181,10 @@ public class MapService {
 			writer.println("warn=default\n");
 			writer.println("[Continents]");
 
+			// traversing over continents and territories to write them to file.
 			for (Continent continent : continentsSet)
 				writer.println(continent + "=" + continent.getContinentArmyValue());
-			//adding 0,0 as map files in fileparser reads map file in a certain format,
+
 			writer.println("\n[Territories]");
 			for (Territory parentTerritory : territoriesSet) {
 				writer.print(parentTerritory + ",0,0," + parentTerritory.getContinent());
@@ -239,26 +240,25 @@ public class MapService {
 		HashMap<String, Continent> ifContinentObject = null;
 		ArrayList<Territory> territoryInAContinentList;
 
-		Map<String, Set> continentAndTerritorySetObjectMap = new HashMap<>();
 		BufferedReader bufferedReaderObject;
 		try {
 
 			bufferedReaderObject = new BufferedReader(new FileReader(file));
 
 			String fileContents;
-			/*
-			 * This is how we are reading the continent and territories and their
-			 * relation from the map. As, map files have a certain format so this code
-			 * deducts needed entities and relationship among them according to the format
-			 */
+
+			// This is how we are reading the continent and territories and their
+			// relation from the map. As, map files have a certain format so this code
+			// deducts needed entities and relationship among them according to the format
 			try {
 				while ((fileContents = bufferedReaderObject.readLine()) != null) {
 
 					if (fileContents.equals(MapService.CONTINENT_KEY)) {
 						ifContinentObject = new HashMap<>();
 						fileContents = bufferedReaderObject.readLine();
-						//used do-while as there is blank space between continents and territories in files
-						
+
+						// used do-while as there is blank space between continents and territories in
+						// files
 						do {
 							if (!fileContents.contains("=")) {
 								errormessage = "No Continent is present in the File";
@@ -275,7 +275,8 @@ public class MapService {
 
 						} while (!fileContents.isEmpty());
 					}
-					//logic makes territory set and continent-territory relation
+
+					// logic makes territory set and continent-territory relation
 					if (fileContents.equals(MapService.TERRITORY_KEY)) {
 						fileContents = bufferedReaderObject.readLine();
 						continentToTerritoryMap = new HashMap<>();
@@ -296,7 +297,8 @@ public class MapService {
 
 							String territoryName = lineContent[0];
 							String continentName;
-							//lineContent[1] and lineContent[2] are random integers
+
+							// lineContent[1] and lineContent[2] are random integers
 							if (lineContent.length > 3) {
 								continentName = lineContent[3];
 								neighbouringTerritories = new ArrayList<>();
@@ -354,7 +356,6 @@ public class MapService {
 				continentToSetTerritories.setTerritories(abc);
 			}
 
-			
 			MapController.continentsSet = (HashSet<Continent>) continentObjectSet;
 			MapController.territoriesSet = (HashSet<Territory>) territoryObjectSet;
 
@@ -363,7 +364,5 @@ public class MapService {
 			return;
 		}
 	}
-	
+
 }
-
-

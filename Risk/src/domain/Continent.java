@@ -10,8 +10,19 @@ import java.util.List;
  */
 public class Continent {
 
+	/**
+	 * Represents continents name.
+	 */
 	private String name;
+	
+	/**
+	 * Represents list of territories.
+	 */
 	private List<Territory> territories;
+	
+	/**
+	 * Represents continents control value.
+	 */
 	private int continentArmyValue;
 
 	/**
@@ -106,6 +117,11 @@ public class Continent {
 		this.territories = territories;
 	}
 
+	/**
+	 * Overriden toString() method.
+	 * 
+	 * @return String
+	 */
 	@Override
 	public String toString() {
 		return this.name;

@@ -14,8 +14,20 @@ import javafx.util.Pair;
  *
  */
 public class Player {
+
+	/**
+	 * It represents player's name.
+	 */
 	private String name;
+
+	/**
+	 * It represents list of territories.
+	 */
 	private List<Territory> territories;
+
+	/**
+	 * Army count which this player holds to place on territories.
+	 */
 	private int armyCount;
 
 	/**
@@ -147,6 +159,8 @@ public class Player {
 		int remainingAttackingTroops = -1;
 		List<Integer> attackerDiceRolls;
 		List<Integer> defenderDiceRolls;
+
+		// if the attack mode is normal mode.
 		if (!isAllOutMode) {
 			phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\n" + "dice rolling...");
 			attackerDiceRolls = recordDiceRolls(totalAttackerDice, true);
@@ -158,7 +172,10 @@ public class Player {
 				isWon = true;
 			}
 
-		} else {
+		}
+
+		// if the attack is all-out mode attack.
+		else {
 			while (attackerTerritory.getArmyCount() > 1) {
 				phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\n" + "dice rolling...");
 				attackerDiceRolls = recordDiceRolls(attackerTerritory.getArmyCount() - 1, true);
@@ -173,6 +190,7 @@ public class Player {
 			}
 		}
 
+		// if attacker territory in current attack.
 		if (isWon) {
 			phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\n" + "attacker won territory.");
 			defender.getTerritories().remove(defenderTerritory);
@@ -202,9 +220,11 @@ public class Player {
 	 * @return an integer representing as how many troops are survived from
 	 *         attacking territory.
 	 */
-	public int attackerHelper(Territory attackerTerritory, Territory defenderTerritory,
-			List<Integer> attackerDiceRolls, List<Integer> defenderDiceRolls, PhaseViewModel phaseViewModel) {
+	public int attackerHelper(Territory attackerTerritory, Territory defenderTerritory, List<Integer> attackerDiceRolls,
+			List<Integer> defenderDiceRolls, PhaseViewModel phaseViewModel) {
 		int remainingAttackingTroops = attackerDiceRolls.size();
+
+		// sort dice in descending order
 		Collections.sort(attackerDiceRolls, Collections.reverseOrder());
 		Collections.sort(defenderDiceRolls, Collections.reverseOrder());
 
@@ -214,12 +234,14 @@ public class Player {
 				+ attackerDiceRolls.toString() + "\n" + "defender dice " + defenderDiceRolls.toString());
 
 		for (int i = 0; i < iterations; i++) {
-			// case where attacker won current dice roll
+			// case where attacker won current dice roll.
 			if (attackerDiceRolls.get(i) > defenderDiceRolls.get(i)) {
 				phaseViewModel
 						.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\n" + "attacker won in " + i + " die roll.");
 				defenderTerritory.setArmyCount(defenderTerritory.getArmyCount() - 1);
-			} else {
+			}
+			// case where defender beats attacker current dice roll.
+			else {
 				phaseViewModel
 						.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\n" + "defender won in " + i + " die roll.");
 				attackerTerritory.setArmyCount(attackerTerritory.getArmyCount() - 1);
@@ -242,8 +264,10 @@ public class Player {
 	 */
 	public List<Integer> recordDiceRolls(int armySize, boolean isAttacker) {
 		Random random = new Random();
-		List<Integer> list = new ArrayList();
+		List<Integer> list = new ArrayList<>();
 		int noOfDices;
+
+		// decide how many max dice can be rolled.
 		if (isAttacker) {
 			if (armySize >= 3)
 				noOfDices = 3;

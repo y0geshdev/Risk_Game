@@ -19,40 +19,72 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.RowConstraints;
+
 /**
  * This class is a controller class for WorldDominationView.
+ * 
  * @author Yogesh
  *
  */
 public class WorldDominationViewController implements Observer {
 
+	/**
+	 * Reference to GridPane showing WorldDominationView.
+	 */
 	@FXML
 	private GridPane gridPane;
 
+	/**
+	 * Reference to Map holding player to percentage label mapping.
+	 */
 	private Map<Player, Label> playerToPercentageLabelMap;
+
+	/**
+	 * Reference to Map holding player to continentTextFields mapping.
+	 */
 	private Map<Player, TextArea> playerToContinentsTAMap;
+
+	/**
+	 * Reference to Map holding player to army label mapping.
+	 */
 	private Map<Player, Label> playerToArmiesLabelMap;
+
+	/**
+	 * Reference to list holding players.
+	 */
 	private List<Player> playersList;
 
+	/**
+	 * Overridden method from {@link Observer#update(Observable, Object)} to update
+	 * the UI once observer is notified of observer state change.
+	 */
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		WorldDominationModel model = (WorldDominationModel) arg0;
 		Map<Player, Integer> playerArmiesMapping = model.getPlayerArmiesMapping();
-		Map<Player,Set<Continent>> playerContinentsMapping = model.getPlayerContinentsMapping();
-		Map<Player,Double> playerMapCoverageMapping = model.getPlayerMapCoverageMapping();
-		
-		for(Player player : playersList) {
-			playerToPercentageLabelMap.get(player).setText(String.format("%.2f", playerMapCoverageMapping.get(player))); //String.valueOf(playerMapCoverageMapping.get(player))
+		Map<Player, Set<Continent>> playerContinentsMapping = model.getPlayerContinentsMapping();
+		Map<Player, Double> playerMapCoverageMapping = model.getPlayerMapCoverageMapping();
+
+		// iterate over player list to fetch changed state and update UI.
+		for (Player player : playersList) {
+			playerToPercentageLabelMap.get(player).setText(String.format("%.2f", playerMapCoverageMapping.get(player))); // String.valueOf(playerMapCoverageMapping.get(player))
 			playerToArmiesLabelMap.get(player).setText(String.valueOf(playerArmiesMapping.get(player)));
 			String continents = "";
-			for(Continent continent : playerContinentsMapping.get(player)) {
-				continents = continents.concat(continent.getName()+" ");
+			for (Continent continent : playerContinentsMapping.get(player)) {
+				continents = continents.concat(continent.getName() + " ");
 			}
 			playerToContinentsTAMap.get(player).setText(continents);
 		}
 
 	}
 
+	/**
+	 * Setup method to initialize various class attributes. This method is called
+	 * while World Domination View is setup.
+	 * 
+	 * @param playersList:
+	 *            List of players.
+	 */
 	public void setUpWorldDominationView(List<Player> playersList) {
 		playerToPercentageLabelMap = new LinkedHashMap<>();
 		playerToContinentsTAMap = new LinkedHashMap<>();
@@ -86,13 +118,15 @@ public class WorldDominationViewController implements Observer {
 		Label armiesPerPlayerHeader = new Label("Armies Owned");
 		armiesPerPlayerHeader.setUnderline(true);
 		armiesPerPlayerHeader.setAlignment(Pos.CENTER);
-
+		
+		// set constraints over gridPane.
 		gridPane.getRowConstraints().add(heightRow);
 		GridPane.setConstraints(playerHeader, 0, rowCounter);
 		GridPane.setConstraints(mapControlledHeader, 1, rowCounter);
 		GridPane.setConstraints(armiesPerPlayerHeader, 2, rowCounter);
 		GridPane.setConstraints(continentControlledHeader, 3, rowCounter);
 
+		// set component alignments.
 		GridPane.setHalignment(playerHeader, HPos.CENTER);
 		GridPane.setHalignment(mapControlledHeader, HPos.CENTER);
 		GridPane.setHalignment(continentControlledHeader, HPos.CENTER);
@@ -105,6 +139,8 @@ public class WorldDominationViewController implements Observer {
 
 		Label playerNameLabel, mapPercentageLabel, armiesCountLabel;
 		TextArea controlledContinentsTA;
+		
+		// iterate over playerList and populate various class Maps.
 		for (Player player : playersList) {
 			playerNameLabel = new Label(player.getName());
 			mapPercentageLabel = new Label(player.getName());

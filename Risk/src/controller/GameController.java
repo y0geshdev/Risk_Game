@@ -258,6 +258,9 @@ public class GameController {
 	 */
 	private CardExchangeViewModel cardExchangeViewModel = new CardExchangeViewModel();
 
+	/**
+	 * Reference to stage of cardExchangeView.
+	 */
 	private Stage cardExchangeViewStage;
 
 	/**
@@ -273,14 +276,13 @@ public class GameController {
 		this.continentsSet = continentsSet;
 		this.territoriesSet = territoriesSet;
 
-		// SetUp UI
+		// SetUp UI and game context.
 		displayMap();
 		disableComponents(attackPhaseUI);
 		disableComponents(fortiPhaseUI);
 		disableComponents(reinfoPhaseUI);
 
-		while (getPlayersCount() == -1)
-			;
+		while (getPlayersCount() == -1);
 		playersList = new ArrayList<>(playersCount);
 		gameService.createPlayers(playersList, playersCount);
 		gameService.assignTerritories(playersList);
@@ -289,9 +291,11 @@ public class GameController {
 		currentPlayer = gameService.getNextPlayer(null, playersList);
 		enableComponents(reinfoPhaseUI);
 		List<String> errorList = new ArrayList<>();
-		// phase View and World Domination Views
+
+		// setup Phase view, World domination view and Card exchange view.
 		setUpPhaseAndWorldDominationViews(errorList);
 		setUpCardExchangeView(errorList);
+
 		if (errorList.size() > 0) {
 			showError(errorList.get(0));
 			Platform.exit();
@@ -316,6 +320,7 @@ public class GameController {
 		numberOfArmiesPerTerritory.setText("");
 		List<String> errorList = new ArrayList<>();
 
+		// validate entered string as army number and show errors if there are any.
 		gameService.validateArmyInput(armyInput, currentPlayer, selectedTerritory, errorList);
 		if (errorList.size() != 0) {
 			String errors = "Resolve below errors:";
@@ -325,10 +330,15 @@ public class GameController {
 			return;
 		}
 		int numberOfArmies = Integer.parseInt(armyInput);
+		// perform reinforcement
 		gameService.addReinforcement(selectedTerritory, numberOfArmies);
+
+		// update UI.
 		updateTerritoryFields(selectedTerritory);
 		updatePhaseInfo(null, null, String.valueOf(numberOfArmies) + " armies moved to " + selectedTerritory.getName());
 		worldDominationModel.updateState(continentsSet, territoriesSet);
+
+		// check if startUp phase is completed or not.
 		if (!ifStartUpIsComepleted) {
 			if (currentPlayer.getArmyCount() == 0) {
 				playersWithZeroArmies.add(currentPlayer);
@@ -352,13 +362,17 @@ public class GameController {
 		Territory attackerTerritory = attackAttackerCB.getValue();
 		Territory defenderTerritory = attackDefenderCB.getValue();
 
+		// validate selected attacker an defender territory.
 		if (attackerTerritory.getArmyCount() <= 1)
 			showError("Can not attack with one Army.");
 		else if (defenderTerritory == null) {
 			showError("Select a territory to attack to. ");
 		} else {
+			// check to identify which attack mode is selected.
 			boolean isAllOutMode = (RadioButton) (attackMode.getSelectedToggle()) == allOutModeRB;
 			int totalAttackerDice = 0, totalDefenderDice = 0;
+
+			// if its normal attack mode.
 			if (!isAllOutMode) {
 				List<String> errorList = new ArrayList<>();
 				gameService.validateSelectedDiceNumber(attackerTerritory, defenderTerritory,
@@ -370,18 +384,27 @@ public class GameController {
 					}
 					showError(errors);
 					return;
+				} else {
+					totalAttackerDice = Integer.parseInt(attackerTotalDiceTF.getText());
+					totalDefenderDice = Integer.parseInt(defenderTotalDiceTF.getText());
 				}
 			}
 
+			// update UI regarding which territory attack which territory.
 			updatePhaseInfo(null, null, attackerTerritory.getName() + " attacked on " + defenderTerritory.getName());
+
+			// perform attack
 			Pair<Boolean, Integer> attackResult = gameService.attack(attackerTerritory, defenderTerritory, isAllOutMode,
 					totalAttackerDice, totalDefenderDice, phaseViewModel);
 
+			// update UI
 			worldDominationModel.updateState(continentsSet, territoriesSet);
 			updateTerritoryFields(attackerTerritory);
 			updateTerritoryFields(defenderTerritory);
 
 			boolean ifWon = attackResult.getKey();
+
+			// if attacker Won then do fortification of won territory.
 			if (ifWon) {
 				int armiesToMove = -1;
 				while (armiesToMove == -1) {
@@ -393,12 +416,15 @@ public class GameController {
 						+ attackerTerritory.getName() + " to " + defenderTerritory.getName() + " after conquering it.");
 			}
 
+			// update UI
 			updateTerritoryFields(attackerTerritory);
 			updateTerritoryFields(defenderTerritory);
 
+			// card exchange state change
 			if (!cardExchangeViewModel.getIfPlayerGetsCard() && ifWon)
 				cardExchangeViewModel.setIfPlayerGetsCard(ifWon);
 
+			// check if current player won whole game.
 			if (gameService.isGameEnded(currentPlayer, territoriesSet.size())) {
 				showInformation("Player " + currentPlayer.getName() + " won the game.");
 				Platform.exit();
@@ -445,7 +471,11 @@ public class GameController {
 
 		if (selectedTerritory == null)
 			return;
+
+		// get defender territory according to selected attacker territory.
 		List<Territory> defenderTerritories = gameService.getAttackableTerritories(selectedTerritory);
+
+		// update drop down with fetched defender territories.
 		if (defenderTerritories.size() > 0) {
 			attackDefenderCB.setDisable(false);
 			attackDefenderCB.setItems(FXCollections.observableList(defenderTerritories));
@@ -466,20 +496,20 @@ public class GameController {
 	 */
 	@FXML
 	public void finishAttack(ActionEvent event) {
-		/*
-		 * These 3 lines checks if the current player is entitled to draw a card from
-		 * the deck or not.
-		 */
+
+		// to check if current player is entitled to draw a card from a deck or not.
 		if (cardExchangeViewModel.getIfPlayerGetsCard())
 			cardExchangeViewModel.assignCardToAPlayer(currentPlayer);
 		cardExchangeViewModel.setIfPlayerGetsCard(false);
 
+		// update UI
 		updatePhaseInfo(null, "Fortification Phase", "Fortification Phase started.");
 		attackerTotalDiceTF.disableProperty().unbind();
 		defenderTotalDiceTF.disableProperty().unbind();
 		disableComponents(attackPhaseUI);
 		enableComponents(fortiPhaseUI);
 
+		// prepare fortification phase drop downs
 		fortifyFromTerritoryCB.setItems(FXCollections.observableList(currentPlayer.getTerritories()));
 		fortifyFromTerritoryCB.setValue(currentPlayer.getTerritories().get(0));
 		List<Territory> fortifiableTerritories = gameService
@@ -505,6 +535,8 @@ public class GameController {
 	@FXML
 	public void doFortification(ActionEvent event) {
 		List<String> errorList = new ArrayList<>();
+
+		// validate user inputs
 		Territory from = fortifyFromTerritoryCB.getValue();
 		Territory to = fortifyToTerritoryCB.getValue();
 		if (to == null) {
@@ -519,7 +551,11 @@ public class GameController {
 			return;
 		}
 		armiesNoToFortify.setText("");
+
+		// fortify
 		gameService.fortify(from, to, armiesToMove, errorList);
+
+		// check for errors while fortifying
 		if (errorList.size() > 0) {
 			String errors = "Cannot fortify due to:";
 			for (String error : errorList)
@@ -527,6 +563,7 @@ public class GameController {
 			showError(errors);
 		} else {
 
+			// update UI
 			updateTerritoryFields(from);
 			updateTerritoryFields(to);
 			finishFortification(event);
@@ -547,7 +584,11 @@ public class GameController {
 
 		if (selectedTerritory == null)
 			return;
+
+		// fetch fortifiable territory according to selected territory.
 		List<Territory> fortifiableTerritories = gameService.getFortifiableTerritories(selectedTerritory);
+
+		// update fortification phase drop downs.
 		if (fortifiableTerritories.size() > 0) {
 			fortifyToTerritoryCB.setDisable(false);
 			fortifyToTerritoryCB.setItems(FXCollections.observableList(fortifiableTerritories));
@@ -569,25 +610,29 @@ public class GameController {
 	@FXML
 	public void finishFortification(ActionEvent event) {
 		disableComponents(fortiPhaseUI);
-		currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);
 
+		// find next player in turn who is still playing
+		currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);
 		while (currentPlayer.getTerritories().size() == 0)
 			currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);
 		updatePhaseInfo(currentPlayer.getName(), "Reinforcement Phase",
 				"Place reinforcement for " + currentPlayer.getName() + " territories.");
-		/*
-		 * This is how the exchange view is being displayed every time after the
-		 * fortification phase is finished.
-		 */
+
+		// display exchange view every time after the fortification phase is finished.
 		cardExchangeViewModel.setViewForCurrentPlayer(currentPlayer);
 		cardExchangeViewStage.showAndWait();
 
+		// keep exchanging card till player have cards less than 5
 		while (cardExchangeViewModel.getCurrentPlayerCards(currentPlayer).size() >= 5) {
 			cardExchangeViewStage.showAndWait();
 		}
+
+		// update UI
 		cardExchangeViewStage.hide();
 		setArmiesOnPlayerOwnedCardTerritory();
 		enableComponents(reinfoPhaseUI);
+
+		// calculated armies for reinforcement phase.
 		gameService.calcArmiesForReinforcement(currentPlayer);
 		displayPlayerInfo();
 	}
@@ -602,6 +647,9 @@ public class GameController {
 			String state = "Placing 2 armies on " + cardAndOwnedTerritory.getName()
 					+ " as one of the card Exchanged was of this territory and it is owned by the "
 					+ currentPlayer.getName();
+
+			// updating UI based on if player exchange a card corresponding to territory he
+			// already owns.
 			showInformation(state);
 			cardAndOwnedTerritory.setArmyCount(cardAndOwnedTerritory.getArmyCount() + 2);
 			updateTerritoryFields(cardAndOwnedTerritory);
@@ -619,6 +667,7 @@ public class GameController {
 	private void setUpCardExchangeView(List<String> errorList) {
 		Parent root;
 		try {
+			// load fxml and add its controller to corresponding model.
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/CardExchange.fxml"));
 			root = loader.load();
 			cardExchangeViewModel.addObserver(loader.getController());
@@ -627,11 +676,13 @@ public class GameController {
 			e.printStackTrace();
 			return;
 		}
+		
+		// setup stage
 		cardExchangeViewModel.setViewForCurrentPlayer(currentPlayer);
 		cardExchangeViewStage = new Stage();
 		cardExchangeViewStage.setTitle("Risk Game");
 		cardExchangeViewStage.setScene(new Scene(root));
-		
+
 	}
 
 	/**
@@ -639,6 +690,8 @@ public class GameController {
 	 */
 	private void startUpPhase() {
 		updatePhaseInfo(currentPlayer.getName(), "StartUp Phase", "Place armies for " + currentPlayer.getName());
+		
+		// if startUp phase is ended then prepare for reinforcement phase.
 		if (gameService.endOfStartUpPhase(playersWithZeroArmies, playersList)) {
 			ifStartUpIsComepleted = true;
 			currentPlayer = gameService.getNextPlayer(null, playersList);
@@ -668,6 +721,7 @@ public class GameController {
 			if (furtherAttackPossible) {
 				updatePhaseInfo(currentPlayer.getName(), "Attack Phase", "Attack Phase Started.");
 
+				// prepare UI and reinforcement phase drop downs
 				enableComponents(attackPhaseUI);
 				attackerTotalDiceTF.disableProperty().bind(Bindings.not(normalModeRB.selectedProperty()));
 				defenderTotalDiceTF.disableProperty().bind(Bindings.not(normalModeRB.selectedProperty()));
@@ -703,21 +757,31 @@ public class GameController {
 		int colCounter = 0;
 		ColumnConstraints widthCol = new ColumnConstraints();
 		widthCol.setHgrow(Priority.ALWAYS);
+		
+		// iterate over continents of map
 		while (ite.hasNext()) {
 			mapGrid.getColumnConstraints().add(widthCol);
+		
 			Continent obj = ite.next();
 			String nameofTheContinent = obj.getName();
 			List<Territory> territoryList = obj.getTerritories();
 			Integer controlValue = obj.getContinentArmyValue();
+			
+			// setup UI for current continent
 			Label continentName = new Label(nameofTheContinent);
 			Label controlValueLabel = new Label(GameController.CONTROL_VALUE_WITH_SEMICOLON + controlValue.toString());
 			GridPane.setConstraints(continentName, colCounter, 1);
 			GridPane.setConstraints(controlValueLabel, colCounter, 2);
+			
 			mapGrid.getChildren().addAll(continentName, controlValueLabel);
 			if (maxNumberOfTerritores < territoryList.size()) {
 				maxNumberOfTerritores = territoryList.size();
 			}
+			
+			// iterate over selected continents territories
 			for (int i = 0; i < territoryList.size(); i++) {
+				
+				// setup UI for current territory.
 				Territory territoryObj = territoryList.get(i);
 				TextField territoryField = new TextField();
 				GridPane.setConstraints(territoryField, colCounter, i + 3);
@@ -754,11 +818,13 @@ public class GameController {
 	 * @return int: number of players entered by user.
 	 */
 	private int getPlayersCount() {
+		// setup dialog box
 		TextInputDialog dialog = new TextInputDialog();
 		dialog.setTitle("Enter Number Of Players");
 		dialog.setContentText("Enter Number Of Players");
 		Optional<String> result = dialog.showAndWait();
 		String error;
+		// check if user enter valid input or not.
 		if (result.isPresent()) {
 			try {
 				playersCount = Integer.parseInt(result.get());
@@ -806,6 +872,7 @@ public class GameController {
 
 		List<Territory> neighbouringCountries = territoryObj.getNeighbourTerritories();
 
+		// iterate over selected territoryObj's neighbor territory to highlight their connectivity.
 		for (int i = 0; i < neighbouringCountries.size(); i++) {
 			Territory terr = neighbouringCountries.get(i);
 			TextField tf = territoriesToTFMapping.get(terr.getName());
@@ -916,11 +983,14 @@ public class GameController {
 	 */
 	private int getNumberOfArmiesToMove(int minArmy, int maxArmy) {
 		int armiesToMove = -1;
+		
+		// prepare dialog box
 		TextInputDialog dialog = new TextInputDialog(String.valueOf(minArmy));
 		dialog.setTitle("Risk Game Dialog");
 		dialog.setHeaderText("You can move between " + minArmy + "-" + maxArmy + " armies.");
 		dialog.setContentText("Total armies to move:");
 
+		// get input from user and validate
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()) {
 			try {
@@ -974,6 +1044,8 @@ public class GameController {
 		Pane phaseViewPane = null;
 		PhaseViewController phaseViewController = null;
 		try {
+			
+			// load fxml and add its controller to corresponding model.
 			loader = new FXMLLoader(getClass().getResource("/ui/PhaseView.fxml"));
 			phaseViewPane = loader.load();
 			phaseViewController = loader.getController();
@@ -983,6 +1055,8 @@ public class GameController {
 			e.printStackTrace();
 			return;
 		}
+		
+		// setup view
 		phaseViewUI.getChildren().add(phaseViewPane);
 		phaseViewPane.prefHeightProperty().bind(phaseViewUI.heightProperty());
 		phaseViewPane.prefWidthProperty().bind(phaseViewUI.widthProperty());
@@ -993,6 +1067,7 @@ public class GameController {
 		WorldDominationViewController worldDominationViewController = null;
 		try {
 
+			// load fxml and add its controller to corresponding model.
 			loader = new FXMLLoader(getClass().getResource("/ui/WorldDominationView.fxml"));
 			worldDominationViewPane = loader.load();
 			worldDominationViewController = loader.getController();
@@ -1003,6 +1078,7 @@ public class GameController {
 			return;
 		}
 
+		// setup view
 		worldDominationViewUI.getChildren().add(worldDominationViewPane);
 		worldDominationModel = new WorldDominationModel(playersList);
 		worldDominationModel.addObserver(worldDominationViewController);

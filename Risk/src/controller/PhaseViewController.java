@@ -7,22 +7,37 @@ import domain.PhaseViewModel;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
+
 /**
  * This is a controller class for Phase View.
+ * 
  * @author Yogesh
  *
  */
 public class PhaseViewController implements Observer {
 
+	/**
+	 * Represents label for player's name.
+	 */
 	@FXML
-    private Label playerNameLabel;
+	private Label playerNameLabel;
 
-    @FXML
-    private Label phaseNameLabel;
+	/**
+	 * Represents label for phase name.
+	 */
+	@FXML
+	private Label phaseNameLabel;
 
-    @FXML
-    private TextArea phaseInfoTF;
-	
+	/**
+	 * Represents textarea for phase related information.
+	 */
+	@FXML
+	private TextArea phaseInfoTF;
+
+	/**
+	 * Overridden method of {@link Observer#update(Observable, Object)} to update
+	 * view according to updated to state of Observable object passed as parameter.
+	 */
 	@Override
 	public void update(Observable o, Object arg) {
 		PhaseViewModel model = (PhaseViewModel) o;

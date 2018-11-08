@@ -9,7 +9,6 @@ import java.util.Queue;
 import java.util.Random;
 
 import controller.MapController;
-import javafx.stage.Stage;
 
 public class CardExchangeViewModel extends Observable {
 

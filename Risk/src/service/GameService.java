@@ -36,6 +36,9 @@ public class GameService {
 		List<Territory> territoryObjectList = new ArrayList<>(MapController.territoriesSet);
 
 		Territory tempTerritory;
+		
+		// iterate over players list and assign then random territory till all the
+		// territories are assigned.
 		while (territoryObjectList.size() != 0) {
 			for (int i = 0; i < numberOfPlayers.size() && territoryObjectList.size() != 0; i++) {
 				Player onePlayer = numberOfPlayers.get(i);
@@ -66,6 +69,9 @@ public class GameService {
 		int numberOfArmiesToAdd = 0;
 		Iterator<Continent> contIterator = MapController.continentsSet.iterator();
 		Continent contObject;
+
+		// check if current player occupy whole continents to add continent control
+		// values.
 		while (contIterator.hasNext()) {
 			contObject = contIterator.next();
 			List<Territory> territoriesInContinent = contObject.getTerritories();
@@ -299,6 +305,8 @@ public class GameService {
 		Queue<Territory> queue = new LinkedList<>();
 		queue.add(territory);
 		Territory t;
+
+		// doing BFS to get all the territory which can be fortified by given territory.
 		while (queue.size() > 0) {
 			t = queue.poll();
 			for (Territory neighbours : t.getNeighbourTerritories()) {
