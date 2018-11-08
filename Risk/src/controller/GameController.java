@@ -375,8 +375,12 @@ public class GameController {
 			// if its normal attack mode.
 			if (!isAllOutMode) {
 				List<String> errorList = new ArrayList<>();
+				
+				// validate number of dice entered by user for attacker and defender for normal mode.
 				gameService.validateSelectedDiceNumber(attackerTerritory, defenderTerritory,
 						attackerTotalDiceTF.getText(), defenderTotalDiceTF.getText(), errorList);
+				
+				// show if there are any validation errors.
 				if (errorList.size() > 0) {
 					String errors = "Issue with entered dice numbers:";
 					for (String error : errorList) {
@@ -550,7 +554,6 @@ public class GameController {
 			showError("Enter valid number.");
 			return;
 		}
-		armiesNoToFortify.setText("");
 
 		// fortify
 		gameService.fortify(from, to, armiesToMove, errorList);
@@ -609,6 +612,7 @@ public class GameController {
 	 */
 	@FXML
 	public void finishFortification(ActionEvent event) {
+		armiesNoToFortify.setText("");
 		disableComponents(fortiPhaseUI);
 
 		// find next player in turn who is still playing

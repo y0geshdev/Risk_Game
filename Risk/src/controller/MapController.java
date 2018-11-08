@@ -223,11 +223,14 @@ public class MapController {
 	 */
 	@FXML
 	public void generateMap(ActionEvent event) {
+
+		// initialize collections to hold map in form of lists and sets.
 		MapController.continentsSet = new HashSet<>();
 		MapController.territoriesSet = new HashSet<>();
 		List<Continent> continentsList = new ArrayList<>();
 		List<Territory> territoriesList = new ArrayList<>();
 
+		// validate total number of continents and territories entered by user.
 		int continents, territories;
 		try {
 			continents = Integer.parseInt(contsNoTF.getText());
@@ -239,6 +242,7 @@ public class MapController {
 			return;
 		}
 
+		// create continents and add them to set and list.
 		Continent tempContinent;
 		for (int i = 1; i <= continents; i++) {
 			tempContinent = new Continent("Continent " + i);
@@ -246,6 +250,7 @@ public class MapController {
 			continentsList.add(tempContinent);
 		}
 
+		// create territories and add them to set and list.
 		Territory tempTerritory;
 		for (int i = 1; i <= territories; i++) {
 			tempTerritory = new Territory("Territory " + i);
@@ -253,6 +258,7 @@ public class MapController {
 			territoriesList.add(tempTerritory);
 		}
 
+		// setup UI for various mappings of territories and continents.
 		contsCB.setItems(FXCollections.observableList(continentsList));
 		contsCB.setValue(continentsList.get(0));
 		contiControlValueTF.setText(String.valueOf(continentsList.get(0).getContinentArmyValue()));
@@ -324,6 +330,7 @@ public class MapController {
 		Territory selectedTerritory = allTerritoriesCTMapping.getSelectionModel().getSelectedItem();
 		Continent selectedContinent = contsCB.getValue();
 
+		// validate selected territory and continent if they can be mapped and do so.
 		if (selectedTerritory != null && !selectedContinent.getTerritories().contains(selectedTerritory)
 				&& selectedTerritory.getContinent() == null) {
 			selectedContinent.getTerritories().add(selectedTerritory);
@@ -345,6 +352,8 @@ public class MapController {
 	public void removeTerritoriesToContinent(ActionEvent event) {
 		Territory selectedTerritory = mappedTerritoriesCTMapping.getSelectionModel().getSelectedItem();
 		Continent selectedContinent = contsCB.getValue();
+		
+		// remove selected territory from selected continent
 		if (selectedTerritory != null) {
 			selectedContinent.getTerritories().remove(selectedTerritory);
 			selectedTerritory.setContinent(null);
@@ -405,6 +414,8 @@ public class MapController {
 	public void removeTerritoriesToTerritory(ActionEvent event) {
 		Territory neighbourTerritory = mappedTerritoriesTTMapping.getSelectionModel().getSelectedItem();
 		Territory selectedTerritory = terrsCB.getValue();
+		
+		// remove territory mapping between selected territories
 		if (neighbourTerritory != null) {
 			selectedTerritory.getNeighbourTerritories().remove(neighbourTerritory);
 			neighbourTerritory.getNeighbourTerritories().remove(selectedTerritory);
@@ -448,15 +459,20 @@ public class MapController {
 	@FXML
 	public void saveMap(ActionEvent event) {
 
+		// get input from user where to save map file
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.getExtensionFilters().add(new ExtensionFilter(".map file", "*.map"));
 		File file = fileChooser.showSaveDialog(null);
 
 		if (file != null) {
 			List<String> errorList = new ArrayList<String>();
+			
+			// validate map.
 			mapService.validateMap(continentsSet, territoriesSet, errorList);
 
 			if (errorList.size() == 0) {
+				
+				// if map is saved successfully then inform user.
 				if (mapService.saveMap(file, continentsSet, territoriesSet)) {
 					Alert alert = new Alert(AlertType.INFORMATION);
 					alert.setTitle("INFORMATION");
@@ -496,14 +512,9 @@ public class MapController {
 			showError("Choose a file to load map.");
 		else {
 			File file = new File(filePath);
-			/*
-			 * try { mapService.parseFile(file); } catch (FileNotFoundException e) {
-			 * showError("Unable to find selected File."); return; } catch (IOException e) {
-			 * showError("Error reading from file."); return; } catch (Exception e) {
-			 * e.printStackTrace(); }
-			 */
-
 			List<String> errorList = new ArrayList<>();
+			
+			// parse user selected map file.
 			mapService.parseFile(file, errorList);
 			if (errorList.size() > 0) {
 				String errors = "Resolve below errors:";
@@ -513,7 +524,8 @@ public class MapController {
 				showError(errors);
 				return;
 			} else {
-
+				
+				// setup UI for user to modify selected map.
 				List<Continent> continentsList = new ArrayList<>();
 				List<Territory> territoriesList = new ArrayList<>();
 				if (continentsSet != null && continentsSet.size() > 0) {
@@ -556,25 +568,21 @@ public class MapController {
 			showError("Choose a map to start game.");
 		else {
 			File file = new File(filePath);
-			/*try {
-				mapService.parseFile(file);
-			} catch (FileNotFoundException e) {
-				showError("Unable to find selected File.");
-				return;
-			} catch (IOException e) {
-				showError("Error reading from file.");
-				return;
-			} catch (Exception e) {
-				e.printStackTrace();
-			}*/
 			List<String> errorList = new ArrayList<>();
+			
+			// parse user selected map
 			mapService.parseFile(file, errorList);
+			
+			// validate map which is in memory.
 			mapService.validateMap(continentsSet, territoriesSet, errorList);
 
+			// if there are no validation errors then load game stage to play
 			if (errorList.size() == 0) {
 				Parent root;
 				GameController gameController;
 				try {
+					
+					// load fxml for UI.
 					FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/Game.fxml"));
 					root = loader.load();
 					gameController = loader.getController();
@@ -582,6 +590,8 @@ public class MapController {
 					showError("Unable to load Game.fxml file.");
 					return;
 				}
+				
+				// setup stage
 				Stage stage = new Stage();
 				stage.setTitle("Risk Game");
 				stage.setScene(new Scene(root, 800, 600));
