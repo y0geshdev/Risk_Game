@@ -38,7 +38,7 @@ public class MapServiceTest {
 	String errorMessage_terrPresentInMultipleContinents;
 	String errorMessage_noNeighbouringTerritory;
 	String errorMessage_unconnectedGraph;
-	File nullFileObject, correctFileObject, wrongFileObject, wrongFileObjectNoTerritory;
+	File nullFileObject, correctFileObject, wrongFileObject;
 
 	/**
 	 * This method setup require common context before every test is run.
@@ -65,7 +65,6 @@ public class MapServiceTest {
 		nullFileObject = null;
 		correctFileObject = new File("resource\\Asiamap.map");
 		wrongFileObject = new File("resource\\WrongFormatMap.map");
-		wrongFileObjectNoTerritory = new File("C:\\Users\\pc\\Desktop\\apprisk\\WrongFormatMapNoTerritory.map");
 	}
 
 	/**
