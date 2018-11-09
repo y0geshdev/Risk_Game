@@ -713,7 +713,9 @@ public class GameController {
 			cardExchangeViewStage.showAndWait();
 			reinforcementPhase();
 		} else if (currentPlayer.getArmyCount() == 0) {
+			while(currentPlayer.getArmyCount()==0) {
 			currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);
+			}
 			updatePhaseInfo(currentPlayer.getName(), null, "Place armies for " + currentPlayer.getName());
 			startUpPhase();
 		}
