@@ -1,0 +1,22 @@
+[Map]
+image=default.bmp
+wrap=default
+scroll=default
+author=default
+warn=default
+
+[Continents]
+Continent 2=5
+Continent 1=5
+
+[Territories]
+Territory 8,0,0,Continent 2,Territory 7,Territory 9
+Territory 10,0,0,Continent 2,Territory 9,Territory 1
+Territory 2,0,0,Continent 1,Territory 1,Territory 3
+Territory 4,0,0,Continent 1,Territory 3,Territory 5
+Territory 5,0,0,Continent 1,Territory 4,Territory 6
+Territory 3,0,0,Continent 1,Territory 2,Territory 4
+Territory 6,0,0,Continent 2,Territory 5,Territory 7
+Territory 1,0,0,Continent 1,Territory 2,Territory 10
+Territory 7,0,0,Continent 2,Territory 6,Territory 8
+Territory 9,0,0,Continent 2,Territory 8,Territory 10

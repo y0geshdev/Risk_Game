@@ -404,7 +404,6 @@ public class GameController {
 					totalAttackerDice, totalDefenderDice, phaseViewModel);
 
 			// update UI
-			worldDominationModel.updateState(continentsSet, territoriesSet);
 			updateTerritoryFields(attackerTerritory);
 			updateTerritoryFields(defenderTerritory);
 
@@ -423,6 +422,7 @@ public class GameController {
 			}
 
 			// update UI
+			worldDominationModel.updateState(continentsSet, territoriesSet);
 			updateTerritoryFields(attackerTerritory);
 			updateTerritoryFields(defenderTerritory);
 
