@@ -1,5 +1,10 @@
 package domain;
 
+/**
+ * This class is an entity class for cards
+ * @author Shivam
+ *
+ */
 public class Card {
 	
 	/**

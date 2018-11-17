@@ -9,6 +9,11 @@ import java.util.Queue;
 
 import controller.MapController;
 
+/**
+ * This class represent model class for Card Exchange View Model.
+ * @author Shivam
+ *
+ */
 public class CardExchangeViewModel extends Observable {
 
 	/**

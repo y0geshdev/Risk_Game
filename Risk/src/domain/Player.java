@@ -260,7 +260,7 @@ public class Player {
 	 *            Number of armies involved in attack.
 	 * @param isAttacker:
 	 *            true if this call is from attacker front else false.
-	 * @return a List<Integer> representing dice outcomes.
+	 * @return a List representing dice outcomes.
 	 */
 	public List<Integer> recordDiceRolls(int armySize, boolean isAttacker) {
 		Random random = new Random();

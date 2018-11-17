@@ -24,6 +24,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Window;
 
+
 public class CardExchangeViewController implements Observer {
 
 	/**

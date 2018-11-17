@@ -63,7 +63,7 @@ public class WorldDominationModel extends Observable {
 	/**
 	 * Getter for {@link WorldDominationModel#playerMapCoverageMapping}.
 	 * 
-	 * @return a Map<Player, Double>.
+	 * @return a Map.
 	 */
 	public Map<Player, Double> getPlayerMapCoverageMapping() {
 		return playerMapCoverageMapping;
@@ -72,7 +72,7 @@ public class WorldDominationModel extends Observable {
 	/**
 	 * Getter for {@link WorldDominationModel#playerContinentsMapping}.
 	 * 
-	 * @return a Map<Player, Set<Continent>>.
+	 * @return a Map.
 	 */
 	public Map<Player, Set<Continent>> getPlayerContinentsMapping() {
 		return playerContinentsMapping;
@@ -81,7 +81,7 @@ public class WorldDominationModel extends Observable {
 	/**
 	 * Getter for {@link WorldDominationModel#playerArmiesMapping}.
 	 * 
-	 * @return a Map<Player, Integer>.
+	 * @return a Map.
 	 */
 	public Map<Player, Integer> getPlayerArmiesMapping() {
 		return playerArmiesMapping;
@@ -127,7 +127,7 @@ public class WorldDominationModel extends Observable {
 	 *            player for whom covered continents are to be fetched.
 	 * @param continentsSet:
 	 *            Set of all the continents in game map.
-	 * @return Set<Continent> containing all the continents which are covered by
+	 * @return Set containing all the continents which are covered by
 	 *         passed player.
 	 */
 	private Set<Continent> getAllCoveredContinents(Player player, HashSet<Continent> continentsSet) {
