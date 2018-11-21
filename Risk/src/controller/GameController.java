@@ -345,7 +345,11 @@ public class GameController {
 				playersWithZeroArmies.add(currentPlayer);
 			}
 			currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);
+			while (currentPlayer.getArmyCount() == 0 && playersWithZeroArmies.size()!=playersList.size()) {
+				currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);
+			}
 			startUpPhase();
+
 		} else {
 			reinforcementPhase();
 		}
@@ -702,7 +706,7 @@ public class GameController {
 	 * This method begins the startUp phase.
 	 */
 	private void startUpPhase() {
-		updatePhaseInfo(currentPlayer.getName(), "StartUp Phase", "Place armies for " + currentPlayer.getName());
+		
 
 		// if startUp phase is ended then prepare for reinforcement phase.
 		if (gameService.endOfStartUpPhase(playersWithZeroArmies, playersList)) {
@@ -710,15 +714,11 @@ public class GameController {
 			currentPlayer = gameService.getNextPlayer(null, playersList);
 			updatePhaseInfo(currentPlayer.getName(), "Reinforcement Phase", "Reinforcement Phase started.");
 			gameService.calcArmiesForReinforcement(currentPlayer);
+			cardExchangeViewModel.setViewForCurrentPlayer(currentPlayer);
 			cardExchangeViewStage.showAndWait();
 			reinforcementPhase();
-		} else if (currentPlayer.getArmyCount() == 0) {
-			while(currentPlayer.getArmyCount()==0) {
-			currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);
-			}
-			updatePhaseInfo(currentPlayer.getName(), null, "Place armies for " + currentPlayer.getName());
-			startUpPhase();
 		}
+		updatePhaseInfo(currentPlayer.getName(), "StartUp Phase", "Place armies for " + currentPlayer.getName());
 		displayPlayerInfo();
 	}
 
