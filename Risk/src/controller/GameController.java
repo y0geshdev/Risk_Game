@@ -257,7 +257,7 @@ public class GameController {
 	/**
 	 * Reference variable for the CardExchangeViewModel
 	 */
-	private CardExchangeViewModel cardExchangeViewModel = new CardExchangeViewModel();
+	private CardExchangeViewModel cardExchangeViewModel;
 
 	/**
 	 * Reference to stage of cardExchangeView.
@@ -313,7 +313,7 @@ public class GameController {
 		playerStrategyMapping.put(playersList.get(1), PlayerStrategyEnum.AGGRESSIVE);*/
 		//playerStrategyMapping.put(playersList.get(2), PlayerStrategyEnum.AGGRESSIVE);
 
-		gameService.assignTerritories(playersList);
+		gameService.assignTerritories(playersList,territoriesSet);
 		updateMapData();
 
 		currentPlayer = gameService.getNextPlayer(null, playersList);
@@ -767,6 +767,7 @@ public class GameController {
 			// load fxml and add its controller to corresponding model.
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/CardExchange.fxml"));
 			root = loader.load();
+			cardExchangeViewModel = new CardExchangeViewModel(territoriesSet);
 			cardExchangeViewModel.addObserver(loader.getController());
 		} catch (Exception e) {
 			errorList.add("Issue setting up Card exchange view.");

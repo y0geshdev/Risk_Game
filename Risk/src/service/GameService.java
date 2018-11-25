@@ -34,8 +34,8 @@ public class GameService {
 	 * @param numberOfPlayers:
 	 *            It has all the player object.
 	 */
-	public void assignTerritories(List<Player> numberOfPlayers) {
-		List<Territory> territoryObjectList = new ArrayList<>(MapController.territoriesSet);
+	public void assignTerritories(List<Player> numberOfPlayers, Set<Territory> territoriesSet) {
+		List<Territory> territoryObjectList = new ArrayList<>(territoriesSet);
 
 		Territory tempTerritory;
 

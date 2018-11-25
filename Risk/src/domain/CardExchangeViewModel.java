@@ -6,8 +6,7 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.Observable;
 import java.util.Queue;
-
-import controller.MapController;
+import java.util.Set;
 
 /**
  * This class represent model class for Card Exchange View Model.
@@ -71,14 +70,14 @@ public class CardExchangeViewModel extends Observable {
 	/**
 	 * default constructor for CardExchangeViewModel.
 	 */
-	public CardExchangeViewModel() {
+	public CardExchangeViewModel(Set<Territory> territoriesSet) {
 		playerToCardMapping = new HashMap<>();
 		ifPlayerGetsCard = false;
 		totalNumberOfExchanges = 0;
 		allCards = new LinkedList<>();
 		cardAndOwnedTerritory = null;
 		// this initialize the total number of cards to be used in game.
-		setCards();
+		setCards(territoriesSet);
 	}
 
 	/**
@@ -291,11 +290,11 @@ public class CardExchangeViewModel extends Observable {
 	 * This method sets the initial deck of the cards as per the number of
 	 * territories.
 	 */
-	public void setCards() {
+	public void setCards(Set<Territory> territoriesSet) {
 		String[] cardtype = { INFANTRY_ARMY, CAVALRY_ARMY, ARTILLERY_ARMY };
 		Queue<Card> allCards = new LinkedList<>();
 
-		Iterator<Territory> ite = MapController.territoriesSet.iterator();
+		Iterator<Territory> ite = territoriesSet.iterator();
 		int index = 0;
 		while (ite.hasNext()) {
 			Territory cardTerritory = ite.next();
