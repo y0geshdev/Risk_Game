@@ -264,8 +264,15 @@ public class GameController {
 	 */
 	private Stage cardExchangeViewStage;
 
-	Map<Player, PlayerStrategyEnum> playerStrategyMapping = new HashMap<>();
+	Map<Player, PlayerStrategyEnum> playerStrategyMapping;
 
+	/**
+	 * 
+	 * 
+	 * @param continentsSet
+	 * @param territoriesSet
+	 */
+	
 	/**
 	 * This method forms the game map on UI, distributes territories randomly to the
 	 * players, select the player randomly to start the startup phase of the game.
@@ -274,10 +281,17 @@ public class GameController {
 	 *            Set of all the continents in game.
 	 * @param territoriesSet:
 	 *            Set of all the territories in game.
+	 * @param playersList:
+	 *            List of players.
+	 * @param playerStrategyMapping:
+	 *            Mapping of players and their strategies.
 	 */
-	public void startGame(HashSet<Continent> continentsSet, HashSet<Territory> territoriesSet) {
+	public void startGame(HashSet<Continent> continentsSet, HashSet<Territory> territoriesSet, List<Player> playersList,
+			Map<Player, PlayerStrategyEnum> playerStrategyMapping) {
 		this.continentsSet = continentsSet;
 		this.territoriesSet = territoriesSet;
+		this.playersList = playersList;
+		this.playerStrategyMapping = playerStrategyMapping;
 
 		// SetUp UI and game context.
 		displayMap();
@@ -289,14 +303,14 @@ public class GameController {
 		 * while (getPlayersCount() == -1) ;
 		 */
 		// testing purpose
-		playersCount = 2;
+		/*playersCount = 2;
 
 		playersList = new ArrayList<>(playersCount);
 		gameService.createPlayers(playersList, playersCount);
 
 		// testing purpose
 		playerStrategyMapping.put(playersList.get(0), PlayerStrategyEnum.HUMAN);
-		playerStrategyMapping.put(playersList.get(1), PlayerStrategyEnum.AGGRESSIVE);
+		playerStrategyMapping.put(playersList.get(1), PlayerStrategyEnum.AGGRESSIVE);*/
 		//playerStrategyMapping.put(playersList.get(2), PlayerStrategyEnum.AGGRESSIVE);
 
 		gameService.assignTerritories(playersList);

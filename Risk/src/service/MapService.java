@@ -15,7 +15,15 @@ import java.util.Map;
 import java.util.Set;
 
 import controller.MapController;
+import domain.AggressiveStrategy;
+import domain.BenevolentStrategy;
+import domain.CheaterStrategy;
 import domain.Continent;
+import domain.HumanStrategy;
+import domain.IStrategy;
+import domain.Player;
+import domain.PlayerStrategyEnum;
+import domain.RandomStrategy;
 import domain.Territory;
 
 /**
@@ -362,6 +370,74 @@ public class MapService {
 		} catch (FileNotFoundException e) {
 			errorList.add("Unable to find given file to parse.");
 			return;
+		}
+	}
+
+	public IStrategy getStrategyfromEnum(PlayerStrategyEnum strategyEnum) {
+		IStrategy strategy = null;
+		switch (strategyEnum) {
+		case HUMAN:
+			strategy = new HumanStrategy();
+			break;
+		case AGGRESSIVE:
+			strategy = new AggressiveStrategy();
+			break;
+		case BENEVOLENT:
+			strategy = new BenevolentStrategy();
+			break;
+		case RANDOM:
+			strategy = new RandomStrategy();
+			break;
+		case CHEATER:
+			strategy = new CheaterStrategy();
+			break;
+		}
+		return strategy;
+	}
+
+	/**
+	 * This method created player instances and adds them to playerList
+	 * 
+	 * @param playerList:
+	 *            List of players who are playing the game.
+	 * @param totalNumberOfPlayers:
+	 *            total number of players to check how many armies should be
+	 *            assigned at the start of the game.
+	 */
+	public void createPlayers(List<Player> playerList, int totalNumberOfPlayers) {
+		int armyCount = getArmyCount(totalNumberOfPlayers);
+		// iterate till the total Number of players and create that many player objects.
+		for (int i = 0; i < totalNumberOfPlayers; i++) {
+			Player playerObj = new Player();
+			playerObj.setName("Player " + (i + 1));
+			playerObj.setArmyCount(armyCount);
+			playerList.add(playerObj);
+		}
+	}
+
+	/**
+	 * This method is used to get the number of armies according to the number of
+	 * players
+	 * 
+	 * @param playerCount:
+	 *            Number of player playing the game
+	 * @return int number of armies per player according to total number of players
+	 *         playing game.
+	 */
+	private int getArmyCount(int playerCount) {
+		switch (playerCount) {
+		case 2:
+			return 40;
+		case 3:
+			return 35;
+		case 4:
+			return 30;
+		case 5:
+			return 25;
+		case 6:
+			return 20;
+		default:
+			return 15;
 		}
 	}
 

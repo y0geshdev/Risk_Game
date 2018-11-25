@@ -121,7 +121,7 @@ public class GameService {
 	 * @param totalNumberOfPlayers:
 	 *            total number of players to check how many armies should be
 	 *            assigned at the start of the game.
-	 */
+	 *//*
 	public void createPlayers(List<Player> playerList, int totalNumberOfPlayers) {
 		int armyCount = getArmyCount(totalNumberOfPlayers);
 		// iterate till the total Number of players and create that many player objects.
@@ -135,7 +135,7 @@ public class GameService {
 		playerList.get(0).setPlayingStrategy(new HumanStrategy());
 		playerList.get(1).setPlayingStrategy(new AggressiveStrategy());
 		//playerList.get(2).setPlayingStrategy(new AggressiveStrategy());
-	}
+	}*/
 
 	/**
 	 * This method gives the player who will have the next turn to play. Initially,
@@ -373,7 +373,7 @@ public class GameService {
 	 * @return int number of armies per player according to total number of players
 	 *         playing game.
 	 */
-	private int getArmyCount(int playerCount) {
+	/*private int getArmyCount(int playerCount) {
 		switch (playerCount) {
 		case 2:
 			return 40;
@@ -388,7 +388,7 @@ public class GameService {
 		default:
 			return 15;
 		}
-	}
+	}*/
 
 	/**
 	 * This method current player's reinforcement method to add reinforcement armies
