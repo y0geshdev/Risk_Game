@@ -1,4 +1,4 @@
-package domain;
+/*package domain;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -15,38 +15,38 @@ import org.junit.Test;
 import controller.MapController;
 import javafx.util.Pair;
 
-/**
+*//**
  * This Junit Test Class will have all the test cases for {@link Player} class.
  * 
  * @author Yogesh
  *
- */
+ *//*
 public class PlayerTest {
 
-	/**
+	*//**
 	 * To hold GameService class instance.
-	 */
+	 *//*
 	private Player player;
-	/**
+	*//**
 	 * It hold collection of all the continents in game in set.
-	 */
+	 *//*
 	private HashSet<Continent> continentsSet;
-	/**
+	*//**
 	 * It hold collection of all the territory in game in set.
-	 */
+	 *//*
 	private HashSet<Territory> territoriesSet;
-	/**
+	*//**
 	 * It hold collection of all the territories in game in list.
-	 */
+	 *//*
 	private List<Territory> territoryList;
-	/**
+	*//**
 	 * It hold collection of all the continents in game in list.
-	 */
+	 *//*
 	private List<Continent> continentList;
 
-	/**
+	*//**
 	 * This method setup require common context before every test is run.
-	 */
+	 *//*
 	@Before
 	public void setUp() {
 		player = new Player();
@@ -95,10 +95,10 @@ public class PlayerTest {
 		MapController.continentsSet = continentsSet;
 	}
 
-	/**
+	*//**
 	 * This test will test the reinforcement logic which is done by
 	 * {@link Player#reinforcement(Territory, int)} method.
-	 */
+	 *//*
 	@Test
 	public void testReinforcement() {
 		// setting up context.
@@ -111,10 +111,10 @@ public class PlayerTest {
 
 	}
 
-	/**
+	*//**
 	 * This test will test the fortification logic which is done by
 	 * {@link Player#fortify(Territory, Territory, int)} method.
-	 */
+	 *//*
 	@Test
 	public void testFortify() {
 		// setting up context
@@ -130,13 +130,13 @@ public class PlayerTest {
 		assertEquals(7, fromTerritory.getArmyCount());
 	}
 
-	/**
+	*//**
 	 * This method test
 	 * {@link Player#attack(Territory, Territory, Player, boolean, int, int, PhaseViewModel)}
 	 * method where attack mode is normal and there is only one army attacking and
 	 * defending in both territories.
 	 * 
-	 */
+	 *//*
 	@Test
 	public void testAttackCaseOne() {
 		// setUp context
@@ -168,12 +168,12 @@ public class PlayerTest {
 		}
 	}
 
-	/**
+	*//**
 	 * This method test
 	 * {@link Player#attack(Territory, Territory, Player, boolean, int, int, PhaseViewModel)}
 	 * method where attack mode is All-out.
 	 * 
-	 */
+	 *//*
 	@Test
 	public void testAttackCaseTwo() {
 		// setUp context
@@ -203,11 +203,11 @@ public class PlayerTest {
 		}
 	}
 	
-	/**
+	*//**
 	 * This method will test the
 	 * {@link Player#attackerHelper(Territory, Territory, List, List, PhaseViewModel)}
 	 * method where attacker beats defender completely.
-	 */
+	 *//*
 	@Test
 	public void testAttackerHelperCaseOne() {
 		// setting up context
@@ -225,12 +225,12 @@ public class PlayerTest {
 		assertEquals(3, defenderTerritory.getArmyCount());
 	}
 
-	/**
+	*//**
 	 * This method will test the
 	 * {@link Player#attackerHelper(Territory, Territory, List, List, PhaseViewModel)}
 	 * method where attacker beats defender's one army and defender beats attacker's
 	 * one army.
-	 */
+	 *//*
 	@Test
 	public void testAttackerHelperCaseTwo() {
 		// setting up context
@@ -248,11 +248,11 @@ public class PlayerTest {
 		assertEquals(4, defenderTerritory.getArmyCount());
 	}
 
-	/**
+	*//**
 	 * This method tests {@link Player#recordDiceRolls(int, boolean)} method where
 	 * armySize and if player for which dice are rolled is attacker or defender will
 	 * decide how many dices can be rolled.
-	 */
+	 *//*
 	@Test
 	public void testRecordDiceRolls() {
 		List<Integer> diceRollList;
@@ -284,3 +284,4 @@ public class PlayerTest {
 		assertEquals(2, diceRollList.size());
 	}
 }
+*/

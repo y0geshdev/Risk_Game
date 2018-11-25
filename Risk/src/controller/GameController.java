@@ -13,6 +13,7 @@ import domain.CardExchangeViewModel;
 import domain.Continent;
 import domain.PhaseViewModel;
 import domain.Player;
+import domain.PlayerStrategyEnum;
 import domain.Territory;
 import domain.WorldDominationModel;
 import javafx.application.Platform;
@@ -263,6 +264,8 @@ public class GameController {
 	 */
 	private Stage cardExchangeViewStage;
 
+	Map<Player, PlayerStrategyEnum> playerStrategyMapping = new HashMap<>();
+
 	/**
 	 * This method forms the game map on UI, distributes territories randomly to the
 	 * players, select the player randomly to start the startup phase of the game.
@@ -282,10 +285,20 @@ public class GameController {
 		disableComponents(fortiPhaseUI);
 		disableComponents(reinfoPhaseUI);
 
-		while (getPlayersCount() == -1)
-			;
+		/*
+		 * while (getPlayersCount() == -1) ;
+		 */
+		// testing purpose
+		playersCount = 2;
+
 		playersList = new ArrayList<>(playersCount);
 		gameService.createPlayers(playersList, playersCount);
+
+		// testing purpose
+		playerStrategyMapping.put(playersList.get(0), PlayerStrategyEnum.HUMAN);
+		playerStrategyMapping.put(playersList.get(1), PlayerStrategyEnum.AGGRESSIVE);
+		//playerStrategyMapping.put(playersList.get(2), PlayerStrategyEnum.AGGRESSIVE);
+
 		gameService.assignTerritories(playersList);
 		updateMapData();
 
@@ -332,27 +345,42 @@ public class GameController {
 		}
 		int numberOfArmies = Integer.parseInt(armyInput);
 		// perform reinforcement
-		gameService.addReinforcement(selectedTerritory, numberOfArmies);
+		gameService.addReinforcement(selectedTerritory.getOwner(), selectedTerritory, numberOfArmies, phaseViewModel);
 
 		// update UI.
 		updateTerritoryFields(selectedTerritory);
-		updatePhaseInfo(null, null, String.valueOf(numberOfArmies) + " armies moved to " + selectedTerritory.getName());
 		worldDominationModel.updateState(continentsSet, territoriesSet);
+		sleep(1);
+		Runnable task = new Runnable() {
+			@Override
+			public void run() {
+				sleep(50);
+				// perform action here.
+				// check if startUp phase is completed or not.
+				if (!ifStartUpIsComepleted) {
+					if (currentPlayer.getArmyCount() == 0) {
+						playersWithZeroArmies.add(currentPlayer);
+					}
+					currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);
+					while (currentPlayer.getArmyCount() == 0 && playersWithZeroArmies.size() != playersList.size()) {
+						playersWithZeroArmies.add(currentPlayer);
+						currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);
+					}
+					if (playersWithZeroArmies.size() == playersList.size()
+							|| playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
+						enableComponents(reinfoPhaseUI);
+						startUpPhase();
+					} else {
+						disableComponents(reinfoPhaseUI);
+						reinforcementForNonHumanPlayer();
+					}
 
-		// check if startUp phase is completed or not.
-		if (!ifStartUpIsComepleted) {
-			if (currentPlayer.getArmyCount() == 0) {
-				playersWithZeroArmies.add(currentPlayer);
+				} else {
+					reinforcementPhase();
+				}
 			}
-			currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);
-			while (currentPlayer.getArmyCount() == 0 && playersWithZeroArmies.size()!=playersList.size()) {
-				currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);
-			}
-			startUpPhase();
-
-		} else {
-			reinforcementPhase();
-		}
+		};
+		Platform.runLater(task);
 	}
 
 	/**
@@ -381,10 +409,12 @@ public class GameController {
 			if (!isAllOutMode) {
 				List<String> errorList = new ArrayList<>();
 
+				totalDefenderDice = defenderTerritory.getArmyCount()>=2?2:1;
+				defenderTotalDiceTF.setText(String.valueOf(totalDefenderDice));
 				// validate number of dice entered by user for attacker and defender for normal
 				// mode.
 				gameService.validateSelectedDiceNumber(attackerTerritory, defenderTerritory,
-						attackerTotalDiceTF.getText(), defenderTotalDiceTF.getText(), errorList);
+						attackerTotalDiceTF.getText(), String.valueOf(totalDefenderDice), errorList);
 
 				// show if there are any validation errors.
 				if (errorList.size() > 0) {
@@ -396,7 +426,7 @@ public class GameController {
 					return;
 				} else {
 					totalAttackerDice = Integer.parseInt(attackerTotalDiceTF.getText());
-					totalDefenderDice = Integer.parseInt(defenderTotalDiceTF.getText());
+					//totalDefenderDice = Integer.parseInt(defenderTotalDiceTF.getText());
 				}
 			}
 
@@ -404,8 +434,9 @@ public class GameController {
 			updatePhaseInfo(null, null, attackerTerritory.getName() + " attacked on " + defenderTerritory.getName());
 
 			// perform attack
-			Pair<Boolean, Integer> attackResult = gameService.attack(attackerTerritory, defenderTerritory, isAllOutMode,
-					totalAttackerDice, totalDefenderDice, phaseViewModel);
+			Pair<Boolean, Integer> attackResult = gameService.attack(attackerTerritory.getOwner(),
+					defenderTerritory.getOwner(), attackerTerritory, defenderTerritory, isAllOutMode, totalAttackerDice,
+					totalDefenderDice, phaseViewModel);
 
 			// update UI
 			updateTerritoryFields(attackerTerritory);
@@ -420,8 +451,8 @@ public class GameController {
 					armiesToMove = getNumberOfArmiesToMove(attackResult.getValue(),
 							attackerTerritory.getArmyCount() - 1);
 				}
-				gameService.fortify(attackerTerritory, defenderTerritory, armiesToMove, new ArrayList<String>());
-				updatePhaseInfo(null, "Attack Phase", "Moved " + armiesToMove + " armies from "
+				gameService.fortify(currentPlayer, attackerTerritory, defenderTerritory, armiesToMove, phaseViewModel);
+				updatePhaseInfo(null, "Attack Phase","Moved " + armiesToMove + " armies from "
 						+ attackerTerritory.getName() + " to " + defenderTerritory.getName() + " after conquering it.");
 			}
 
@@ -434,36 +465,55 @@ public class GameController {
 			if (!cardExchangeViewModel.getIfPlayerGetsCard() && ifWon)
 				cardExchangeViewModel.setIfPlayerGetsCard(ifWon);
 
-			// check if current player won whole game.
-			if (gameService.isGameEnded(currentPlayer, territoriesSet.size())) {
-				showInformation("Player " + currentPlayer.getName() + " won the game.");
-				Platform.exit();
-			} else {
-
-				// logic to automatically end the attack if current user can't attack anymore.
-				boolean furtherAttackPossible = gameService.canPlayerAttackFurther(currentPlayer);
-
-				// If there are territories for current player from which he can attack
-				if (furtherAttackPossible) {
-					attackAttackerCB.setItems(FXCollections.observableList(currentPlayer.getTerritories()));
-					attackAttackerCB.setValue(attackAttackerCB.getItems().get(0));
-
-					List<Territory> defenderTerritories = gameService
-							.getAttackableTerritories(currentPlayer.getTerritories().get(0));
-					if (defenderTerritories.size() > 0) {
-						attackDefenderCB.setDisable(false);
-						attackDefenderCB.setItems(FXCollections.observableList(defenderTerritories));
-						attackDefenderCB.setValue(defenderTerritories.get(0));
+			sleep(1);
+			Runnable task = new Runnable() {
+				@Override
+				public void run() {
+					sleep(50);
+					// perform action here.
+					// check if current player won whole game.
+					if (gameService.isGameEnded(currentPlayer, territoriesSet.size())) {
+						showInformation("Player " + currentPlayer.getName() + " won the game.");
+						Platform.exit();
 					} else {
-						attackDefenderCB.setDisable(true);
-						attackDefenderCB.setValue(null);
+
+						// logic to automatically end the attack if current user can't attack anymore.
+						boolean furtherAttackPossible = gameService.canPlayerAttackFurther(currentPlayer);
+
+						// If there are territories for current player from which he can attack
+						if (furtherAttackPossible) {
+							attackAttackerCB.setItems(FXCollections.observableList(currentPlayer.getTerritories()));
+							attackAttackerCB.setValue(attackAttackerCB.getItems().get(0));
+
+							List<Territory> defenderTerritories = gameService
+									.getAttackableTerritories(currentPlayer.getTerritories().get(0));
+							if (defenderTerritories.size() > 0) {
+								attackDefenderCB.setDisable(false);
+								attackDefenderCB.setItems(FXCollections.observableList(defenderTerritories));
+								attackDefenderCB.setValue(defenderTerritories.get(0));
+							} else {
+								attackDefenderCB.setDisable(true);
+								attackDefenderCB.setValue(null);
+							}
+						}
+						// else finish attack automatically.
+						else {
+							updatePhaseInfo(null, null, "Cannot attack any further.");
+							sleep(1);
+							Runnable task = new Runnable() {	
+								@Override
+								public void run() {
+									sleep(50);
+									// perform action here.
+									finishAttack(event);
+								}
+							};
+						Platform.runLater(task);
+						}
 					}
 				}
-				// else finish attack automatically.
-				else {
-					finishAttack(event);
-				}
-			}
+			};
+			Platform.runLater(task);
 		}
 	}
 
@@ -568,21 +618,32 @@ public class GameController {
 			return;
 		}
 
-		// fortify
-		gameService.fortify(from, to, armiesToMove, errorList);
+		// validate fortification params
+		gameService.validatefortifcationParameters(from, to, armiesToMove, errorList);
 
-		// check for errors while fortifying
+		// check for errors after validation
 		if (errorList.size() > 0) {
 			String errors = "Cannot fortify due to:";
 			for (String error : errorList)
 				errors = errors.concat("\n-" + error);
 			showError(errors);
 		} else {
-
-			// update UI
+			// fortify and update UI
+			gameService.fortify(currentPlayer, from, to, armiesToMove, phaseViewModel);
+			updatePhaseInfo(null, null, phaseViewModel.getPhaseInfo() + "\nMoved " + armiesToMove + " armies from "
+					+ from.getName() + " to " + to.getName());
 			updateTerritoryFields(from);
 			updateTerritoryFields(to);
-			finishFortification(event);
+			sleep(1);
+			Runnable task = new Runnable() {	
+				@Override
+				public void run() {
+					sleep(50);
+					finishFortification(event);	
+				}
+			};
+		Platform.runLater(task);
+			
 		}
 	}
 
@@ -635,23 +696,28 @@ public class GameController {
 		updatePhaseInfo(currentPlayer.getName(), "Reinforcement Phase",
 				"Place reinforcement for " + currentPlayer.getName() + " territories.");
 
-		// display exchange view every time after the fortification phase is finished.
-		cardExchangeViewModel.setViewForCurrentPlayer(currentPlayer);
-		cardExchangeViewStage.showAndWait();
-
-		// keep exchanging card till player have cards less than 5
-		while (cardExchangeViewModel.getCurrentPlayerCards(currentPlayer).size() >= 5) {
+		if(playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
+			// display exchange view every time after the fortification phase is finished.
+			cardExchangeViewModel.setViewForCurrentPlayer(currentPlayer);
 			cardExchangeViewStage.showAndWait();
+
+			// keep exchanging card till player have cards less than 5
+			while (cardExchangeViewModel.getCurrentPlayerCards(currentPlayer).size() >= 5) {
+				cardExchangeViewStage.showAndWait();
+			}
+
+			// update UI
+			cardExchangeViewStage.hide();
+			setArmiesOnPlayerOwnedCardTerritory();
+			enableComponents(reinfoPhaseUI);
+
+			// calculated armies for reinforcement phase.
+			gameService.calcArmiesForReinforcement(currentPlayer);
+			displayPlayerInfo();
+		}else {
+			gameService.calcArmiesForReinforcement(currentPlayer);
+			reinforcementForNonHumanPlayer();
 		}
-
-		// update UI
-		cardExchangeViewStage.hide();
-		setArmiesOnPlayerOwnedCardTerritory();
-		enableComponents(reinfoPhaseUI);
-
-		// calculated armies for reinforcement phase.
-		gameService.calcArmiesForReinforcement(currentPlayer);
-		displayPlayerInfo();
 	}
 
 	/**
@@ -706,20 +772,44 @@ public class GameController {
 	 * This method begins the startUp phase.
 	 */
 	private void startUpPhase() {
-		
 
 		// if startUp phase is ended then prepare for reinforcement phase.
 		if (gameService.endOfStartUpPhase(playersWithZeroArmies, playersList)) {
 			ifStartUpIsComepleted = true;
 			currentPlayer = gameService.getNextPlayer(null, playersList);
 			updatePhaseInfo(currentPlayer.getName(), "Reinforcement Phase", "Reinforcement Phase started.");
-			gameService.calcArmiesForReinforcement(currentPlayer);
-			cardExchangeViewModel.setViewForCurrentPlayer(currentPlayer);
-			cardExchangeViewStage.showAndWait();
-			reinforcementPhase();
+			sleep(1);
+			Runnable task = new Runnable() {	
+				@Override
+				public void run() {
+					sleep(20);
+					// perform action here.
+					if (playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
+						gameService.calcArmiesForReinforcement(currentPlayer);
+						cardExchangeViewModel.setViewForCurrentPlayer(currentPlayer);
+						cardExchangeViewStage.showAndWait();
+						enableComponents(reinfoPhaseUI);
+						reinforcementPhase();
+					} else {
+						disableComponents(reinfoPhaseUI);
+						// need to add logic for card exchange of player is non human.
+						gameService.calcArmiesForReinforcement(currentPlayer);
+						reinforcementForNonHumanPlayer();
+					}
+				}
+			};
+		Platform.runLater(task);
+
+		} else {
+			updatePhaseInfo(currentPlayer.getName(), "StartUp Phase", "Place armies for " + currentPlayer.getName());
+			if (playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
+				enableComponents(reinfoPhaseUI);
+				displayPlayerInfo();
+			} else {
+				disableComponents(reinfoPhaseUI);
+				reinforcementForNonHumanPlayer();
+			}
 		}
-		updatePhaseInfo(currentPlayer.getName(), "StartUp Phase", "Place armies for " + currentPlayer.getName());
-		displayPlayerInfo();
 	}
 
 	/**
@@ -1101,4 +1191,168 @@ public class GameController {
 		worldDominationViewController.setUpWorldDominationView(playersList);
 	}
 
+	private void reinforcementForNonHumanPlayer() {
+
+		// do reinforcement or startup and update UI
+		playerArmies.setText(String.valueOf(currentPlayer.getArmyCount()));
+		if (ifStartUpIsComepleted) {
+			startUpAndReinforcementId.setText("Reinforcement Phase");
+		}
+
+		gameService.addReinforcement(currentPlayer, null, 0, phaseViewModel);
+		for (Territory territory : currentPlayer.getTerritories()) {
+			updateTerritoryFields(territory);
+		}
+		worldDominationModel.updateState(continentsSet, territoriesSet);
+
+		sleep(1);
+		Runnable task = new Runnable() {
+
+			@Override
+			public void run() {
+				sleep(50);
+				// check if startUp phase is completed or not.
+				if (!ifStartUpIsComepleted) {
+
+					// if current player have no armies to place then add it to playersWithZeroAmies
+					// set.
+					if (currentPlayer.getArmyCount() == 0) {
+						playersWithZeroArmies.add(currentPlayer);
+					}
+					// keep fetching next player till you find a player with non zero armies or all
+					// the players are added to playersWithZeroArmies set.
+					currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);
+					while (currentPlayer.getArmyCount() == 0 && playersWithZeroArmies.size() != playersList.size()) {
+						playersWithZeroArmies.add(currentPlayer);
+						currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);
+					}
+					if (playersWithZeroArmies.size() == playersList.size()
+							|| playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
+						startUpPhase();
+					} else {
+						reinforcementForNonHumanPlayer();
+					}
+
+				} else {
+					// if reinforcement is completed then prepare for attack phase and call for attack for non human player.
+					if (gameService.endOfReinforcementPhase(currentPlayer, cardExchangeViewModel)) {
+						playerArmies.setText(null);
+						playerTerritoryList.setValue(null);
+						attackForNonHumanPlayer();
+					} else {
+						reinforcementForNonHumanPlayer();
+					}
+				}
+			}
+		};
+		Platform.runLater(task);
+	}
+
+	private void attackForNonHumanPlayer() {
+
+		updatePhaseInfo(currentPlayer.getName(), "Attack Phase", "Attack Phase Started.");
+
+		// perform attack
+		Pair<Boolean, Integer> attackResult = gameService.attack(currentPlayer, null, null, null, true, 0, 0,
+				phaseViewModel);
+
+		// update UI
+		updateMapData();
+		worldDominationModel.updateState(continentsSet, territoriesSet);
+
+		boolean ifWon = attackResult.getKey();
+
+		// card exchange state change
+		if (!cardExchangeViewModel.getIfPlayerGetsCard() && ifWon)
+			cardExchangeViewModel.setIfPlayerGetsCard(ifWon);
+		
+		// to check if current player is entitled to draw a card from a deck or not.
+		if (cardExchangeViewModel.getIfPlayerGetsCard()) {
+			if (cardExchangeViewModel.getAllCards().size() != 0) {
+				cardExchangeViewModel.assignCardToAPlayer(currentPlayer);
+			} else {
+				phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo()
+						+ "\nPlayer Won't be able to get a card as inital deck doesn't have enough cards.");
+			}
+			cardExchangeViewModel.setIfPlayerGetsCard(false);
+		}
+
+		// check if current player won whole game.
+		if (gameService.isGameEnded(currentPlayer, territoriesSet.size())) {
+			showInformation("Player " + currentPlayer.getName() + " won the game.");
+			Platform.exit();
+		} else {
+			// to end attack phase for non human player and start fortification phase.
+			sleep(1);
+			Runnable task = new Runnable() {
+				@Override
+				public void run() {
+					sleep(70);
+					fortificationForNonHumanPlayer();
+				}
+			};
+			Platform.runLater(task);
+		}
+	}
+	
+	private void fortificationForNonHumanPlayer() {
+		updatePhaseInfo(null, "Fortification Phase", "Fortification Phase started.");
+		gameService.fortify(currentPlayer, null, null, 0, phaseViewModel);
+		for (Territory territory : currentPlayer.getTerritories()) {
+			updateTerritoryFields(territory);
+		}
+		worldDominationModel.updateState(continentsSet, territoriesSet);
+		// finishFortification(event);
+
+		sleep(1);
+		Runnable task = new Runnable() {
+			@Override
+			public void run() {
+				sleep(50);
+				// perform action here.
+				armiesNoToFortify.setText("");
+				disableComponents(fortiPhaseUI);
+
+				// find next player in turn who is still playing
+				currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);
+				while (currentPlayer.getTerritories().size() == 0)
+					currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);
+				updatePhaseInfo(currentPlayer.getName(), "Reinforcement Phase",
+						"Place reinforcement for " + currentPlayer.getName() + " territories.");
+
+				if(playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
+					// display exchange view every time after the fortification phase is finished.
+					cardExchangeViewModel.setViewForCurrentPlayer(currentPlayer);
+					cardExchangeViewStage.showAndWait();
+					// keep exchanging card till player have cards less than 5
+					while (cardExchangeViewModel.getCurrentPlayerCards(currentPlayer).size() >= 5) {
+						cardExchangeViewStage.showAndWait();
+					}
+
+					// update UI
+					cardExchangeViewStage.hide();
+					setArmiesOnPlayerOwnedCardTerritory();
+					enableComponents(reinfoPhaseUI);
+
+					// calculated armies for reinforcement phase.
+					gameService.calcArmiesForReinforcement(currentPlayer);
+					displayPlayerInfo();
+				}else {
+					gameService.calcArmiesForReinforcement(currentPlayer);
+					reinforcementForNonHumanPlayer();
+				}
+			}
+		};
+		Platform.runLater(task);
+
+	}
+
+	private void sleep(int time) {
+		try {
+			Thread.sleep(time * 100);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }

@@ -1,4 +1,4 @@
-package service;
+/*package service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -22,39 +22,39 @@ import domain.Player;
 import domain.Territory;
 import javafx.util.Pair;
 
-/**
+*//**
  * This Junit Test Class will have all the test cases for {@link GameService}
  * class.
  * 
  * @author Yogesh
  *
- */
+ *//*
 public class GameServiceTest {
-	/**
+	*//**
 	 * To hold GameService class instance.
-	 */
+	 *//*
 	private GameService gameService;
 
-	/**
+	*//**
 	 * It hold collection of all the continents in game in set.
-	 */
+	 *//*
 	private HashSet<Continent> continentsSet;
-	/**
+	*//**
 	 * It hold collection of all the territory in game in set.
-	 */
+	 *//*
 	private HashSet<Territory> territoriesSet;
-	/**
+	*//**
 	 * It hold collection of all the territories in game in list.
-	 */
+	 *//*
 	private List<Territory> territoryList;
-	/**
+	*//**
 	 * It hold collection of all the continents in game in list.
-	 */
+	 *//*
 	private List<Continent> continentList;
 
-	/**
+	*//**
 	 * This method setup require common context before every test is run.
-	 */
+	 *//*
 	@Before
 	public void setUp() {
 		gameService = new GameService();
@@ -102,10 +102,10 @@ public class GameServiceTest {
 		MapController.continentsSet = continentsSet;
 	}
 
-	/**
+	*//**
 	 * This method test if {@link GameService#assignTerritories(List)} assigns
 	 * territories to players or not.
-	 */
+	 *//*
 	@Test
 	public void testAssignTerritories() {
 		Player playerOne = new Player();
@@ -118,12 +118,12 @@ public class GameServiceTest {
 		assertTrue(playerOne.getTerritories().size() > 0 && playerTwo.getTerritories().size() > 0);
 	}
 
-	/**
+	*//**
 	 * This method is use to test the functionality of
 	 * {@link GameService#calcArmiesForReinforcement(Player)} method that whether it
 	 * calculate armies for a given player as per game rules or not when player
 	 * occupy whole continent..
-	 */
+	 *//*
 	@Test
 	public void testCalcArmiesForReinforcementCaseOne() {
 
@@ -134,12 +134,12 @@ public class GameServiceTest {
 
 	}
 
-	/**
+	*//**
 	 * This method is use to test the functionality of
 	 * {@link GameService#calcArmiesForReinforcement(Player)} method that whether it
 	 * calculate armies for a given player as per game rules or not when player
 	 * doesn't occupy whole continent.
-	 */
+	 *//*
 	@Test
 	public void testCalcArmiesForReinforcementCaseTwo() {
 
@@ -149,12 +149,12 @@ public class GameServiceTest {
 		assertEquals(3, p2.getArmyCount());
 	}
 
-	/**
+	*//**
 	 * This method test {@link GameService#createPlayers(List, int)} method which
 	 * should populate playerList which is passed as one of the argument with as
 	 * many players as denoted by numberOfplayers argument.
 	 * 
-	 */
+	 *//*
 	@Test
 	public void testCreatePlayers() {
 		List<Player> playerList = new ArrayList<>();
@@ -163,12 +163,12 @@ public class GameServiceTest {
 		assertEquals(numberOfplayers, playerList.size());
 	}
 
-	/**
+	*//**
 	 * This test case is for
 	 * {@link GameService#validateArmyInput(String, Player, Territory, List)} method
 	 * where we test to various cases where method validates given parameters as per
 	 * logic.
-	 */
+	 *//*
 	@Test
 	public void testValidateArmyInput() {
 		Player player = new Player();
@@ -205,12 +205,12 @@ public class GameServiceTest {
 		assertEquals(errorString, errorList.get(0));
 	}
 
-	/**
+	*//**
 	 * This test checks if the
 	 * {@link GameService#getAttackableTerritories(Territory)} method returns valid
 	 * attackable territories according to given territory and according to game
 	 * rule.
-	 */
+	 *//*
 	@Test
 	public void testGetAttackableTerritories() {
 		Player playerOne = new Player();
@@ -226,12 +226,12 @@ public class GameServiceTest {
 		assertEquals(2, gameService.getAttackableTerritories(territoryList.get(0)).size());
 	}
 
-	/**
+	*//**
 	 * This test checks if the
 	 * {@link GameService#fortify(Territory, Territory, int, List)} method fortify
 	 * given territory according to game logic and after proper validation or not
 	 * when armies to move is greater than from territory army count.
-	 */
+	 *//*
 	@Test
 	public void testFortifyCaseOne() {
 		territoryList.get(0).setArmyCount(10);
@@ -244,12 +244,12 @@ public class GameServiceTest {
 
 	}
 
-	/**
+	*//**
 	 * This test checks if the
 	 * {@link GameService#fortify(Territory, Territory, int, List)} method fortify
 	 * given territory according to game logic and after proper validation or not
 	 * when from territory try to move armies to itself.
-	 */
+	 *//*
 	@Test
 	public void testFortifyCaseTwo() {
 		territoryList.get(0).setArmyCount(10);
@@ -263,10 +263,10 @@ public class GameServiceTest {
 
 	}
 
-	/**
+	*//**
 	 * This test checks if the {@link GameService#attack(Territory, Territory)}
 	 * method attack given territory or not.
-	 */
+	 *//*
 	@Test
 	public void testAttack() {
 		Player playerOne = new Player();
@@ -289,12 +289,12 @@ public class GameServiceTest {
 
 	}
 
-	/**
+	*//**
 	 * This test checks if the
 	 * {@link GameService#getFortifiableTerritories(Territory)} method returns valid
 	 * fortifiable territories according to given territory and according to game
 	 * rule.
-	 */
+	 *//*
 	@Test
 	public void testGetFortifiableTerritories() {
 		Player player = new Player();
@@ -308,11 +308,11 @@ public class GameServiceTest {
 		assertEquals(3, gameService.getFortifiableTerritories(territoryList.get(0)).size());
 	}
 
-	/**
+	*//**
 	 * This test checks if the {@link GameService#getNextPlayer()} method returns
 	 * valid player whose turn it is as per round robin fashion for choosing player
 	 * turn
-	 */
+	 *//*
 	@Test
 	public void testGetNextPlayer() {
 		List<Player> playerList = new ArrayList<>();
@@ -331,10 +331,10 @@ public class GameServiceTest {
 		}
 	}
 
-	/**
+	*//**
 	 * This test checks if the {@link GameService#addReinforcement()} method add
 	 * correct number of reinforcement armies to current player's selected territory
-	 */
+	 *//*
 
 	@Test
 	public void testAddReinforcement() {
@@ -357,10 +357,10 @@ public class GameServiceTest {
 
 	}
 
-	/**
+	*//**
 	 * This test check if the method {@link GameService#canPlayerAttackFurther()}
 	 * returns correct boolean based on if current player can attack further or not
-	 */
+	 *//*
 
 	@Test
 	public void testCanPlayerAttackFurther() {
@@ -381,11 +381,11 @@ public class GameServiceTest {
 
 	}
 
-	/**
+	*//**
 	 * This test check if the method {@link GameService#ifContinentOccupied()}
 	 * returns correct boolean based on if current player occupies all the
 	 * territories of the continent and hence occupies the continent.
-	 */
+	 *//*
 	@Test
 	public void testIfContinentOccupied() {
 		Player player = new Player();
@@ -395,10 +395,10 @@ public class GameServiceTest {
 
 	}
 
-	/**
+	*//**
 	 * This test checks if the {@link GameService#endOfStartUpPhase()} method
 	 * returns valid boolean to check if the startUp phase is completed or not.
-	 */
+	 *//*
 	@Test
 	public void testEndOfStartUpPhase() {
 		Set<Player> playersWithZeroArmies = new HashSet<>();
@@ -415,11 +415,11 @@ public class GameServiceTest {
 		assertTrue(gameService.endOfStartUpPhase(playersWithZeroArmies, playerList));
 	}
 
-	/**
+	*//**
 	 * This method checks if the
 	 * {@link GameService#endOfReinforcementPhase(Player, CardExchangeViewModel)}
 	 * method return correct result or not.
-	 */
+	 *//*
 	@Test
 	public void testEndOfReinforcementPhase() {
 		Player playerOne = new Player();
@@ -431,10 +431,10 @@ public class GameServiceTest {
 		assertTrue(gameService.endOfReinforcementPhase(playerOne, new CardExchangeViewModel()));
 	}
 
-	/**
+	*//**
 	 * This method test logic for {@link GameService#isGameEnded(Player, int)}
 	 * method.
-	 */
+	 *//*
 	@Test
 	public void testIsGameEnded() {
 		// Setting context
@@ -449,10 +449,10 @@ public class GameServiceTest {
 
 	}
 
-	/**
+	*//**
 	 * This method will test whether the values entered by user for number of dice
 	 * roll for attacker and defender are valid or not.
-	 */
+	 *//*
 	@Test
 	public void testValidateSelectedDiceNumber() {
 		// Setting context
@@ -469,3 +469,4 @@ public class GameServiceTest {
 		assertEquals(error, errorList.get(0));
 	}
 }
+*/

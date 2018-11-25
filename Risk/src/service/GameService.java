@@ -10,8 +10,10 @@ import java.util.Set;
 
 import controller.GameController;
 import controller.MapController;
+import domain.AggressiveStrategy;
 import domain.CardExchangeViewModel;
 import domain.Continent;
+import domain.HumanStrategy;
 import domain.PhaseViewModel;
 import domain.Player;
 import domain.Territory;
@@ -36,7 +38,7 @@ public class GameService {
 		List<Territory> territoryObjectList = new ArrayList<>(MapController.territoriesSet);
 
 		Territory tempTerritory;
-		
+
 		// iterate over players list and assign then random territory till all the
 		// territories are assigned.
 		while (territoryObjectList.size() != 0) {
@@ -122,13 +124,17 @@ public class GameService {
 	 */
 	public void createPlayers(List<Player> playerList, int totalNumberOfPlayers) {
 		int armyCount = getArmyCount(totalNumberOfPlayers);
-		//iterate till the total Number of players and create  that many player objects.
+		// iterate till the total Number of players and create that many player objects.
 		for (int i = 0; i < totalNumberOfPlayers; i++) {
 			Player playerObj = new Player();
 			playerObj.setName("Player " + (i + 1));
 			playerObj.setArmyCount(armyCount);
 			playerList.add(playerObj);
 		}
+		// stubbing players
+		playerList.get(0).setPlayingStrategy(new HumanStrategy());
+		playerList.get(1).setPlayingStrategy(new AggressiveStrategy());
+		//playerList.get(2).setPlayingStrategy(new AggressiveStrategy());
 	}
 
 	/**
@@ -147,7 +153,8 @@ public class GameService {
 		int diceNumber;
 		Player nextPlayer = null;
 		Integer maxNumber = Integer.MIN_VALUE;
-		// At the start of the game prevPlayer will be null and player who gets the maximum number on dice roll will have the first turn 
+		// At the start of the game prevPlayer will be null and player who gets the
+		// maximum number on dice roll will have the first turn
 		if (prevPlayer == null) {
 			for (int i = 0; i < playerList.size(); i++) {
 				diceNumber = randomIndex(1, 6);
@@ -161,7 +168,8 @@ public class GameService {
 
 		} else {
 			int indexOfPreviousPlayer = playerList.indexOf(prevPlayer);
-			//if it's last player of the list the next player will be the first one in the list
+			// if it's last player of the list the next player will be the first one in the
+			// list
 			if (indexOfPreviousPlayer == playerList.size() - 1) {
 				nextPlayer = playerList.get(0);
 				return nextPlayer;
@@ -191,7 +199,7 @@ public class GameService {
 		int numberOfArmiesInput;
 		try {
 			numberOfArmiesInput = Integer.parseInt(inputText);
-			//army input cannot be greater than the total army the player has.
+			// army input cannot be greater than the total army the player has.
 			if (numberOfArmiesInput > playerInFocus.getArmyCount()) {
 				error = "Number of armies cannot be more than what owner owns";
 				errorList.add(error);
@@ -235,6 +243,10 @@ public class GameService {
 	/**
 	 * This method delegate attack from controller to player class.
 	 * 
+	 * @param attacker:
+	 *            Player who is attacking.
+	 * @param defender:
+	 *            Player whose territory is attacked.
 	 * @param attackerTerritory:
 	 *            Territory from which attack is performed.
 	 * @param defenderTerritory:
@@ -253,14 +265,39 @@ public class GameService {
 	 * @return A {@link Pair} class which hold data as Boolean and Integer
 	 *         representing attack outcome and minimum troops to move.
 	 */
-	public Pair<Boolean, Integer> attack(Territory attackerTerritory, Territory defenderTerritory, boolean isAllOutMode,
-			int totalAttackerDice, int totalDefenderDice, PhaseViewModel phaseViewModel) {
-		Player attacker = attackerTerritory.getOwner();
-		Player defender = defenderTerritory.getOwner();
+	public Pair<Boolean, Integer> attack(Player attacker, Player defender, Territory attackerTerritory,
+			Territory defenderTerritory, boolean isAllOutMode, int totalAttackerDice, int totalDefenderDice,
+			PhaseViewModel phaseViewModel) {
 
-		return attacker.attack(attackerTerritory, defenderTerritory, defender, isAllOutMode, totalAttackerDice,
+		return attacker.attack(defender, attackerTerritory, defenderTerritory, isAllOutMode, totalAttackerDice,
 				totalDefenderDice, phaseViewModel);
 
+	}
+
+	/**
+	 * This method is used to validate the parameters passed for fortification and
+	 * populate errorList accordingly
+	 * 
+	 * @param from:
+	 *            Territory from which armies to be moved.
+	 * @param to:
+	 *            Territory to which armies to be moved.
+	 * @param armiesToMove:
+	 *            Number of armies to move.
+	 * @param errorList:
+	 *            List to hold validation errors.
+	 */
+	public void validatefortifcationParameters(Territory from, Territory to, int armiesToMove, List<String> errorList) {
+		if (from.getArmyCount() <= 1) {
+			errorList.add("Don't have sufficient armies to move.");
+			return;
+		} else if (from.getArmyCount() <= armiesToMove) {
+			errorList.add("Can only move upto " + String.valueOf(from.getArmyCount() - 1) + " armies.");
+			return;
+		} else if (from == to) {
+			errorList.add("Can't move from same territory to same territory.");
+			return;
+		}
 	}
 
 	/**
@@ -273,23 +310,9 @@ public class GameService {
 	 *            Territory to which armies to be moved.
 	 * @param armiesToMove:
 	 *            Number of armies to move.
-	 * @param errorList:
-	 *            List to hold validation errors.
 	 */
-	public void fortify(Territory from, Territory to, int armiesToMove, List<String> errorList) {
-		if (from.getArmyCount() <= 1) {
-			errorList.add("Don't have sufficient armies to move.");
-			return;
-		} else if (from.getArmyCount() <= armiesToMove) {
-			errorList.add("Can only move upto " + String.valueOf(from.getArmyCount() - 1) + " armies.");
-			return;
-		} else if (from == to) {
-			errorList.add("Can't move from same territory to same territory.");
-			return;
-		} else {
-			Player player = from.getOwner();
-			player.fortify(from, to, armiesToMove);
-		}
+	public void fortify(Player player, Territory from, Territory to, int armiesToMove, PhaseViewModel phaseViewModel) {
+			player.fortify(from, to, armiesToMove,phaseViewModel);
 	}
 
 	/**
@@ -376,15 +399,17 @@ public class GameService {
 	 * @param numberOfArmies:
 	 *            number of armies to add to a territory as reinforcement.
 	 */
-	public void addReinforcement(Territory selectedTerritory, int numberOfArmies) {
+	public void addReinforcement(Player player, Territory selectedTerritory, int numberOfArmies,
+			PhaseViewModel phaseViewModel) {
 
-		Player player = selectedTerritory.getOwner();
-		player.reinforcement(selectedTerritory, numberOfArmies);
+		player.reinforcement(selectedTerritory, numberOfArmies, phaseViewModel);
 
 	}
 
 	/**
-	 * This method check if currentPlayer can attack any further or not.
+	 * This method check if currentPlayer can attack any further or not by checking
+	 * if current player have any territory with army greater than 1 and that
+	 * territory neighbor as a territory owned by some other player.
 	 * 
 	 * @param currentPlayer:
 	 *            Player to which further attacking is possible or not is checked.

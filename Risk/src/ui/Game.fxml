@@ -36,7 +36,7 @@
       <VBox layoutX="725.0" layoutY="1.0" prefHeight="578.0" prefWidth="239.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <AnchorPane fx:id="phaseViewUI" minHeight="-Infinity" minWidth="-Infinity" prefHeight="121.0" prefWidth="237.0" style="-fx-border-color: black;" VBox.vgrow="ALWAYS" />
-            <AnchorPane fx:id="reinfoPhaseUI" prefHeight="119.0" prefWidth="239.0" style="-fx-border-color: black;" VBox.vgrow="ALWAYS">
+            <AnchorPane fx:id="reinfoPhaseUI" prefHeight="124.0" prefWidth="239.0" style="-fx-border-color: black;" VBox.vgrow="NEVER">
                <VBox.margin>
                   <Insets top="2.0" />
                </VBox.margin>
@@ -50,7 +50,7 @@
                   <Button fx:id="addArmies" layoutX="139.0" layoutY="94.0" mnemonicParsing="false" onAction="#addReinforcement" prefHeight="22.0" prefWidth="84.0" text="Add" />
                </children>
             </AnchorPane>
-            <AnchorPane fx:id="attackPhaseUI" prefHeight="152.0" prefWidth="239.0" style="-fx-border-color: black;" VBox.vgrow="ALWAYS">
+            <AnchorPane fx:id="attackPhaseUI" prefHeight="157.0" prefWidth="239.0" style="-fx-border-color: black;" VBox.vgrow="NEVER">
                <VBox.margin>
                   <Insets top="2.0" />
                </VBox.margin>
@@ -70,10 +70,10 @@
                   </RadioButton>
                   <RadioButton fx:id="normalModeRB" layoutX="170.0" layoutY="73.0" mnemonicParsing="false" text="Normal" toggleGroup="$attackMode" />
                   <TextField fx:id="attackerTotalDiceTF" layoutX="13.0" layoutY="98.0" prefHeight="22.0" prefWidth="101.0" promptText="total attacker dice" />
-                  <TextField fx:id="defenderTotalDiceTF" layoutX="123.0" layoutY="98.0" prefHeight="22.0" prefWidth="101.0" promptText="total defender dice" />
+                  <TextField fx:id="defenderTotalDiceTF" disable="true" editable="false" layoutX="123.0" layoutY="98.0" prefHeight="22.0" prefWidth="101.0" promptText="total defender dice" />
                </children>
             </AnchorPane>
-            <AnchorPane fx:id="fortiPhaseUI" prefHeight="128.0" prefWidth="239.0" style="-fx-border-color: black;" VBox.vgrow="ALWAYS">
+            <AnchorPane fx:id="fortiPhaseUI" prefHeight="140.0" prefWidth="239.0" style="-fx-border-color: black;" VBox.vgrow="NEVER">
                <VBox.margin>
                   <Insets top="2.0" />
                </VBox.margin>
