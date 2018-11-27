@@ -21,7 +21,7 @@ public class AggressiveStrategy implements IStrategy {
 	public void reinforcement(Player player, Territory selectedTerritory, int numberOfArmies,
 			PhaseViewModel phaseViewModel) {
 
-		phaseViewModel.setPhaseInfo("Placing armies for Aggressive player.");
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo()+"\nPlacing armies for Aggressive player.");
 		phaseViewModel.setCurrentPlayer(player.getName());
 		selectedTerritory = fetchAttackFromTerritory(player);
 		selectedTerritory.setArmyCount(selectedTerritory.getArmyCount() + player.getArmyCount());
@@ -64,7 +64,7 @@ public class AggressiveStrategy implements IStrategy {
 			return;
 		}else {
 			armiesToMove = from.getArmyCount()-1;
-			phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nFortified strongest territory with "+armiesToMove+" from "+from.getName());
+			phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nFortified "+to.getName()+" with "+armiesToMove+" from "+from.getName());
 			from.setArmyCount(1);
 			to.setArmyCount(to.getArmyCount() + armiesToMove);
 		}
@@ -75,7 +75,7 @@ public class AggressiveStrategy implements IStrategy {
 	public Pair<Boolean, Integer> attack(Player attacker, Player defender, Territory attackerTerritory,
 			Territory defenderTerritory, boolean isAllOutMode, int totalAttackerDice, int totalDefenderDice,
 			PhaseViewModel phaseViewModel) {
-		phaseViewModel.setPhaseInfo("Will attack from strongest territory to it's weakest neighbour.");
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo()+"\nPlayer will attack from strongest territory to it's weakest neighbour.");
 
 		attackerTerritory = fetchAttackFromTerritory(attacker);
 		defenderTerritory = fetchAttackToTerritory(attackerTerritory);

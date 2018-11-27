@@ -20,11 +20,13 @@ public class HumanStrategy implements IStrategy {
 			PhaseViewModel phaseViewModel) {
 		selectedTerritory.setArmyCount(selectedTerritory.getArmyCount() + numberOfArmies);
 		player.setArmyCount(player.getArmyCount() - numberOfArmies);
-		phaseViewModel.setPhaseInfo(String.valueOf(numberOfArmies) + " armies moved to " + selectedTerritory.getName());
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo()+"\n"+String.valueOf(numberOfArmies) + " armies moved to " + selectedTerritory.getName());
 	}
 
 	@Override
 	public void fortify(Player player, Territory from, Territory to, int armiesToMove, PhaseViewModel phaseViewModel) {
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nMoved " + armiesToMove + " to " + to.getName()
+				+ " from " + from.getName());
 		from.setArmyCount(from.getArmyCount() - armiesToMove);
 		to.setArmyCount(to.getArmyCount() + armiesToMove);
 
