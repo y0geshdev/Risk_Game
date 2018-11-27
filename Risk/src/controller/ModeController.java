@@ -35,10 +35,10 @@ public class ModeController {
 	private ComboBox<Player> playerListTM;
 
 	@FXML
-	private ListView<IStrategy> allStrategiesTM;
+	private ListView<PlayerStrategyEnum> allStrategiesTM;
 
 	@FXML
-	private ListView<IStrategy> mappedStrategiesTM;
+	private ListView<PlayerStrategyEnum> mappedStrategiesTM;
 
 	@FXML
 	private TextField movesForDraw;
@@ -118,64 +118,74 @@ public class ModeController {
 		disableSMComponents();
 	}
 
-	/*
-	 * public void setPlayerStartegyTM(ActionEvent event) {
-	 * 
-	 * String error; if (map1PathTM.getText().trim().length() == 0 &&
-	 * map2PathTM.getText().trim().length() == 0 &&
-	 * map3PathTM.getText().trim().length() == 0 &&
-	 * map4PathTM.getText().trim().length() == 0 &&
-	 * map5PathTM.getText().trim().length() == 0) {
-	 * showError("Choose at least one file to play"); } else {
-	 * 
-	 * try { int playersCount = Integer.parseInt(noOfPlayerTM.getText()); int
-	 * drawMoves = Integer.parseInt(movesForDraw.getText()); int gameNumber =
-	 * Integer.parseInt(noOfGamesTM.getText()); if (playersCount <= 1) { error =
-	 * "Number of Players cannot be less than 2"; showError(error); } else if
-	 * (drawMoves < 10 || drawMoves > 50) { error =
-	 * "Enter Valid Number of Draw Moves"; showError(error); } else if (gameNumber <
-	 * 1 || gameNumber > 5) { error = "Enter Valid Number of Games";
-	 * showError(error); } else { enableTMComponents(); playerList = new
-	 * ArrayList<>(playersCount); createPlayer(playerList, playersCount);
-	 * playerListTM.setItems(FXCollections.observableList(playerList));
-	 * playerListTM.setValue(playerList.get(0));
-	 * allStrategiesTM.setItems(FXCollections.observableList(allStrategies)); } }
-	 * catch (NumberFormatException e) { error =
-	 * "Enter a valid Number For Draw, Player Count and Number of Games";
-	 * showError(error); }
-	 * 
-	 * }
-	 * 
-	 * }
-	 */
+	public void setPlayerStartegyTM(ActionEvent event) {
 
-	/*
-	 * public void addPlayerStrategyTM(ActionEvent event) {
-	 * 
-	 * IStrategy selectedStrategy =
-	 * allStrategiesTM.getSelectionModel().getSelectedItem(); Player selectedPlayer
-	 * = playerListTM.getSelectionModel().getSelectedItem(); // Base case. if
-	 * (selectedStrategy == null) { showError("Please select Strategy To Add");
-	 * return; } if (selectedPlayer.getPlayingStrategy() != null) {
-	 * showError("Strategy has already been set for " + selectedPlayer); return; }
-	 * List<IStrategy> tempList = mappedStrategiesTM.getItems();
-	 * tempList.add(selectedStrategy);
-	 * mappedStrategiesTM.setItems(FXCollections.observableList(tempList)); //
-	 * allStrategiesTM.getItems().remove(selectedStrategy);
-	 * mappedStrategiesTM.setItems(FXCollections.observableList(mappedStrategiesTM.
-	 * getItems())); selectedPlayer.setPlayingStrategy(selectedStrategy); }
-	 */
+		String error;
+		if (map1PathTM.getText().trim().length() == 0 && map2PathTM.getText().trim().length() == 0
+				&& map3PathTM.getText().trim().length() == 0 && map4PathTM.getText().trim().length() == 0
+				&& map5PathTM.getText().trim().length() == 0) {
+			showError("Choose at least one file to play");
+		} else {
 
-	/*
-	 * public void removePlayerStrategyTM(ActionEvent event) { IStrategy
-	 * selectedStrategy = mappedStrategiesTM.getSelectionModel().getSelectedItem();
-	 * Player selectedPlayer = playerListTM.getSelectionModel().getSelectedItem();
-	 * // Base case. if (selectedStrategy == null) {
-	 * showError("Please select Strategy To Remove"); return; }
-	 * 
-	 * mappedStrategiesTM.getItems().remove(selectedStrategy);
-	 * selectedPlayer.setPlayingStrategy(null); }
-	 */
+			try {
+				int playersCount = Integer.parseInt(noOfPlayerTM.getText());
+				int drawMoves = Integer.parseInt(movesForDraw.getText());
+				int gameNumber = Integer.parseInt(noOfGamesTM.getText());
+				if (playersCount <= 1) {
+					error = "Number of Players cannot be less than 2";
+					showError(error);
+				} else if (drawMoves < 10 || drawMoves > 50) {
+					error = "Enter Valid Number of Draw Moves";
+					showError(error);
+				} else if (gameNumber < 1 || gameNumber > 5) {
+					error = "Enter Valid Number of Games";
+					showError(error);
+				} else {
+					playerStrategyMapping = new HashMap<>();
+					enableTMComponents();
+					playerList = new ArrayList<>(playersCount);
+					mapService.createPlayers(playerList, playersCount);
+					playerListTM.setItems(FXCollections.observableList(playerList));
+					playerListTM.setValue(playerList.get(0));
+					allStrategiesTM.setItems(FXCollections.observableList(allStrategies));
+					for (Player player : playerList)
+						playerStrategyMapping.put(player, null);
+				}
+			} catch (NumberFormatException e) {
+				error = "Enter a valid Number For Draw, Player Count and Number of Games";
+				showError(error);
+			}
+
+		}
+
+	}
+
+	@FXML
+	public void addPlayerStrategyTM(ActionEvent event) {
+
+		PlayerStrategyEnum selectedStrategy = allStrategiesTM.getSelectionModel().getSelectedItem();
+		Player selectedPlayer = playerListTM.getSelectionModel().getSelectedItem();
+		// Base case.
+		if (selectedStrategy == null) {
+			showError("Please select Strategy To Add");
+			return;
+		}
+		playerStrategyMapping.put(selectedPlayer, selectedStrategy);
+		mappedStrategiesTM.setItems(FXCollections.observableArrayList(playerStrategyMapping.get(selectedPlayer)));
+
+	}
+
+	public void removePlayerStrategyTM(ActionEvent event) {
+		PlayerStrategyEnum selectedStrategy = mappedStrategiesTM.getSelectionModel().getSelectedItem();
+		Player selectedPlayer = playerListTM.getSelectionModel().getSelectedItem();
+		// Base case.
+		if (selectedStrategy == null) {
+			showError("Please select Strategy To Remove");
+			return;
+		}
+		playerStrategyMapping.put(selectedPlayer, null);
+		mappedStrategiesTM.setItems(FXCollections.observableArrayList());
+	}
 
 	@FXML
 	public void addPlayerStrategySM(ActionEvent event) {
@@ -301,19 +311,24 @@ public class ModeController {
 				playerStrategyMapping);
 	}
 
-	
-	/*public void playTM(ActionEvent event) {
+	public void playTM(ActionEvent event) {
 
 		String error;
 		for (int i = 0; i < playerList.size(); i++) {
 			Player curPlayer = playerList.get(i);
-			if (curPlayer.getPlayingStrategy() == null) {
+			if (playerStrategyMapping.get(curPlayer) == null) {
 				error = "Strategy for " + curPlayer + " is null";
 				showError(error);
 				return;
 			}
 		}
 
+		IStrategy playerStrategy;
+		for (Player player : playerList) {
+			playerStrategy = mapService.getStrategyfromEnum(playerStrategyMapping.get(player));
+			player.setPlayingStrategy(playerStrategy);
+		}
+		
 		int drawMoves = Integer.parseInt(movesForDraw.getText());
 		int noOfGames = Integer.parseInt(noOfGamesTM.getText());
 		List<File> mapFiles = new ArrayList<>();
@@ -325,7 +340,8 @@ public class ModeController {
 		GameController gameController;
 		try {
 
-			// load fxml for UI. FXMLLoader loader = new
+			// load fxml for UI. 
+			FXMLLoader loader = new
 			FXMLLoader(getClass().getResource("/ui/Game.fxml"));
 			root = loader.load();
 			gameController = loader.getController();
@@ -334,16 +350,15 @@ public class ModeController {
 			e.printStackTrace();
 			return;
 		}
-		// setup stage Stage stage = new Stage(); stage.setTitle("Game");
+		// setup stage 
+		Stage stage = new Stage(); stage.setTitle("Game");
 		stage.setScene(new Scene(root, 800, 600));
 		stage.show();
-		gameController.playTournament(playerList, drawMoves, noOfGames, mapFiles);
+//		gameController.playTournament(playerList, drawMoves, noOfGames, mapFiles);
 
-	}*/
-	 
+	}
 
-	
-	/*public void addFiles(int ind, List<File> mapFiles) {
+	public void addFiles(int ind, List<File> mapFiles) {
 		File file;
 		switch (ind) {
 		case 0:
@@ -382,15 +397,6 @@ public class ModeController {
 		}
 	}
 
-	public void createPlayer(List<Player> playerList, int numberOfPlayers) {
-
-		for (int i = 0; i < numberOfPlayers; i++) {
-			Player playerObj = new Player();
-			playerObj.setName("Player " + (i + 1));
-			playerList.add(playerObj);
-		}
-	}*/
-
 	/**
 	 * This is a helper method is used to show am alert to user informing about
 	 * various validation errors.
@@ -414,23 +420,30 @@ public class ModeController {
 		map1PathSM.setText(file == null ? "" : file.getAbsolutePath());
 	}
 
-	/*
-	 * @FXML public void chooseFileTM(ActionEvent event) { FileChooser chooser = new
-	 * FileChooser(); chooser.getExtensionFilters().add(new
-	 * ExtensionFilter(".map file", "*.map")); File file =
-	 * chooser.showOpenDialog(null); if (map1PathTM.getText().trim().length() == 0)
-	 * { map1PathTM.setText(file == null ? "" : file.getAbsolutePath()); return; }
-	 * else if (map2PathTM.getText().trim().length() == 0) { map2PathTM.setText(file
-	 * == null ? "" : file.getAbsolutePath()); return; } else if
-	 * (map3PathTM.getText().trim().length() == 0) { map3PathTM.setText(file == null
-	 * ? "" : file.getAbsolutePath()); return; } else if
-	 * (map4PathTM.getText().trim().length() == 0) { map4PathTM.setText(file == null
-	 * ? "" : file.getAbsolutePath()); return; } else if
-	 * (map5PathTM.getText().trim().length() == 0) { map5PathTM.setText(file == null
-	 * ? "" : file.getAbsolutePath()); return; }
-	 * 
-	 * }
-	 */
+	@FXML
+	public void chooseFileTM(ActionEvent event) {
+		FileChooser chooser = new FileChooser();
+		chooser.getExtensionFilters().add(new ExtensionFilter(".map file", "*.map"));
+		File file = chooser.showOpenDialog(null);
+		if (map1PathTM.getText().trim().length() == 0) {
+			map1PathTM.setText(file == null ? "" : file.getAbsolutePath());
+			return;
+		} else if (map2PathTM.getText().trim().length() == 0) {
+			map2PathTM.setText(file == null ? "" : file.getAbsolutePath());
+			return;
+		} else if (map3PathTM.getText().trim().length() == 0) {
+			map3PathTM.setText(file == null ? "" : file.getAbsolutePath());
+			return;
+		} else if (map4PathTM.getText().trim().length() == 0) {
+			map4PathTM.setText(file == null ? "" : file.getAbsolutePath());
+			return;
+		} else if (map5PathTM.getText().trim().length() == 0) {
+			map5PathTM.setText(file == null ? "" : file.getAbsolutePath());
+			return;
+		}
+
+	}
+
 	public void disableSMComponents() {
 		playerListSM.setDisable(true);
 		addSM.setDisable(true);
@@ -467,7 +480,6 @@ public class ModeController {
 		gamePlayTM.setDisable(false);
 	}
 
-
 	@FXML
 	public void updateMappedStrategyLV(ActionEvent event) {
 		Player selectedPlayer = playerListSM.getValue();
@@ -480,4 +492,15 @@ public class ModeController {
 
 	}
 
+	@FXML
+	public void updateMappedStrategyTM(ActionEvent event) {
+		Player selectedPlayer = playerListTM.getValue();
+		if (selectedPlayer == null || playerStrategyMapping.get(selectedPlayer) == null) {
+			mappedStrategiesTM.setItems(FXCollections.observableArrayList());
+			return;
+		} else {
+			mappedStrategiesTM.setItems(FXCollections.observableArrayList(playerStrategyMapping.get(selectedPlayer)));
+		}
+
+	}
 }
