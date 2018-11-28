@@ -666,7 +666,7 @@ public class GameController {
 			}
 			cardExchangeViewModel.setIfPlayerGetsCard(false);
 		}
-
+		currentPhase	=	GameController.FORTIFICATION_PHASE;
 		// update UI
 		updatePhaseInfo(null, "Fortification Phase", "Fortification Phase started.");
 		attackerTotalDiceTF.disableProperty().unbind();
@@ -808,7 +808,7 @@ public class GameController {
 			cardExchangeViewStage.hide();
 			setArmiesOnPlayerOwnedCardTerritory();
 			enableComponents(reinfoPhaseUI);
-
+			currentPhase	=	GameController.REINFORCEMENT_PHASE;
 			// calculated armies for reinforcement phase.
 			gameService.calcArmiesForReinforcement(currentPlayer);
 			displayPlayerInfo();
@@ -888,6 +888,7 @@ public class GameController {
 						cardExchangeViewModel.setViewForCurrentPlayer(currentPlayer);
 						cardExchangeViewStage.showAndWait();
 						enableComponents(reinfoPhaseUI);
+						currentPhase	=	GameController.REINFORCEMENT_PHASE;
 						reinforcementPhase();
 					} else {
 						disableComponents(reinfoPhaseUI);
@@ -903,6 +904,7 @@ public class GameController {
 			updatePhaseInfo(currentPlayer.getName(), "StartUp Phase", "Place armies for " + currentPlayer.getName());
 			if (playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
 				enableComponents(reinfoPhaseUI);
+				currentPhase	=	GameController.STARTUP_PHASE;
 				displayPlayerInfo();
 			} else {
 				disableComponents(reinfoPhaseUI);
@@ -918,6 +920,7 @@ public class GameController {
 		if (gameService.endOfReinforcementPhase(currentPlayer, cardExchangeViewModel)) {
 
 			disableComponents(reinfoPhaseUI);
+			currentPhase	=	GameController.ATTACK_PHASE;
 			// logic to automatically end the attack if current user can't attack anymore.
 			boolean furtherAttackPossible = gameService.canPlayerAttackFurther(currentPlayer);
 
@@ -1310,7 +1313,7 @@ public class GameController {
 			fileOutput = new FileOutputStream(savedFile);
 			out = new ObjectOutputStream(fileOutput);
 			GameObjectClass gameState = new GameObjectClass(continentsSet, territoriesSet, playersList, currentPlayer,
-					currentPhase,ifStartUpIsComepleted);
+					currentPhase,ifStartUpIsComepleted, playerStrategyMapping);
 
 			out.writeObject(gameState);
 			String info = "Game Saved";
@@ -1319,6 +1322,7 @@ public class GameController {
 		} catch (Exception e) {
 			String error = "Game Cannot be saved";
 			showError(error);
+			e.printStackTrace();
 			return;
 		} finally {
 			try {
@@ -1345,7 +1349,7 @@ public class GameController {
 			savedFile = fileChooser.showSaveDialog(null);			
 		}
 		serialize(savedFile, continentsSet, territoriesSet, playersList, currentPlayer,
-				currentPhase,ifStartUpIsComepleted);
+				currentPhase,ifStartUpIsComepleted, playerStrategyMapping);
 	}
 	
 	/**
@@ -1368,7 +1372,7 @@ public class GameController {
 	 * @return true if game state is serialized
 	 */
 	public boolean serialize(File fileToSave,HashSet<Continent> continentSet, HashSet<Territory> territorySet, List<Player> playerList,
-			Player currentPlayer,String currentPhase,boolean ifStartUpIsComepleted) {
+			Player currentPlayer,String currentPhase,boolean ifStartUpIsComepleted, Map<Player,PlayerStrategyEnum> playerStrategyMapping) {
 		
 		FileOutputStream fileOutput;
 		ObjectOutputStream out = null;
@@ -1377,7 +1381,7 @@ public class GameController {
 			fileOutput = new FileOutputStream(fileToSave);
 			out = new ObjectOutputStream(fileOutput);
 			GameObjectClass gameState = new GameObjectClass(continentSet, territorySet, playersList, currentPlayer,
-					currentPhase,ifStartUpIsComepleted);
+					currentPhase,ifStartUpIsComepleted, playerStrategyMapping);
 
 			out.writeObject(gameState);
 			out.close();
@@ -1420,7 +1424,7 @@ public class GameController {
 	 * 				File from which information of game state to be retrieved 
 	 */
 	public void resumeGame(HashSet<Continent> continentsSet2, HashSet<Territory> territoriesSet2,
-			List<Player> playersList2, Player currentPlayer2, String currentPhase2,boolean ifStartUpIsComepleted2, File file) {
+			List<Player> playersList2, Player currentPlayer2, String currentPhase2,boolean ifStartUpIsComepleted2, Map<Player,PlayerStrategyEnum> playerStrategyMapping2,File file) {
 
 		gameStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST,
 				new EventHandler<WindowEvent>() {
@@ -1438,6 +1442,7 @@ public class GameController {
 		currentPlayer = currentPlayer2;
 		savedFile = file;
 		ifStartUpIsComepleted	=	ifStartUpIsComepleted2;
+		this.playerStrategyMapping = playerStrategyMapping2;
 
 		displayMap();
 		updateMapData();

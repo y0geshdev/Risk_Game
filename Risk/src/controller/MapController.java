@@ -7,10 +7,12 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 import domain.Continent;
 import domain.GameObjectClass;
 import domain.Player;
+import domain.PlayerStrategyEnum;
 import domain.Territory;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
@@ -692,6 +694,7 @@ public class MapController {
 				GameObjectClass gameState	= null;
 				String currentPhase;
 				boolean ifStartUpIsComepleted;
+				Map<Player,PlayerStrategyEnum> playerStrategyMapping;
 				List<String> errorList	=	new ArrayList<>();
 				try {
 					gameState		=	deserialize(file);
@@ -701,6 +704,7 @@ public class MapController {
 					currentPlayer	=	gameState.getCurrentPlayer();
 					currentPhase	=	gameState.getCurrentPhase();
 					ifStartUpIsComepleted	=	gameState.getIfStartUpIsComepleted();
+					playerStrategyMapping   =   gameState.getplayerStrategyMapping();
 					if (errorList.size() == 0) {
 						Parent root;
 						GameController gameController;
@@ -721,7 +725,7 @@ public class MapController {
 						stage.setScene(new Scene(root, 800, 600));
 						stage.show();
 						gameController.setGameStage(stage);
-						gameController.resumeGame(continentsSet, territoriesSet, playersList, currentPlayer, currentPhase,ifStartUpIsComepleted,file);
+						gameController.resumeGame(continentsSet, territoriesSet, playersList, currentPlayer, currentPhase,ifStartUpIsComepleted,playerStrategyMapping,file);
 						
 
 					} else {

@@ -1,5 +1,6 @@
 package domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -13,7 +14,7 @@ import javafx.util.Pair;
  * @author Yogesh
  *
  */
-public class HumanStrategy implements IStrategy {
+public class HumanStrategy implements IStrategy, Serializable {
 
 	@Override
 	public void reinforcement(Player player, Territory selectedTerritory, int numberOfArmies,
