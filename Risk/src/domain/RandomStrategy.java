@@ -1,5 +1,7 @@
 package domain;
 
+import java.io.Serializable;
+
 import javafx.util.Pair;
 
 /**
@@ -8,7 +10,7 @@ import javafx.util.Pair;
  * @author Yogesh
  *
  */
-public class RandomStrategy implements IStrategy {
+public class RandomStrategy implements IStrategy, Serializable {
 
 	@Override
 	public void reinforcement(Player player, Territory selectedTerritory, int numberOfArmies,

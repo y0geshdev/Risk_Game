@@ -1,5 +1,6 @@
 package domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -15,7 +16,7 @@ import javafx.util.Pair;
  * @author Yogesh
  *
  */
-public class AggressiveStrategy implements IStrategy {
+public class AggressiveStrategy implements IStrategy, Serializable {
 
 	@Override
 	public void reinforcement(Player player, Territory selectedTerritory, int numberOfArmies,

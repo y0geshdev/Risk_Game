@@ -46,6 +46,10 @@
 					<TextField fx:id="mapPathGameTF" layoutX="97.0" layoutY="46.0" prefHeight="22.0" prefWidth="159.0" promptText="map file path" />
 					<Button fx:id="chooseGameButton" layoutX="270.0" layoutY="46.0" mnemonicParsing="false" onAction="#chooseMapToPlayGame" prefHeight="22.0" prefWidth="75.0" text="Choose..." />
 					<Button fx:id="startGameButton" layoutX="270.0" layoutY="88.0" mnemonicParsing="false" onAction="#startGame" prefHeight="22.0" prefWidth="75.0" text="Start Game" />
+               <Label layoutX="7.0" layoutY="113.0" prefHeight="17.0" prefWidth="85.0" text="Resume Game" />
+               <TextField fx:id="savedFilePath" layoutX="91.0" layoutY="106.0" promptText="game file" />
+               <Button layoutX="242.0" layoutY="118.0" mnemonicParsing="false" onAction="#chooseGameToResume" text="Choose File" />
+               <Button layoutX="319.0" layoutY="118.0" mnemonicParsing="false" onAction="#resumeGame" text="Resume" />
 				</AnchorPane>
 			</SplitPane>
 		</AnchorPane>
