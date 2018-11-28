@@ -307,8 +307,10 @@ public class ModeController {
 		stage.setScene(new Scene(root, 800, 600));
 		stage.show();
 		singleModePane.getScene().getWindow().hide();
+		gameController.setGameStage(stage);
 		gameController.startGame(MapController.continentsSet, MapController.territoriesSet, playerList,
 				playerStrategyMapping);
+		
 	}
 
 	public void playTM(ActionEvent event) {

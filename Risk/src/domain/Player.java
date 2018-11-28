@@ -1,5 +1,6 @@
 package domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import javafx.util.Pair;
  * @author Yogesh
  *
  */
-public class Player {
+public class Player implements Serializable{
 
 	/**
 	 * It represents player's name.
