@@ -1,5 +1,6 @@
 package domain;
 
+import java.io.Serializable;
 import java.util.Observable;
 
 /**
@@ -9,7 +10,7 @@ import java.util.Observable;
  * @author karanbhalla
  *
  */
-public class PhaseViewModel extends Observable {
+public class PhaseViewModel extends Observable{
 
 	/**
 	 * Representing current phase going on in game.

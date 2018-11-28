@@ -1,5 +1,6 @@
 package domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,7 +10,7 @@ import java.util.List;
  * @author Yogesh
  *
  */
-public class Territory {
+public class Territory  implements Serializable{
 
 	private String name;
 	private List<Territory> neighbourTerritories;
