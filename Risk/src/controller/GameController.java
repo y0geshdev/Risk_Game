@@ -1535,7 +1535,7 @@ public class GameController {
 		this.playerStrategyMapping = playerStrategyMapping;
 		MapService mapService = new MapService();
 		for (int i = 0; i < noOfGames; i++) {
-			for (int j = 0; j < mapFiles.size();) {
+			for (int j = 0; j < mapFiles.size();j++) {
 				movesToDefineDraw = movesForDraw;
 				File curFile = mapFiles.get(j);
 				mapService.parseFile(curFile, errorList);
@@ -1712,7 +1712,7 @@ public class GameController {
 		if (ifTournamentMode) {
 			movesToDefineDraw--;
 		}
-		if (movesToDefineDraw == 0) {
+		if (movesToDefineDraw == 0 && ifTournamentMode) {
 			statForTournamentMode = "Draw";
 			return;
 		}
