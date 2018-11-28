@@ -320,6 +320,10 @@ public class ModeController {
 				error = "Strategy for " + curPlayer + " is null";
 				showError(error);
 				return;
+			}else if(playerStrategyMapping.get(curPlayer).equals(PlayerStrategyEnum.HUMAN)) {
+				error = "Strategy for " + curPlayer + " cannot be Human in Tournament Mode";
+				showError(error);
+				return;
 			}
 		}
 
@@ -354,7 +358,7 @@ public class ModeController {
 		Stage stage = new Stage(); stage.setTitle("Game");
 		stage.setScene(new Scene(root, 800, 600));
 		stage.show();
-//		gameController.playTournament(playerList, drawMoves, noOfGames, mapFiles);
+		gameController.playTournament(playerList, drawMoves, noOfGames, mapFiles,playerStrategyMapping);
 
 	}
 

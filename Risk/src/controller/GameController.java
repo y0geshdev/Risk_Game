@@ -1,9 +1,11 @@
 package controller;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -43,6 +45,7 @@ import javafx.scene.layout.Priority;
 import javafx.stage.Stage;
 import javafx.util.Pair;
 import service.GameService;
+import service.MapService;
 
 /**
  * This controller handles Game.fxml controls and implements game driver.
@@ -266,13 +269,23 @@ public class GameController {
 
 	Map<Player, PlayerStrategyEnum> playerStrategyMapping;
 
+	String statForTournamentMode = null;
+
+	boolean ifTournamentMode = false;
+
+	Integer movesToDefineDraw = 0;
+
+	Map<String, List<String>> tournamentModeResult = new LinkedHashMap<>();
+
+	Thread mainGameThread = new Thread();
+
 	/**
 	 * 
 	 * 
 	 * @param continentsSet
 	 * @param territoriesSet
 	 */
-	
+
 	/**
 	 * This method forms the game map on UI, distributes territories randomly to the
 	 * players, select the player randomly to start the startup phase of the game.
@@ -303,17 +316,19 @@ public class GameController {
 		 * while (getPlayersCount() == -1) ;
 		 */
 		// testing purpose
-		/*playersCount = 2;
+		/*
+		 * playersCount = 2;
+		 * 
+		 * playersList = new ArrayList<>(playersCount);
+		 * gameService.createPlayers(playersList, playersCount);
+		 * 
+		 * // testing purpose playerStrategyMapping.put(playersList.get(0),
+		 * PlayerStrategyEnum.HUMAN); playerStrategyMapping.put(playersList.get(1),
+		 * PlayerStrategyEnum.AGGRESSIVE);
+		 */
+		// playerStrategyMapping.put(playersList.get(2), PlayerStrategyEnum.AGGRESSIVE);
 
-		playersList = new ArrayList<>(playersCount);
-		gameService.createPlayers(playersList, playersCount);
-
-		// testing purpose
-		playerStrategyMapping.put(playersList.get(0), PlayerStrategyEnum.HUMAN);
-		playerStrategyMapping.put(playersList.get(1), PlayerStrategyEnum.AGGRESSIVE);*/
-		//playerStrategyMapping.put(playersList.get(2), PlayerStrategyEnum.AGGRESSIVE);
-
-		gameService.assignTerritories(playersList,territoriesSet);
+		gameService.assignTerritories(playersList, territoriesSet);
 		updateMapData();
 
 		currentPlayer = gameService.getNextPlayer(null, playersList);
@@ -423,7 +438,7 @@ public class GameController {
 			if (!isAllOutMode) {
 				List<String> errorList = new ArrayList<>();
 
-				totalDefenderDice = defenderTerritory.getArmyCount()>=2?2:1;
+				totalDefenderDice = defenderTerritory.getArmyCount() >= 2 ? 2 : 1;
 				defenderTotalDiceTF.setText(String.valueOf(totalDefenderDice));
 				// validate number of dice entered by user for attacker and defender for normal
 				// mode.
@@ -440,7 +455,7 @@ public class GameController {
 					return;
 				} else {
 					totalAttackerDice = Integer.parseInt(attackerTotalDiceTF.getText());
-					//totalDefenderDice = Integer.parseInt(defenderTotalDiceTF.getText());
+					// totalDefenderDice = Integer.parseInt(defenderTotalDiceTF.getText());
 				}
 			}
 
@@ -466,7 +481,7 @@ public class GameController {
 							attackerTerritory.getArmyCount() - 1);
 				}
 				gameService.fortify(currentPlayer, attackerTerritory, defenderTerritory, armiesToMove, phaseViewModel);
-				updatePhaseInfo(null, "Attack Phase","Moved " + armiesToMove + " armies from "
+				updatePhaseInfo(null, "Attack Phase", "Moved " + armiesToMove + " armies from "
 						+ attackerTerritory.getName() + " to " + defenderTerritory.getName() + " after conquering it.");
 			}
 
@@ -514,7 +529,7 @@ public class GameController {
 						else {
 							updatePhaseInfo(null, null, "Cannot attack any further.");
 							sleep(1);
-							Runnable task = new Runnable() {	
+							Runnable task = new Runnable() {
 								@Override
 								public void run() {
 									sleep(50);
@@ -522,7 +537,7 @@ public class GameController {
 									finishAttack(event);
 								}
 							};
-						Platform.runLater(task);
+							Platform.runLater(task);
 						}
 					}
 				}
@@ -649,15 +664,15 @@ public class GameController {
 			updateTerritoryFields(from);
 			updateTerritoryFields(to);
 			sleep(1);
-			Runnable task = new Runnable() {	
+			Runnable task = new Runnable() {
 				@Override
 				public void run() {
 					sleep(50);
-					finishFortification(event);	
+					finishFortification(event);
 				}
 			};
-		Platform.runLater(task);
-			
+			Platform.runLater(task);
+
 		}
 	}
 
@@ -710,7 +725,7 @@ public class GameController {
 		updatePhaseInfo(currentPlayer.getName(), "Reinforcement Phase",
 				"Place reinforcement for " + currentPlayer.getName() + " territories.");
 
-		if(playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
+		if (playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
 			// display exchange view every time after the fortification phase is finished.
 			cardExchangeViewModel.setViewForCurrentPlayer(currentPlayer);
 			cardExchangeViewStage.showAndWait();
@@ -728,7 +743,7 @@ public class GameController {
 			// calculated armies for reinforcement phase.
 			gameService.calcArmiesForReinforcement(currentPlayer);
 			displayPlayerInfo();
-		}else {
+		} else {
 			gameService.calcArmiesForReinforcement(currentPlayer);
 			reinforcementForNonHumanPlayer();
 		}
@@ -794,7 +809,7 @@ public class GameController {
 			currentPlayer = gameService.getNextPlayer(null, playersList);
 			updatePhaseInfo(currentPlayer.getName(), "Reinforcement Phase", "Reinforcement Phase started.");
 			sleep(1);
-			Runnable task = new Runnable() {	
+			Runnable task = new Runnable() {
 				@Override
 				public void run() {
 					sleep(20);
@@ -813,7 +828,7 @@ public class GameController {
 					}
 				}
 			};
-		Platform.runLater(task);
+			Platform.runLater(task);
 
 		} else {
 			updatePhaseInfo(currentPlayer.getName(), "StartUp Phase", "Place armies for " + currentPlayer.getName());
@@ -1206,6 +1221,67 @@ public class GameController {
 		worldDominationViewController.setUpWorldDominationView(playersList);
 	}
 
+	public void playTournament(List<Player> playerList, int movesForDraw, int noOfGames, List<File> mapFiles,
+			Map<Player, PlayerStrategyEnum> playerStrategyMapping) {
+
+		List<String> errorList = new ArrayList<>();
+		ifTournamentMode = true;
+		this.playerStrategyMapping = playerStrategyMapping;
+		MapService mapService = new MapService();
+		for (int i = 0; i < noOfGames; i++) {
+			for (int j = 0; j < mapFiles.size();) {
+				movesToDefineDraw = movesForDraw;
+				File curFile = mapFiles.get(j);
+				mapService.parseFile(curFile, errorList);
+				mapService.validateMap(MapController.continentsSet, MapController.territoriesSet, errorList);
+
+				if (errorList.size() == 0) {
+					this.continentsSet = MapController.continentsSet;
+					this.territoriesSet = MapController.territoriesSet;
+
+					cardExchangeViewModel = new CardExchangeViewModel(territoriesSet);
+					displayMap();
+					disableComponents(reinfoPhaseUI);
+					disableComponents(attackPhaseUI);
+					disableComponents(fortiPhaseUI);
+					playersList = playerList;
+					gameService.assignTerritories(playersList, this.territoriesSet);
+					updateMapData();
+					currentPlayer = gameService.getNextPlayer(null, playersList);
+					setUpPhaseAndWorldDominationViews(errorList);
+					if (errorList.size() > 0) {
+						showError(errorList.get(0));
+						Platform.exit();
+					} else {
+						worldDominationModel.updateState(continentsSet, territoriesSet);
+
+						startUpPhase();
+
+						if (tournamentModeResult.get(curFile.getName()) == null) {
+							List<String> tmResult = new ArrayList<>();
+							tmResult.add(statForTournamentMode);
+							tournamentModeResult.put(curFile.getName(), tmResult);
+						} else {
+
+							tournamentModeResult.get(curFile.getName()).add(statForTournamentMode);
+						}
+
+					}
+				} else {
+					showError("Not able to load file " + curFile.getName());
+				}
+			}
+
+		}
+		Iterator<String> keys = tournamentModeResult.keySet().iterator();
+		while (keys.hasNext()) {
+			String mapName = keys.next();
+			for (int i = 0; i < tournamentModeResult.get(mapName).size(); i++) {
+				System.out.println(mapName + " Result is " + tournamentModeResult.get(mapName).get(i));
+			}
+		}
+	}
+
 	private void reinforcementForNonHumanPlayer() {
 
 		// do reinforcement or startup and update UI
@@ -1242,14 +1318,18 @@ public class GameController {
 						currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);
 					}
 					if (playersWithZeroArmies.size() == playersList.size()
-							|| playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
+							&& playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
 						startUpPhase();
 					} else {
+						if (playersWithZeroArmies.size() == playersList.size()) {
+							ifStartUpIsComepleted = true;
+						}
 						reinforcementForNonHumanPlayer();
 					}
 
 				} else {
-					// if reinforcement is completed then prepare for attack phase and call for attack for non human player.
+					// if reinforcement is completed then prepare for attack phase and call for
+					// attack for non human player.
 					if (gameService.endOfReinforcementPhase(currentPlayer, cardExchangeViewModel)) {
 						playerArmies.setText(null);
 						playerTerritoryList.setValue(null);
@@ -1280,7 +1360,7 @@ public class GameController {
 		// card exchange state change
 		if (!cardExchangeViewModel.getIfPlayerGetsCard() && ifWon)
 			cardExchangeViewModel.setIfPlayerGetsCard(ifWon);
-		
+
 		// to check if current player is entitled to draw a card from a deck or not.
 		if (cardExchangeViewModel.getIfPlayerGetsCard()) {
 			if (cardExchangeViewModel.getAllCards().size() != 0) {
@@ -1295,7 +1375,12 @@ public class GameController {
 		// check if current player won whole game.
 		if (gameService.isGameEnded(currentPlayer, territoriesSet.size())) {
 			showInformation("Player " + currentPlayer.getName() + " won the game.");
-			Platform.exit();
+			if (!ifTournamentMode) {
+				Platform.exit();
+			} else {
+				statForTournamentMode = currentPlayer.getName();
+				return;
+			}
 		} else {
 			// to end attack phase for non human player and start fortification phase.
 			sleep(1);
@@ -1309,7 +1394,7 @@ public class GameController {
 			Platform.runLater(task);
 		}
 	}
-	
+
 	private void fortificationForNonHumanPlayer() {
 		updatePhaseInfo(null, "Fortification Phase", "Fortification Phase started.");
 		gameService.fortify(currentPlayer, null, null, 0, phaseViewModel);
@@ -1318,7 +1403,13 @@ public class GameController {
 		}
 		worldDominationModel.updateState(continentsSet, territoriesSet);
 		// finishFortification(event);
-
+		if (ifTournamentMode) {
+			movesToDefineDraw--;
+		}
+		if (movesToDefineDraw == 0) {
+			statForTournamentMode = "Draw";
+			return;
+		}
 		sleep(1);
 		Runnable task = new Runnable() {
 			@Override
@@ -1335,7 +1426,7 @@ public class GameController {
 				updatePhaseInfo(currentPlayer.getName(), "Reinforcement Phase",
 						"Place reinforcement for " + currentPlayer.getName() + " territories.");
 
-				if(playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
+				if (playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
 					// display exchange view every time after the fortification phase is finished.
 					cardExchangeViewModel.setViewForCurrentPlayer(currentPlayer);
 					cardExchangeViewStage.showAndWait();
@@ -1352,12 +1443,13 @@ public class GameController {
 					// calculated armies for reinforcement phase.
 					gameService.calcArmiesForReinforcement(currentPlayer);
 					displayPlayerInfo();
-				}else {
+				} else {
 					gameService.calcArmiesForReinforcement(currentPlayer);
 					reinforcementForNonHumanPlayer();
 				}
 			}
 		};
+
 		Platform.runLater(task);
 
 	}
