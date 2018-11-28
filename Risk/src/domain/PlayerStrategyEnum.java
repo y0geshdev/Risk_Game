@@ -8,6 +8,6 @@ import java.io.Serializable;
  * @author Yogesh
  *
  */
-public enum PlayerStrategyEnum implements Serializable{
+public enum PlayerStrategyEnum{
 	HUMAN, AGGRESSIVE, BENEVOLENT, RANDOM, CHEATER;
 }

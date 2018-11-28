@@ -12,11 +12,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 
+import domain.AggressiveStrategy;
+import domain.BenevolentStrategy;
 import domain.CardExchangeViewModel;
 import domain.Continent;
 import domain.GameObjectClass;
+import domain.HumanStrategy;
 import domain.PhaseViewModel;
 import domain.Player;
 import domain.PlayerStrategyEnum;
@@ -34,6 +38,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -189,6 +194,12 @@ public class GameController {
 	@FXML
 	private TextField defenderTotalDiceTF;
 
+	@FXML
+	private Button saveGame;
+
+	@FXML
+	private Button saveAndExitGame;  
+	
 	/**
 	 * Game constant for CONTROL_VALUE_WITH_SEMICOLON string.
 	 */
@@ -1134,6 +1145,8 @@ public class GameController {
 		for (Node n : nodes) {
 			n.setDisable(true);
 		}
+		saveGame.setDisable(true);
+		saveAndExitGame.setDisable(true);
 	}
 
 	/**
@@ -1147,6 +1160,8 @@ public class GameController {
 		for (Node n : nodes) {
 			n.setDisable(false);
 		}
+		saveGame.setDisable(false);
+		saveAndExitGame.setDisable(false);
 	}
 
 	/**
@@ -1313,7 +1328,7 @@ public class GameController {
 			fileOutput = new FileOutputStream(savedFile);
 			out = new ObjectOutputStream(fileOutput);
 			GameObjectClass gameState = new GameObjectClass(continentsSet, territoriesSet, playersList, currentPlayer,
-					currentPhase,ifStartUpIsComepleted, playerStrategyMapping);
+					currentPhase,ifStartUpIsComepleted);
 
 			out.writeObject(gameState);
 			String info = "Game Saved";
@@ -1381,7 +1396,7 @@ public class GameController {
 			fileOutput = new FileOutputStream(fileToSave);
 			out = new ObjectOutputStream(fileOutput);
 			GameObjectClass gameState = new GameObjectClass(continentSet, territorySet, playersList, currentPlayer,
-					currentPhase,ifStartUpIsComepleted, playerStrategyMapping);
+					currentPhase,ifStartUpIsComepleted);
 
 			out.writeObject(gameState);
 			out.close();
@@ -1424,7 +1439,7 @@ public class GameController {
 	 * 				File from which information of game state to be retrieved 
 	 */
 	public void resumeGame(HashSet<Continent> continentsSet2, HashSet<Territory> territoriesSet2,
-			List<Player> playersList2, Player currentPlayer2, String currentPhase2,boolean ifStartUpIsComepleted2, Map<Player,PlayerStrategyEnum> playerStrategyMapping2,File file) {
+			List<Player> playersList2, Player currentPlayer2, String currentPhase2,boolean ifStartUpIsComepleted2,File file) {
 
 		gameStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST,
 				new EventHandler<WindowEvent>() {
@@ -1442,8 +1457,8 @@ public class GameController {
 		currentPlayer = currentPlayer2;
 		savedFile = file;
 		ifStartUpIsComepleted	=	ifStartUpIsComepleted2;
-		this.playerStrategyMapping = playerStrategyMapping2;
-
+		setPlayerStartegyEnumMap(playersList2);
+		
 		displayMap();
 		updateMapData();
 		disableComponents(attackPhaseUI);
@@ -1518,6 +1533,25 @@ public class GameController {
 			}
 		}
 	}
+	
+	public void setPlayerStartegyEnumMap(List<Player> playerList) {
+		this.playerStrategyMapping	=	new HashMap<>();
+		for(int i=0;i<playerList.size();i++) {
+			Player curPlayer	=	playerList.get(i);
+			if(curPlayer.getPlayingStrategy() instanceof AggressiveStrategy) {
+				this.playerStrategyMapping.put(curPlayer, PlayerStrategyEnum.AGGRESSIVE);
+			}else if(curPlayer.getPlayingStrategy() instanceof HumanStrategy) {
+				this.playerStrategyMapping.put(curPlayer, PlayerStrategyEnum.HUMAN);
+			}else if(curPlayer.getPlayingStrategy() instanceof BenevolentStrategy) {
+				this.playerStrategyMapping.put(curPlayer, PlayerStrategyEnum.BENEVOLENT);
+			}else if(curPlayer.getPlayingStrategy() instanceof Random) {
+				this.playerStrategyMapping.put(curPlayer, PlayerStrategyEnum.RANDOM);
+			}else {
+				this.playerStrategyMapping.put(curPlayer, PlayerStrategyEnum.CHEATER);
+			}
+		}
+	}
+	
 	/**
 	 * Setter for gameStage
 	 * @param gameStage:
@@ -1590,6 +1624,7 @@ public class GameController {
 
 	private void reinforcementForNonHumanPlayer() {
 
+	
 		// do reinforcement or startup and update UI
 		playerArmies.setText(String.valueOf(currentPlayer.getArmyCount()));
 		if (ifStartUpIsComepleted) {
@@ -1624,7 +1659,7 @@ public class GameController {
 						currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);
 					}
 					if (playersWithZeroArmies.size() == playersList.size()
-							&& playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
+							|| playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
 						startUpPhase();
 					} else {
 						if (playersWithZeroArmies.size() == playersList.size()) {

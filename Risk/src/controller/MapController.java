@@ -694,7 +694,6 @@ public class MapController {
 				GameObjectClass gameState	= null;
 				String currentPhase;
 				boolean ifStartUpIsComepleted;
-				Map<Player,PlayerStrategyEnum> playerStrategyMapping;
 				List<String> errorList	=	new ArrayList<>();
 				try {
 					gameState		=	deserialize(file);
@@ -704,7 +703,6 @@ public class MapController {
 					currentPlayer	=	gameState.getCurrentPlayer();
 					currentPhase	=	gameState.getCurrentPhase();
 					ifStartUpIsComepleted	=	gameState.getIfStartUpIsComepleted();
-					playerStrategyMapping   =   gameState.getplayerStrategyMapping();
 					if (errorList.size() == 0) {
 						Parent root;
 						GameController gameController;
@@ -725,7 +723,7 @@ public class MapController {
 						stage.setScene(new Scene(root, 800, 600));
 						stage.show();
 						gameController.setGameStage(stage);
-						gameController.resumeGame(continentsSet, territoriesSet, playersList, currentPlayer, currentPhase,ifStartUpIsComepleted,playerStrategyMapping,file);
+						gameController.resumeGame(continentsSet, territoriesSet, playersList, currentPlayer, currentPhase,ifStartUpIsComepleted,file);
 						
 
 					} else {
