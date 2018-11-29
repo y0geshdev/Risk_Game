@@ -10,7 +10,7 @@ import javafx.util.Pair;
  * @author Yogesh
  *
  */
-public class RandomStrategy implements IStrategy, Serializable {
+public class RandomStrategy implements IStrategy,Serializable {
 
 	@Override
 	public void reinforcement(Player player, Territory selectedTerritory, int numberOfArmies,

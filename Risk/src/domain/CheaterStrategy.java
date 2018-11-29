@@ -12,7 +12,7 @@ import javafx.util.Pair;
  * @author Yogesh
  *
  */
-public class CheaterStrategy implements IStrategy, Serializable {
+public class CheaterStrategy implements IStrategy,Serializable {
 
 	@Override
 	public void reinforcement(Player player, Territory selectedTerritory, int numberOfArmies,

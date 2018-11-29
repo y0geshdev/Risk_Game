@@ -3,7 +3,6 @@ package domain;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This class is contains all the objects required for storing game state at any
@@ -21,10 +20,10 @@ public class GameObjectClass implements Serializable {
 	Player currentPlayer;
 	String currentPhase;
 	boolean ifStartUpIsComepleted;
-	Map<Player,PlayerStrategyEnum> playerStrategyMapping;	
+		
 	//constructor
 	public GameObjectClass(HashSet<Continent> continentSet, HashSet<Territory> territorySet, List<Player> playerList,
-			Player currentPlayer,String currentPhase,boolean ifStartUpIsComepleted,Map<Player,PlayerStrategyEnum> playerStrategyMapping) {
+			Player currentPlayer,String currentPhase,boolean ifStartUpIsComepleted) {
 		super();
 		this.continentSet = continentSet;
 		this.territorySet = territorySet;
@@ -32,7 +31,7 @@ public class GameObjectClass implements Serializable {
 		this.currentPlayer = currentPlayer;
 		this.currentPhase	=	currentPhase;
 		this.ifStartUpIsComepleted	=	ifStartUpIsComepleted;
-		this.playerStrategyMapping	=	playerStrategyMapping;
+		
 	}
 	/**
 	 * Getter for serial version ID
@@ -105,11 +104,6 @@ public class GameObjectClass implements Serializable {
 	 */
 	public void setIfStartUpIsComepleted(boolean ifStartUpIsComepleted) {
 		this.ifStartUpIsComepleted = ifStartUpIsComepleted;
-	}
-	
-	public Map<Player,PlayerStrategyEnum> getplayerStrategyMapping() {
-		return playerStrategyMapping;
-		
 	}
 
 }

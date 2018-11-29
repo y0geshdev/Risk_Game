@@ -274,7 +274,7 @@ public class MapService {
 								return;
 							}
 							String[] lineContent = fileContents.split("=");
-							String continentName = lineContent[0];
+							String continentName = lineContent[0].trim().toUpperCase();
 							int continentArmyValue = Integer.parseInt(lineContent[1]);
 							continentObject = new Continent(continentName, continentArmyValue);
 							continentObjectSet.add(continentObject);
@@ -303,17 +303,17 @@ public class MapService {
 							}
 							String[] lineContent = fileContents.split(",");
 
-							String territoryName = lineContent[0];
+							String territoryName = lineContent[0].trim().toUpperCase();
 							String continentName;
 
 							// lineContent[1] and lineContent[2] are random integers
 							if (lineContent.length > 3) {
-								continentName = lineContent[3];
+								continentName = lineContent[3].trim().toUpperCase();
 								neighbouringTerritories = new ArrayList<>();
 								territoryInAContinentList = new ArrayList<Territory>();
 
 								for (int i = 4; i < lineContent.length; i++) {
-									tempTerritoryObject = new Territory(lineContent[i]);
+									tempTerritoryObject = new Territory(lineContent[i].trim().toUpperCase());
 									if (ifTerritoryObject.get(tempTerritoryObject.getName()) == null) {
 										ifTerritoryObject.put(tempTerritoryObject.getName(), tempTerritoryObject);
 										neighbouringTerritories.add(tempTerritoryObject);
@@ -363,13 +363,25 @@ public class MapService {
 				List<Territory> abc = continentToTerritoryMap.get(continentToSetTerritories.getName());
 				continentToSetTerritories.setTerritories(abc);
 			}
-
+			checkAndUpdateBiDirectionalLinks((HashSet<Territory>)territoryObjectSet);
 			MapController.continentsSet = (HashSet<Continent>) continentObjectSet;
 			MapController.territoriesSet = (HashSet<Territory>) territoryObjectSet;
 
 		} catch (FileNotFoundException e) {
 			errorList.add("Unable to find given file to parse.");
 			return;
+		}
+	}
+	
+	public void checkAndUpdateBiDirectionalLinks(HashSet<Territory>territorySet) {
+		Iterator<Territory> ite	=	territorySet.iterator();
+		while(ite.hasNext()) {
+			Territory obj	=	ite.next();
+			for(int i=0;i<obj.getNeighbourTerritories().size();i++) {
+				if(!obj.getNeighbourTerritories().get(i).getNeighbourTerritories().contains(obj)) {
+					obj.getNeighbourTerritories().get(i).getNeighbourTerritories().add(obj);
+				}
+			}
 		}
 	}
 

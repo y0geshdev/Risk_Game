@@ -12,11 +12,15 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 
+import domain.AggressiveStrategy;
+import domain.BenevolentStrategy;
 import domain.CardExchangeViewModel;
 import domain.Continent;
 import domain.GameObjectClass;
+import domain.HumanStrategy;
 import domain.PhaseViewModel;
 import domain.Player;
 import domain.PlayerStrategyEnum;
@@ -34,6 +38,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -189,6 +194,12 @@ public class GameController {
 	@FXML
 	private TextField defenderTotalDiceTF;
 
+	@FXML
+	private Button saveGame;
+
+	@FXML
+	private Button saveAndExitGame;
+
 	/**
 	 * Game constant for CONTROL_VALUE_WITH_SEMICOLON string.
 	 */
@@ -273,8 +284,7 @@ public class GameController {
 	 * Reference to stage of cardExchangeView.
 	 */
 	private Stage cardExchangeViewStage;
-	
-	
+
 	/**
 	 * String holding the name of current phase
 	 */
@@ -288,22 +298,22 @@ public class GameController {
 	 * Game constant for STARTUP_PHASE string
 	 */
 	final private static String STARTUP_PHASE = "startUpPhase";
-	
+
 	/**
 	 * Game constant for REINFORCEMENT_PHASE string
 	 */
 	final private static String REINFORCEMENT_PHASE = "reinforcementPhase";
-	
+
 	/**
 	 * Game constant for ATTACK_PHASE string
 	 */
 	final private static String ATTACK_PHASE = "attackPhase";
-	
+
 	/**
 	 * Game constant for FORTIFICATION_PHASE string
 	 */
 	final private static String FORTIFICATION_PHASE = "fortificationPhase";
-	 
+
 	/**
 	 * Reference to file named savedfile initiated with null
 	 */
@@ -319,14 +329,13 @@ public class GameController {
 
 	Map<String, List<String>> tournamentModeResult = new LinkedHashMap<>();
 
-	Thread mainGameThread = new Thread();
+	Integer totalGames = 0;
 
-	/**
-	 * 
-	 * 
-	 * @param continentsSet
-	 * @param territoriesSet
-	 */
+	List<File> totalFiles = new ArrayList<>();
+
+	Integer fileIndex = 0;
+
+	Integer totalPossibleMoves = 0;
 
 	/**
 	 * This method forms the game map on UI, distributes territories randomly to the
@@ -347,9 +356,9 @@ public class GameController {
 		this.territoriesSet = territoriesSet;
 		this.playersList = playersList;
 		this.playerStrategyMapping = playerStrategyMapping;
-		//Registers an event of window close request to this window of this scene of game stage 
-		 // and handles that event with actionOnClosingWindow method
-		 		
+		
+		// Registers an event of window close request to this window of this scene of
+		// game stage and handles that event with actionOnClosingWindow method
 		gameStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST,
 				new EventHandler<WindowEvent>() {
 
@@ -366,22 +375,6 @@ public class GameController {
 		disableComponents(attackPhaseUI);
 		disableComponents(fortiPhaseUI);
 		disableComponents(reinfoPhaseUI);
-
-		/*
-		 * while (getPlayersCount() == -1) ;
-		 */
-		// testing purpose
-		/*
-		 * playersCount = 2;
-		 * 
-		 * playersList = new ArrayList<>(playersCount);
-		 * gameService.createPlayers(playersList, playersCount);
-		 * 
-		 * // testing purpose playerStrategyMapping.put(playersList.get(0),
-		 * PlayerStrategyEnum.HUMAN); playerStrategyMapping.put(playersList.get(1),
-		 * PlayerStrategyEnum.AGGRESSIVE);
-		 */
-		// playerStrategyMapping.put(playersList.get(2), PlayerStrategyEnum.AGGRESSIVE);
 
 		gameService.assignTerritories(playersList, territoriesSet);
 		updateMapData();
@@ -403,11 +396,12 @@ public class GameController {
 		}
 
 	}
-	
+
 	/**
 	 * This method handles the window closing event on the scene of game stage
-	 * @param event :
-	 * 			Handling the event of window closing of game stage
+	 * 
+	 * @param event
+	 *            : Handling the event of window closing of game stage
 	 */
 	private void actionOnClosingWindow(WindowEvent event) {
 		savedFile = null;
@@ -453,7 +447,7 @@ public class GameController {
 			@Override
 			public void run() {
 				sleep(50);
-				// perform action here.
+
 				// check if startUp phase is completed or not.
 				if (!ifStartUpIsComepleted) {
 					if (currentPlayer.getArmyCount() == 0) {
@@ -509,8 +503,7 @@ public class GameController {
 
 				totalDefenderDice = defenderTerritory.getArmyCount() >= 2 ? 2 : 1;
 				defenderTotalDiceTF.setText(String.valueOf(totalDefenderDice));
-				// validate number of dice entered by user for attacker and defender for normal
-				// mode.
+				// validate number of dice entered by user for attacker and defender for normal mode.
 				gameService.validateSelectedDiceNumber(attackerTerritory, defenderTerritory,
 						attackerTotalDiceTF.getText(), String.valueOf(totalDefenderDice), errorList);
 
@@ -524,7 +517,6 @@ public class GameController {
 					return;
 				} else {
 					totalAttackerDice = Integer.parseInt(attackerTotalDiceTF.getText());
-					// totalDefenderDice = Integer.parseInt(defenderTotalDiceTF.getText());
 				}
 			}
 
@@ -568,7 +560,6 @@ public class GameController {
 				@Override
 				public void run() {
 					sleep(50);
-					// perform action here.
 					// check if current player won whole game.
 					if (gameService.isGameEnded(currentPlayer, territoriesSet.size())) {
 						showInformation("Player " + currentPlayer.getName() + " won the game.");
@@ -602,7 +593,6 @@ public class GameController {
 								@Override
 								public void run() {
 									sleep(50);
-									// perform action here.
 									finishAttack(event);
 								}
 							};
@@ -656,7 +646,6 @@ public class GameController {
 	public void finishAttack(ActionEvent event) {
 
 		// to check if current player is entitled to draw a card from a deck or not.
-
 		if (cardExchangeViewModel.getIfPlayerGetsCard()) {
 			if (cardExchangeViewModel.getAllCards().size() != 0) {
 				cardExchangeViewModel.assignCardToAPlayer(currentPlayer);
@@ -666,7 +655,7 @@ public class GameController {
 			}
 			cardExchangeViewModel.setIfPlayerGetsCard(false);
 		}
-		currentPhase	=	GameController.FORTIFICATION_PHASE;
+		currentPhase = GameController.FORTIFICATION_PHASE;
 		// update UI
 		updatePhaseInfo(null, "Fortification Phase", "Fortification Phase started.");
 		attackerTotalDiceTF.disableProperty().unbind();
@@ -808,12 +797,14 @@ public class GameController {
 			cardExchangeViewStage.hide();
 			setArmiesOnPlayerOwnedCardTerritory();
 			enableComponents(reinfoPhaseUI);
-			currentPhase	=	GameController.REINFORCEMENT_PHASE;
+			currentPhase = GameController.REINFORCEMENT_PHASE;
 			// calculated armies for reinforcement phase.
-			gameService.calcArmiesForReinforcement(currentPlayer);
+			gameService.calcArmiesForReinforcement(currentPlayer, playerStrategyMapping.get(currentPlayer),
+					cardExchangeViewModel);
 			displayPlayerInfo();
 		} else {
-			gameService.calcArmiesForReinforcement(currentPlayer);
+			gameService.calcArmiesForReinforcement(currentPlayer, playerStrategyMapping.get(currentPlayer),
+					cardExchangeViewModel);
 			reinforcementForNonHumanPlayer();
 		}
 	}
@@ -882,18 +873,18 @@ public class GameController {
 				@Override
 				public void run() {
 					sleep(20);
-					// perform action here.
 					if (playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
-						gameService.calcArmiesForReinforcement(currentPlayer);
+						gameService.calcArmiesForReinforcement(currentPlayer, playerStrategyMapping.get(currentPlayer),
+								cardExchangeViewModel);
 						cardExchangeViewModel.setViewForCurrentPlayer(currentPlayer);
 						cardExchangeViewStage.showAndWait();
 						enableComponents(reinfoPhaseUI);
-						currentPhase	=	GameController.REINFORCEMENT_PHASE;
+						currentPhase = GameController.REINFORCEMENT_PHASE;
 						reinforcementPhase();
 					} else {
 						disableComponents(reinfoPhaseUI);
-						// need to add logic for card exchange of player is non human.
-						gameService.calcArmiesForReinforcement(currentPlayer);
+						gameService.calcArmiesForReinforcement(currentPlayer, playerStrategyMapping.get(currentPlayer),
+								cardExchangeViewModel);
 						reinforcementForNonHumanPlayer();
 					}
 				}
@@ -904,7 +895,7 @@ public class GameController {
 			updatePhaseInfo(currentPlayer.getName(), "StartUp Phase", "Place armies for " + currentPlayer.getName());
 			if (playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
 				enableComponents(reinfoPhaseUI);
-				currentPhase	=	GameController.STARTUP_PHASE;
+				currentPhase = GameController.STARTUP_PHASE;
 				displayPlayerInfo();
 			} else {
 				disableComponents(reinfoPhaseUI);
@@ -920,7 +911,7 @@ public class GameController {
 		if (gameService.endOfReinforcementPhase(currentPlayer, cardExchangeViewModel)) {
 
 			disableComponents(reinfoPhaseUI);
-			currentPhase	=	GameController.ATTACK_PHASE;
+			currentPhase = GameController.ATTACK_PHASE;
 			// logic to automatically end the attack if current user can't attack anymore.
 			boolean furtherAttackPossible = gameService.canPlayerAttackFurther(currentPlayer);
 
@@ -960,6 +951,7 @@ public class GameController {
 	 * This method display map in grid form on UI.
 	 */
 	private void displayMap() {
+		mapGrid.getChildren().clear();
 		Iterator<Continent> ite = continentsSet.iterator();
 		int colCounter = 0;
 		ColumnConstraints widthCol = new ColumnConstraints();
@@ -1024,7 +1016,7 @@ public class GameController {
 	 * 
 	 * @return int: number of players entered by user.
 	 */
-	private int getPlayersCount() {
+/*	private int getPlayersCount() {
 		// setup dialog box
 		TextInputDialog dialog = new TextInputDialog();
 		dialog.setTitle("Enter Number Of Players");
@@ -1051,7 +1043,7 @@ public class GameController {
 			return -1;
 		}
 	}
-
+*/
 	/**
 	 * This method populate the current player information on UI.
 	 */
@@ -1134,6 +1126,8 @@ public class GameController {
 		for (Node n : nodes) {
 			n.setDisable(true);
 		}
+		saveGame.setDisable(true);
+		saveAndExitGame.setDisable(true);
 	}
 
 	/**
@@ -1147,6 +1141,8 @@ public class GameController {
 		for (Node n : nodes) {
 			n.setDisable(false);
 		}
+		saveGame.setDisable(false);
+		saveAndExitGame.setDisable(false);
 	}
 
 	/**
@@ -1292,20 +1288,22 @@ public class GameController {
 		worldDominationModel.addObserver(worldDominationViewController);
 		worldDominationViewController.setUpWorldDominationView(playersList);
 	}
-	
+
 	/**
-	 * This method handle {@link GameController#saveGame} button event and save the game
-	 * by serializing required objects to a file. It also lets the user to save again and again
-	 * and all changes are update in same file until user uses the button Save and Quit.
+	 * This method handle {@link GameController#saveGame} button event and save the
+	 * game by serializing required objects to a file. It also lets the user to save
+	 * again and again and all changes are update in same file until user uses the
+	 * button Save and Quit.
+	 * 
 	 * @param event:
-	 * 			ActionEvent instance which is generated by the user.
+	 *            ActionEvent instance which is generated by the user.
 	 */
 	public void saveGameState(ActionEvent event) {
 		if (savedFile == null) {
 			FileChooser fileChooser = new FileChooser();
 			fileChooser.getExtensionFilters().add(new ExtensionFilter(".ser files", "*.ser"));
 			savedFile = fileChooser.showSaveDialog(null);
-				}
+		}
 		FileOutputStream fileOutput;
 		ObjectOutputStream out = null;
 
@@ -1313,7 +1311,7 @@ public class GameController {
 			fileOutput = new FileOutputStream(savedFile);
 			out = new ObjectOutputStream(fileOutput);
 			GameObjectClass gameState = new GameObjectClass(continentsSet, territoriesSet, playersList, currentPlayer,
-					currentPhase,ifStartUpIsComepleted, playerStrategyMapping);
+					currentPhase, ifStartUpIsComepleted);
 
 			out.writeObject(gameState);
 			String info = "Game Saved";
@@ -1329,51 +1327,52 @@ public class GameController {
 				if (out != null)
 					out.close();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
 
 	}
-	
+
 	/**
-	 * This method handle {@link GameController#saveGame} button event and save the game
-	 * by serializing required objects to a file and also exits the game
+	 * This method handle {@link GameController#saveGame} button event and save the
+	 * game by serializing required objects to a file and also exits the game
+	 * 
 	 * @param event:
-	 * 			ActionEvent instance which is generated by the user.
+	 *            ActionEvent instance which is generated by the user.
 	 */
 	public void saveAndExitGame(ActionEvent event) {
 		if (savedFile == null) {
 			FileChooser fileChooser = new FileChooser();
 			fileChooser.getExtensionFilters().add(new ExtensionFilter(".ser files", "*.ser"));
-			savedFile = fileChooser.showSaveDialog(null);			
+			savedFile = fileChooser.showSaveDialog(null);
 		}
-		serialize(savedFile, continentsSet, territoriesSet, playersList, currentPlayer,
-				currentPhase,ifStartUpIsComepleted, playerStrategyMapping);
+		serialize(savedFile, continentsSet, territoriesSet, playersList, currentPlayer, currentPhase,
+				ifStartUpIsComepleted, playerStrategyMapping);
 	}
-	
+
 	/**
 	 * This method serializes the game state to a file
 	 * 
 	 * @param fileToSave:
-	 * 				file in which game state is saved
+	 *            file in which game state is saved
 	 * @param continentSet:
-	 * 				Set of Continents at that game state
+	 *            Set of Continents at that game state
 	 * @param territorySet:
-	 * 				Set of Territories at that game state
+	 *            Set of Territories at that game state
 	 * @param playerList:
-	 * 				List of players playing the game at that game state
+	 *            List of players playing the game at that game state
 	 * @param currentPlayer:
-	 * 				Player playing at that instance of game state
+	 *            Player playing at that instance of game state
 	 * @param currentPhase:
-	 * 				Phase at that game state
+	 *            Phase at that game state
 	 * @param ifStartUpIsComepleted:
-	 * 				boolean parameter true if start up phase is completed else false
+	 *            boolean parameter true if start up phase is completed else false
 	 * @return true if game state is serialized
 	 */
-	public boolean serialize(File fileToSave,HashSet<Continent> continentSet, HashSet<Territory> territorySet, List<Player> playerList,
-			Player currentPlayer,String currentPhase,boolean ifStartUpIsComepleted, Map<Player,PlayerStrategyEnum> playerStrategyMapping) {
-		
+	public boolean serialize(File fileToSave, HashSet<Continent> continentSet, HashSet<Territory> territorySet,
+			List<Player> playerList, Player currentPlayer, String currentPhase, boolean ifStartUpIsComepleted,
+			Map<Player, PlayerStrategyEnum> playerStrategyMapping) {
+
 		FileOutputStream fileOutput;
 		ObjectOutputStream out = null;
 
@@ -1381,7 +1380,7 @@ public class GameController {
 			fileOutput = new FileOutputStream(fileToSave);
 			out = new ObjectOutputStream(fileOutput);
 			GameObjectClass gameState = new GameObjectClass(continentSet, territorySet, playersList, currentPlayer,
-					currentPhase,ifStartUpIsComepleted, playerStrategyMapping);
+					currentPhase, ifStartUpIsComepleted);
 
 			out.writeObject(gameState);
 			out.close();
@@ -1398,33 +1397,33 @@ public class GameController {
 				}
 				fileToSave = null;
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
-     return true;
+		return true;
 	}
 
 	/**
 	 * This method resumes the game to state where game was saved
 	 * 
 	 * @param continentsSet2:
-	 * 				Set of continent at last saved state of the game
+	 *            Set of continent at last saved state of the game
 	 * @param territoriesSet2:
-	 * 				Set of Territories at last saved state of the game
+	 *            Set of Territories at last saved state of the game
 	 * @param playersList2:
-	 * 				List of players at last saved state of the game
+	 *            List of players at last saved state of the game
 	 * @param currentPlayer2:
-	 * 				Player playing at last saved state of the game
+	 *            Player playing at last saved state of the game
 	 * @param currentPhase2:
-	 * 				Phase at last saved state of the game
+	 *            Phase at last saved state of the game
 	 * @param ifStartUpIsComepleted2:
-	 * 				boolean parameter true if start up phase is completed else false
+	 *            boolean parameter true if start up phase is completed else false
 	 * @param file:
-	 * 				File from which information of game state to be retrieved 
+	 *            File from which information of game state to be retrieved
 	 */
 	public void resumeGame(HashSet<Continent> continentsSet2, HashSet<Territory> territoriesSet2,
-			List<Player> playersList2, Player currentPlayer2, String currentPhase2,boolean ifStartUpIsComepleted2, Map<Player,PlayerStrategyEnum> playerStrategyMapping2,File file) {
+			List<Player> playersList2, Player currentPlayer2, String currentPhase2, boolean ifStartUpIsComepleted2,
+			File file) {
 
 		gameStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST,
 				new EventHandler<WindowEvent>() {
@@ -1441,8 +1440,8 @@ public class GameController {
 		playersList = playersList2;
 		currentPlayer = currentPlayer2;
 		savedFile = file;
-		ifStartUpIsComepleted	=	ifStartUpIsComepleted2;
-		this.playerStrategyMapping = playerStrategyMapping2;
+		ifStartUpIsComepleted = ifStartUpIsComepleted2;
+		setPlayerStartegyEnumMap(playersList2);
 
 		displayMap();
 		updateMapData();
@@ -1518,74 +1517,98 @@ public class GameController {
 			}
 		}
 	}
+
+	public void setPlayerStartegyEnumMap(List<Player> playerList) {
+		this.playerStrategyMapping = new HashMap<>();
+		for (int i = 0; i < playerList.size(); i++) {
+			Player curPlayer = playerList.get(i);
+			if (curPlayer.getPlayingStrategy() instanceof AggressiveStrategy) {
+				this.playerStrategyMapping.put(curPlayer, PlayerStrategyEnum.AGGRESSIVE);
+			} else if (curPlayer.getPlayingStrategy() instanceof HumanStrategy) {
+				this.playerStrategyMapping.put(curPlayer, PlayerStrategyEnum.HUMAN);
+			} else if (curPlayer.getPlayingStrategy() instanceof BenevolentStrategy) {
+				this.playerStrategyMapping.put(curPlayer, PlayerStrategyEnum.BENEVOLENT);
+			} else if (curPlayer.getPlayingStrategy() instanceof Random) {
+				this.playerStrategyMapping.put(curPlayer, PlayerStrategyEnum.RANDOM);
+			} else {
+				this.playerStrategyMapping.put(curPlayer, PlayerStrategyEnum.CHEATER);
+			}
+		}
+	}
+
 	/**
 	 * Setter for gameStage
+	 * 
 	 * @param gameStage:
-	 * 			Represents stage of the game.
+	 *            Represents stage of the game.
 	 */
 	public void setGameStage(Stage gameStage) {
 		this.gameStage = gameStage;
 	}
 
-	public void playTournament(List<Player> playerList, int movesForDraw, int noOfGames, List<File> mapFiles,
-			Map<Player, PlayerStrategyEnum> playerStrategyMapping) {
+	public void playTournament() {
 
 		List<String> errorList = new ArrayList<>();
-		ifTournamentMode = true;
-		this.playerStrategyMapping = playerStrategyMapping;
 		MapService mapService = new MapService();
-		for (int i = 0; i < noOfGames; i++) {
-			for (int j = 0; j < mapFiles.size();j++) {
-				movesToDefineDraw = movesForDraw;
-				File curFile = mapFiles.get(j);
-				mapService.parseFile(curFile, errorList);
-				mapService.validateMap(MapController.continentsSet, MapController.territoriesSet, errorList);
+		movesToDefineDraw = totalPossibleMoves;
+		MapController.continentsSet = new HashSet<>();
+		MapController.territoriesSet = new HashSet<>();
+		File curFile = totalFiles.get(fileIndex);
+		mapService.parseFile(curFile, errorList);
+		mapService.validateMap(MapController.continentsSet, MapController.territoriesSet, errorList);
 
-				if (errorList.size() == 0) {
-					this.continentsSet = MapController.continentsSet;
-					this.territoriesSet = MapController.territoriesSet;
+		if (errorList.size() == 0) {
+			this.continentsSet = MapController.continentsSet;
+			this.territoriesSet = MapController.territoriesSet;
 
-					cardExchangeViewModel = new CardExchangeViewModel(territoriesSet);
-					displayMap();
-					disableComponents(reinfoPhaseUI);
-					disableComponents(attackPhaseUI);
-					disableComponents(fortiPhaseUI);
-					playersList = playerList;
-					gameService.assignTerritories(playersList, this.territoriesSet);
-					updateMapData();
-					currentPlayer = gameService.getNextPlayer(null, playersList);
-					setUpPhaseAndWorldDominationViews(errorList);
-					if (errorList.size() > 0) {
-						showError(errorList.get(0));
-						Platform.exit();
-					} else {
-						worldDominationModel.updateState(continentsSet, territoriesSet);
+			cardExchangeViewModel = new CardExchangeViewModel(territoriesSet);
+			displayMap();
+			disableComponents(reinfoPhaseUI);
+			disableComponents(attackPhaseUI);
+			disableComponents(fortiPhaseUI);
 
-						startUpPhase();
-
-						if (tournamentModeResult.get(curFile.getName()) == null) {
-							List<String> tmResult = new ArrayList<>();
-							tmResult.add(statForTournamentMode);
-							tournamentModeResult.put(curFile.getName(), tmResult);
-						} else {
-
-							tournamentModeResult.get(curFile.getName()).add(statForTournamentMode);
-						}
-
-					}
-				} else {
-					showError("Not able to load file " + curFile.getName());
-				}
+			gameService.assignTerritories(playersList, this.territoriesSet);
+			updateMapData();
+			currentPlayer = gameService.getNextPlayer(null, playersList);
+			setUpPhaseAndWorldDominationViews(errorList);
+			if (errorList.size() > 0) {
+				showError(errorList.get(0));
+				Platform.exit();
+			} else {
+				worldDominationModel.updateState(continentsSet, territoriesSet);
+				startUpPhase();
 			}
-
+		} else {
+			showError("Not able to load file " + curFile.getName());
 		}
+
+	}
+
+	public void cleanAllPhases(Pane pane) {
+		pane.getChildren().clear();
+	}
+
+	public void generateTournamentStats() {
 		Iterator<String> keys = tournamentModeResult.keySet().iterator();
 		while (keys.hasNext()) {
 			String mapName = keys.next();
 			for (int i = 0; i < tournamentModeResult.get(mapName).size(); i++) {
 				System.out.println(mapName + " Result is " + tournamentModeResult.get(mapName).get(i));
+				System.out.println("System time is " + System.currentTimeMillis());
 			}
 		}
+
+	}
+
+	public void setUpTournamentMode(List<Player> playerList, int movesForDraw, int noOfGames, List<File> mapFiles,
+			Map<Player, PlayerStrategyEnum> playerStrategyMapping) {
+		ifTournamentMode = true;
+		this.playerStrategyMapping = playerStrategyMapping;
+		playersList = playerList;
+		totalGames = noOfGames;
+		totalFiles = mapFiles;
+		movesToDefineDraw = movesForDraw;
+		totalPossibleMoves = movesForDraw;
 	}
 
 	private void reinforcementForNonHumanPlayer() {
@@ -1624,7 +1647,7 @@ public class GameController {
 						currentPlayer = gameService.getNextPlayer(currentPlayer, playersList);
 					}
 					if (playersWithZeroArmies.size() == playersList.size()
-							&& playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
+							|| playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
 						startUpPhase();
 					} else {
 						if (playersWithZeroArmies.size() == playersList.size()) {
@@ -1682,10 +1705,11 @@ public class GameController {
 		if (gameService.isGameEnded(currentPlayer, territoriesSet.size())) {
 			showInformation("Player " + currentPlayer.getName() + " won the game.");
 			if (!ifTournamentMode) {
+				showInformation("Player " + currentPlayer.getName() + " won the game.");
 				Platform.exit();
 			} else {
 				statForTournamentMode = currentPlayer.getName();
-				return;
+				updateTournamentModeVariables();
 			}
 		} else {
 			// to end attack phase for non human player and start fortification phase.
@@ -1712,8 +1736,8 @@ public class GameController {
 		if (ifTournamentMode) {
 			movesToDefineDraw--;
 		}
-		if (movesToDefineDraw == 0) {
-			statForTournamentMode = "Draw";
+		if (movesToDefineDraw == 0 && ifTournamentMode) {
+			updateTournamentModeVariables();
 			return;
 		}
 		sleep(1);
@@ -1747,10 +1771,12 @@ public class GameController {
 					enableComponents(reinfoPhaseUI);
 
 					// calculated armies for reinforcement phase.
-					gameService.calcArmiesForReinforcement(currentPlayer);
+					gameService.calcArmiesForReinforcement(currentPlayer, playerStrategyMapping.get(currentPlayer),
+							cardExchangeViewModel);
 					displayPlayerInfo();
 				} else {
-					gameService.calcArmiesForReinforcement(currentPlayer);
+					gameService.calcArmiesForReinforcement(currentPlayer, playerStrategyMapping.get(currentPlayer),
+							cardExchangeViewModel);
 					reinforcementForNonHumanPlayer();
 				}
 			}
@@ -1768,4 +1794,48 @@ public class GameController {
 			e.printStackTrace();
 		}
 	}
+
+	public void updateTournamentModeVariables() {
+		MapService mapService = new MapService();
+		Map<String, PlayerStrategyEnum> tempPlayerStrategyMap = new HashMap<>();
+		if (statForTournamentMode == null) {
+			statForTournamentMode = "Draw";
+		}
+		if (tournamentModeResult.get(totalFiles.get(fileIndex).getName()) == null) {
+			List<String> tmResult = new ArrayList<>();
+
+			tmResult.add(statForTournamentMode);
+			tournamentModeResult.put(totalFiles.get(fileIndex).getName(), tmResult);
+		} else {
+
+			tournamentModeResult.get(totalFiles.get(fileIndex).getName()).add(statForTournamentMode);
+		}
+
+		statForTournamentMode = null;
+		fileIndex++;
+		movesToDefineDraw = totalPossibleMoves;
+		if (fileIndex == totalFiles.size()) {
+			totalGames--;
+			fileIndex = 0;
+		}
+		if (totalGames == 0) {
+			generateTournamentStats();
+			return;
+		}
+		cleanAllPhases(worldDominationViewUI);
+		cleanAllPhases(phaseViewUI);
+		for (int i = 0; i < playersList.size(); i++) {
+			tempPlayerStrategyMap.put(playersList.get(i).getName(), playerStrategyMapping.get(playersList.get(i)));
+		}
+		List<Player> playerList = new ArrayList<>();
+		mapService.createPlayers(playerList, playersList.size());
+		for (int i = 0; i < playersList.size(); i++) {
+			playerStrategyMapping.put(playerList.get(i), tempPlayerStrategyMap.get(playerList.get(i).getName()));
+			playerList.get(i).setPlayingStrategy(
+					mapService.getStrategyfromEnum(tempPlayerStrategyMap.get(playerList.get(i).getName())));
+		}
+		playersList = playerList;
+		playTournament();
+	}
+
 }

@@ -92,7 +92,7 @@
             <AnchorPane prefHeight="200.0" prefWidth="200.0">
                <children>
                   <Button fx:id="saveGame" alignment="TOP_CENTER" contentDisplay="CENTER" layoutX="46.0" layoutY="12.0" mnemonicParsing="false" onAction="#saveGameState" text="Save" />
-                  <Button layoutX="135.0" layoutY="12.0" mnemonicParsing="false" onAction="#saveAndExitGame" text="Save and Quit" />
+                  <Button fx:id="saveAndExitGame" layoutX="135.0" layoutY="12.0" mnemonicParsing="false" onAction="#saveAndExitGame" text="Save and Quit" />
                </children>
             </AnchorPane>
          </children>

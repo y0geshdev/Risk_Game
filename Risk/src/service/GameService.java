@@ -10,12 +10,12 @@ import java.util.Set;
 
 import controller.GameController;
 import controller.MapController;
-import domain.AggressiveStrategy;
+import domain.Card;
 import domain.CardExchangeViewModel;
 import domain.Continent;
-import domain.HumanStrategy;
 import domain.PhaseViewModel;
 import domain.Player;
+import domain.PlayerStrategyEnum;
 import domain.Territory;
 import javafx.util.Pair;
 
@@ -63,8 +63,14 @@ public class GameService {
 	 * 
 	 * @param playerInFocus:
 	 *            Player who is currently in reinforcement phase
+	 * @param playerStrategy:
+	 * Strategy with which the current player is playing
+	 * 
+	 * @param model:
+	 * instance of CardExchangeViewModel
 	 */
-	public void calcArmiesForReinforcement(Player playerInFocus) {
+	public void calcArmiesForReinforcement(Player playerInFocus, PlayerStrategyEnum playerStrategy,
+			CardExchangeViewModel model) {
 
 		List<Territory> playerTerritories = playerInFocus.getTerritories();
 		int numberOfTerritories = playerInFocus.getTerritories().size();
@@ -89,6 +95,74 @@ public class GameService {
 			numberOfArmiesToAdd += (int) Math.floor(numberOfTerritories / 3);
 			playerInFocus.setArmyCount(playerInFocus.getArmyCount() + numberOfArmiesToAdd);
 		}
+
+		if (!playerStrategy.equals(PlayerStrategyEnum.HUMAN)) {
+
+			Territory cardAndOwnedTerritory = null;
+			Queue<Card> playerCards = model.getCurrentPlayerCards(playerInFocus);
+			List<Card> inputCard = new ArrayList<>();
+
+			List<Card> infantAmryCardList = new ArrayList<>();
+			List<Card> cavAmryCardList = new ArrayList<>();
+			List<Card> artAmryCardList = new ArrayList<>();
+
+			Iterator<Card> ite = playerCards.iterator();
+			while (ite.hasNext()) {
+				Card currCard = ite.next();
+				if (currCard.getCardType().equalsIgnoreCase(CardExchangeViewModel.INFANTRY_ARMY)) {
+					infantAmryCardList.add(currCard);
+				} else if (currCard.getCardType().equalsIgnoreCase(CardExchangeViewModel.CAVALRY_ARMY)) {
+					cavAmryCardList.add(currCard);
+				} else {
+					artAmryCardList.add(currCard);
+				}
+			}
+
+			if (infantAmryCardList.size() == 3) {
+				cardAndOwnedTerritory = removeCardsFromPlayer(model, playerInFocus, infantAmryCardList);
+			} else if (cavAmryCardList.size() == 3) {
+				cardAndOwnedTerritory = removeCardsFromPlayer(model, playerInFocus, cavAmryCardList);
+			} else if (artAmryCardList.size() == 3) {
+				cardAndOwnedTerritory = removeCardsFromPlayer(model, playerInFocus, artAmryCardList);
+			} else if (infantAmryCardList.size() >= 1 && cavAmryCardList.size() >= 1 && artAmryCardList.size() >= 1) {
+				inputCard.add(infantAmryCardList.get(0));
+				inputCard.add(cavAmryCardList.get(0));
+				inputCard.add(artAmryCardList.get(0));
+				cardAndOwnedTerritory = removeCardsFromPlayer(model, playerInFocus, inputCard);
+			}
+
+			model.setTotalNumberOfExchanges(model.getTotalNumberOfExchanges() + 1);
+			if (cardAndOwnedTerritory != null) {
+				model.setPlayerArmyCount(playerInFocus, 0, cardAndOwnedTerritory);
+				cardAndOwnedTerritory.setArmyCount(2);
+			} else {
+				model.setPlayerArmyCount(playerInFocus, 0, null);
+			}
+
+		}
+	}
+
+	private Territory removeCardsFromPlayer(CardExchangeViewModel model, Player currentPlayer,
+			List<Card> selectedCards) {
+
+		Territory cardAndOwnedTerritory = null;
+		Queue<Card> removedCards = new LinkedList<>();
+		Iterator<Card> ite = model.getCurrentPlayerCards(currentPlayer).iterator();
+		List<Card> inputCard = selectedCards;
+		// Iterate over the cards that player is having
+		while (ite.hasNext()) {
+			Card playerCard = ite.next();
+			if (inputCard.contains(playerCard)) {
+				ite.remove();
+				removedCards.add(playerCard);
+				if (currentPlayer.getTerritories().contains(playerCard.getCardTerritory())) {
+					cardAndOwnedTerritory = playerCard.getCardTerritory();
+				}
+			}
+		}
+		// add the exchanged cards to the initial deck of cards again.
+		model.getAllCards().addAll(removedCards);
+		return cardAndOwnedTerritory;
 	}
 
 	/**
@@ -122,20 +196,16 @@ public class GameService {
 	 *            total number of players to check how many armies should be
 	 *            assigned at the start of the game.
 	 *//*
-	public void createPlayers(List<Player> playerList, int totalNumberOfPlayers) {
-		int armyCount = getArmyCount(totalNumberOfPlayers);
-		// iterate till the total Number of players and create that many player objects.
-		for (int i = 0; i < totalNumberOfPlayers; i++) {
-			Player playerObj = new Player();
-			playerObj.setName("Player " + (i + 1));
-			playerObj.setArmyCount(armyCount);
-			playerList.add(playerObj);
-		}
-		// stubbing players
-		playerList.get(0).setPlayingStrategy(new HumanStrategy());
-		playerList.get(1).setPlayingStrategy(new AggressiveStrategy());
-		//playerList.get(2).setPlayingStrategy(new AggressiveStrategy());
-	}*/
+		 * public void createPlayers(List<Player> playerList, int totalNumberOfPlayers)
+		 * { int armyCount = getArmyCount(totalNumberOfPlayers); // iterate till the
+		 * total Number of players and create that many player objects. for (int i = 0;
+		 * i < totalNumberOfPlayers; i++) { Player playerObj = new Player();
+		 * playerObj.setName("Player " + (i + 1)); playerObj.setArmyCount(armyCount);
+		 * playerList.add(playerObj); } // stubbing players
+		 * playerList.get(0).setPlayingStrategy(new HumanStrategy());
+		 * playerList.get(1).setPlayingStrategy(new AggressiveStrategy());
+		 * //playerList.get(2).setPlayingStrategy(new AggressiveStrategy()); }
+		 */
 
 	/**
 	 * This method gives the player who will have the next turn to play. Initially,
@@ -312,7 +382,7 @@ public class GameService {
 	 *            Number of armies to move.
 	 */
 	public void fortify(Player player, Territory from, Territory to, int armiesToMove, PhaseViewModel phaseViewModel) {
-			player.fortify(from, to, armiesToMove,phaseViewModel);
+		player.fortify(from, to, armiesToMove, phaseViewModel);
 	}
 
 	/**
@@ -373,22 +443,11 @@ public class GameService {
 	 * @return int number of armies per player according to total number of players
 	 *         playing game.
 	 */
-	/*private int getArmyCount(int playerCount) {
-		switch (playerCount) {
-		case 2:
-			return 40;
-		case 3:
-			return 35;
-		case 4:
-			return 30;
-		case 5:
-			return 25;
-		case 6:
-			return 20;
-		default:
-			return 15;
-		}
-	}*/
+	/*
+	 * private int getArmyCount(int playerCount) { switch (playerCount) { case 2:
+	 * return 40; case 3: return 35; case 4: return 30; case 5: return 25; case 6:
+	 * return 20; default: return 15; } }
+	 */
 
 	/**
 	 * This method current player's reinforcement method to add reinforcement armies
