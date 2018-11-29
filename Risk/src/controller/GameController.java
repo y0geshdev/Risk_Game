@@ -1596,6 +1596,9 @@ public class GameController {
 		this.gameStage = gameStage;
 	}
 
+	/**
+	 * This method is the driver method for tournament mode 
+	 */
 	public void playTournament() {
 
 		List<String> errorList = new ArrayList<>();
@@ -1634,10 +1637,19 @@ public class GameController {
 
 	}
 
+	/**
+	 * This is the helper method to clear all phase data from 
+	 * the pane.
+	 * @param pane:
+	 * 		Instance of pane
+	 */
 	public void cleanAllPhases(Pane pane) {
 		pane.getChildren().clear();
 	}
 
+	/**
+	 * This is helper method for tournament report generation.
+	 */
 	public void generateTournamentStats() {
 		tournamentReport.setDisable(false);
 		Iterator<String> keys = tournamentModeResult.keySet().iterator();
@@ -1670,6 +1682,20 @@ public class GameController {
 		}
 
 	}
+	/**
+	 * This method sets the tournament game play
+	 * 
+	 * @param playerList:
+	 * 			List of player playing tournament
+	 * @param movesForDraw:
+	 * 			Number of moves to consider game draw
+	 * @param noOfGames:
+	 * 			Number of games in tournament for a particular map
+	 * @param mapFiles:
+	 * 			Map files for tournament
+	 * @param playerStrategyMapping:
+	 * 			Map containg player and its strategies
+	 */
 	public void setUpTournamentMode(List<Player> playerList, int movesForDraw, int noOfGames, List<File> mapFiles,
 			Map<Player, PlayerStrategyEnum> playerStrategyMapping) {
 		ifTournamentMode = true;
@@ -1681,6 +1707,10 @@ public class GameController {
 		totalPossibleMoves = movesForDraw;
 	}
 
+	/**
+	 * This is contains logic for reinforcememt of armies in game for non human player
+	 * according to game rules. 
+	 */
 	private void reinforcementForNonHumanPlayer() {
 
 	
@@ -1743,6 +1773,9 @@ public class GameController {
 		Platform.runLater(task);
 	}
 
+	/**
+	 * This is contains logic for attack in game for non human player. 
+	 */
 	private void attackForNonHumanPlayer() {
 
 		updatePhaseInfo(currentPlayer.getName(), "Attack Phase", "Attack Phase Started.");
@@ -1796,6 +1829,10 @@ public class GameController {
 		}
 	}
 
+	/**
+	 * This is contains logic for fortifying territories for non human player according
+	 * to game rules. 
+	 */
 	private void fortificationForNonHumanPlayer() {
 		updatePhaseInfo(null, "Fortification Phase", "Fortification Phase started.");
 		gameService.fortify(currentPlayer, null, null, 0, phaseViewModel);
@@ -1857,6 +1894,12 @@ public class GameController {
 
 	}
 
+	/**
+	 * Helper method for thread sleep
+	 * 
+	 * @param time:
+	 * 			Time for which thread should sleep
+	 */
 	private void sleep(int time) {
 		try {
 			Thread.sleep(time * 100);
@@ -1866,7 +1909,9 @@ public class GameController {
 		}
 	}
 	
-
+	/**
+	 * This method updates all the variables in tournament game play
+	 */
 	public void updateTournamentModeVariables() {
 		MapService mapService = new MapService();
 		Map<String, PlayerStrategyEnum> tempPlayerStrategyMap = new HashMap<>();
@@ -1894,6 +1939,7 @@ public class GameController {
 			generateTournamentStats();
 			return;
 		}
+		//update world domination view and phase view
 		cleanAllPhases(worldDominationViewUI);
 		cleanAllPhases(phaseViewUI);
 		for (int i = 0; i < playersList.size(); i++) {
@@ -1909,6 +1955,15 @@ public class GameController {
 		playersList = playerList;
 		playTournament();
 	}
+	/**
+	 * This method helps in providing columns for table view for tournament report
+	 * 
+	 * @param columnIndex:
+	 * 			Index for column for table
+	 * @param columnTitle:
+	 * '		Title of the column
+	 * @return column for table
+	 */
 	private TableColumn<ObservableList<StringProperty>, String> createColumn(final int columnIndex,
 			String columnTitle) {
 		TableColumn<ObservableList<StringProperty>, String> column = new TableColumn<>();

@@ -69,6 +69,7 @@ public class CardExchangeViewModel extends Observable {
 
 	/**
 	 * default constructor for CardExchangeViewModel.
+	 * @param territoriesSet: set of territories
 	 */
 	public CardExchangeViewModel(Set<Territory> territoriesSet) {
 		playerToCardMapping = new HashMap<>();
@@ -172,7 +173,7 @@ public class CardExchangeViewModel extends Observable {
 	 * This method set the total Number of Exchanges that have happened in the whole
 	 * game.
 	 * 
-	 * @param totalNumberOfExchanges
+	 * @param totalNumberOfExchanges: represents total number of exchanges.
 	 */
 	public void setTotalNumberOfExchanges(int totalNumberOfExchanges) {
 		this.totalNumberOfExchanges = totalNumberOfExchanges;
@@ -196,6 +197,9 @@ public class CardExchangeViewModel extends Observable {
 	 * @param cardOfPlayerTerritoryExchanged
 	 *            : number is 2 if the any of the exchanged card was of the
 	 *            territory owned by the player else 0
+	 * @param cardAndOwnedTerritory: card and territory owned and associated with the
+	 * card
+	 * 				
 	 */
 	public void setPlayerArmyCount(Player currentPlayer, int cardOfPlayerTerritoryExchanged,
 			Territory cardAndOwnedTerritory) {
@@ -229,7 +233,8 @@ public class CardExchangeViewModel extends Observable {
 	 * This method sets the card and territory owned which is associated with the
 	 * card by taking into consideration a territory object.
 	 * 
-	 * @param cardAndOwnedTerritory
+	 * @param cardAndOwnedTerritory:
+	 * 				:card and territory owned and associated with the card.
 	 */
 	public void setCardAndOwnedTerritory(Territory cardAndOwnedTerritory) {
 		this.cardAndOwnedTerritory = cardAndOwnedTerritory;
@@ -290,6 +295,7 @@ public class CardExchangeViewModel extends Observable {
 	/**
 	 * This method sets the initial deck of the cards as per the number of
 	 * territories.
+	 * @param territoriesSet: set of territories.
 	 */
 	public void setCards(Set<Territory> territoriesSet) {
 		String[] cardtype = { INFANTRY_ARMY, CAVALRY_ARMY, ARTILLERY_ARMY };

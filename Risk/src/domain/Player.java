@@ -38,6 +38,7 @@ public class Player implements Serializable{
 
 	/**
 	 * default constructor for Player
+	 * @param playingStrategy: holds reference to strategy of a player.
 	 */
 	public Player(IStrategy playingStrategy) {
 		armyCount = 0;
@@ -124,6 +125,8 @@ public class Player implements Serializable{
 	 *            Territory to which armies is to be added for reinforcement.
 	 * @param numberOfArmies:
 	 *            number of armies to add to a territory as reinforcement.
+	 * @param phaseViewModel:
+	 * 				reference to PhaseViewModel
 	 */
 	public void reinforcement(Territory selectedTerritory, int numberOfArmies, PhaseViewModel phaseViewModel) {
 		playingStrategy.reinforcement(this, selectedTerritory, numberOfArmies, phaseViewModel);
@@ -138,6 +141,8 @@ public class Player implements Serializable{
 	 *            Territory to which armies to be moved.
 	 * @param armiesToMove:
 	 *            Number of armies to move.
+	 * @param phaseViewModel:
+	 * 				reference to PhaseViewModel
 	 */
 	public void fortify(Territory from, Territory to, int armiesToMove, PhaseViewModel phaseViewModel) {
 		playingStrategy.fortify(this, from, to, armiesToMove,phaseViewModel);
