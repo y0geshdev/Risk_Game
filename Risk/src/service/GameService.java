@@ -144,24 +144,46 @@ public class GameService {
 
 			if (infantAmryCardList.size() == 3) {
 				cardAndOwnedTerritory = removeCardsFromPlayer(model, playerInFocus, infantAmryCardList);
+				model.setTotalNumberOfExchanges(model.getTotalNumberOfExchanges() + 1);
+				if (cardAndOwnedTerritory != null) {
+					model.setPlayerArmyCount(playerInFocus, 0, cardAndOwnedTerritory);
+					cardAndOwnedTerritory.setArmyCount(2);
+				} else {
+					model.setPlayerArmyCount(playerInFocus, 0, null);
+				}
 			} else if (cavAmryCardList.size() == 3) {
 				cardAndOwnedTerritory = removeCardsFromPlayer(model, playerInFocus, cavAmryCardList);
+				model.setTotalNumberOfExchanges(model.getTotalNumberOfExchanges() + 1);
+				if (cardAndOwnedTerritory != null) {
+					model.setPlayerArmyCount(playerInFocus, 0, cardAndOwnedTerritory);
+					cardAndOwnedTerritory.setArmyCount(2);
+				} else {
+					model.setPlayerArmyCount(playerInFocus, 0, null);
+				}
 			} else if (artAmryCardList.size() == 3) {
 				cardAndOwnedTerritory = removeCardsFromPlayer(model, playerInFocus, artAmryCardList);
+				model.setTotalNumberOfExchanges(model.getTotalNumberOfExchanges() + 1);
+				if (cardAndOwnedTerritory != null) {
+					model.setPlayerArmyCount(playerInFocus, 0, cardAndOwnedTerritory);
+					cardAndOwnedTerritory.setArmyCount(2);
+				} else {
+					model.setPlayerArmyCount(playerInFocus, 0, null);
+				}
 			} else if (infantAmryCardList.size() >= 1 && cavAmryCardList.size() >= 1 && artAmryCardList.size() >= 1) {
 				inputCard.add(infantAmryCardList.get(0));
 				inputCard.add(cavAmryCardList.get(0));
 				inputCard.add(artAmryCardList.get(0));
 				cardAndOwnedTerritory = removeCardsFromPlayer(model, playerInFocus, inputCard);
+				model.setTotalNumberOfExchanges(model.getTotalNumberOfExchanges() + 1);
+				if (cardAndOwnedTerritory != null) {
+					model.setPlayerArmyCount(playerInFocus, 0, cardAndOwnedTerritory);
+					cardAndOwnedTerritory.setArmyCount(2);
+				} else {
+					model.setPlayerArmyCount(playerInFocus, 0, null);
+				}
 			}
 
-			model.setTotalNumberOfExchanges(model.getTotalNumberOfExchanges() + 1);
-			if (cardAndOwnedTerritory != null) {
-				model.setPlayerArmyCount(playerInFocus, 0, cardAndOwnedTerritory);
-				cardAndOwnedTerritory.setArmyCount(2);
-			} else {
-				model.setPlayerArmyCount(playerInFocus, 0, null);
-			}
+			
 
 		}
 	}

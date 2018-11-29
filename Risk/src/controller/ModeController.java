@@ -114,7 +114,7 @@ public class ModeController {
 		allStrategies = new ArrayList<>();
 		Collections.addAll(allStrategies, PlayerStrategyEnum.HUMAN, PlayerStrategyEnum.AGGRESSIVE,
 				PlayerStrategyEnum.BENEVOLENT, PlayerStrategyEnum.RANDOM, PlayerStrategyEnum.CHEATER);
-		// disableTMComponents();
+		 disableTMComponents();
 		disableSMComponents();
 	}
 

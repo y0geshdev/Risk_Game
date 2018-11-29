@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -29,6 +30,7 @@
                   </GridPane>
                   <Region prefHeight="18.0" prefWidth="200.0" />
                   <AnchorPane fx:id="worldDominationViewUI" />
+                  <TableView fx:id="tournamentReport" prefHeight="200.0" prefWidth="200.0" />
                </children>
             </VBox>
          </content>

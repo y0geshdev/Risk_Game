@@ -28,7 +28,11 @@ import domain.Territory;
 import domain.WorldDominationModel;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -42,6 +46,9 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableColumn.CellDataFeatures;
+import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleGroup;
@@ -55,6 +62,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import javafx.util.Callback;
 import javafx.util.Pair;
 import service.GameService;
 import service.MapService;
@@ -198,7 +206,10 @@ public class GameController {
 	private Button saveGame;
 
 	@FXML
-	private Button saveAndExitGame;  
+	private Button saveAndExitGame;
+	
+	@FXML
+	private TableView<ObservableList<StringProperty>> tournamentReport;
 	
 	/**
 	 * Game constant for CONTROL_VALUE_WITH_SEMICOLON string.
@@ -827,10 +838,10 @@ public class GameController {
 			enableComponents(reinfoPhaseUI);
 			currentPhase	=	GameController.REINFORCEMENT_PHASE;
 			// calculated armies for reinforcement phase.
-			gameService.calcArmiesForReinforcement(currentPlayer);
+			gameService.calcArmiesForReinforcement(currentPlayer,PlayerStrategyEnum.HUMAN,cardExchangeViewModel);
 			displayPlayerInfo();
 		} else {
-			gameService.calcArmiesForReinforcement(currentPlayer);
+			gameService.calcArmiesForReinforcement(currentPlayer,playerStrategyMapping.get(currentPlayer),cardExchangeViewModel);
 			reinforcementForNonHumanPlayer();
 		}
 	}
@@ -901,7 +912,7 @@ public class GameController {
 					sleep(20);
 					// perform action here.
 					if (playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
-						gameService.calcArmiesForReinforcement(currentPlayer);
+						gameService.calcArmiesForReinforcement(currentPlayer,PlayerStrategyEnum.HUMAN,cardExchangeViewModel);
 						cardExchangeViewModel.setViewForCurrentPlayer(currentPlayer);
 						cardExchangeViewStage.showAndWait();
 						enableComponents(reinfoPhaseUI);
@@ -910,7 +921,7 @@ public class GameController {
 					} else {
 						disableComponents(reinfoPhaseUI);
 						// need to add logic for card exchange of player is non human.
-						gameService.calcArmiesForReinforcement(currentPlayer);
+						gameService.calcArmiesForReinforcement(currentPlayer,playerStrategyMapping.get(currentPlayer),cardExchangeViewModel);
 						reinforcementForNonHumanPlayer();
 					}
 				}
@@ -1154,6 +1165,7 @@ public class GameController {
 		}
 		saveGame.setDisable(true);
 		saveAndExitGame.setDisable(true);
+		tournamentReport.setDisable(true);
 	}
 
 	/**
@@ -1611,17 +1623,37 @@ public class GameController {
 	}
 
 	public void generateTournamentStats() {
+		tournamentReport.setDisable(false);
 		Iterator<String> keys = tournamentModeResult.keySet().iterator();
-		while (keys.hasNext()) {
-			String mapName = keys.next();
-			for (int i = 0; i < tournamentModeResult.get(mapName).size(); i++) {
-				System.out.println(mapName + " Result is " + tournamentModeResult.get(mapName).get(i));
-				System.out.println("System time is " + System.currentTimeMillis());
-			}
-		}
-		
-	}
+		int totalNumberOfGames = tournamentModeResult.get(keys.next()).size();
+		keys = tournamentModeResult.keySet().iterator();
 
+		// tournamentReport.setDisable(false);
+		tournamentReport.getColumns().add(createColumn(0, " "));
+		for (int column = 1; column <= totalNumberOfGames; column++) {
+			tournamentReport.getColumns().add(createColumn(column, "Game " + column));
+		}
+		int mapIndex = 1;
+		while (keys.hasNext()) {
+			String map = keys.next();
+			List<String> dataValue = new ArrayList<>();
+			dataValue.add("Map " + mapIndex);
+
+			dataValue.addAll(tournamentModeResult.get(map));
+
+			for (int colIndex = tournamentReport.getColumns().size(); colIndex < dataValue.size(); colIndex++) {
+				tournamentReport.getColumns().add(createColumn(colIndex, ""));
+			}
+
+			ObservableList<StringProperty> data = FXCollections.observableArrayList();
+			for (String val : dataValue) {
+				data.add(new SimpleStringProperty(val));
+			}
+			tournamentReport.getItems().add(data);
+			mapIndex++;
+		}
+
+	}
 	public void setUpTournamentMode(List<Player> playerList, int movesForDraw, int noOfGames, List<File> mapFiles,
 			Map<Player, PlayerStrategyEnum> playerStrategyMapping) {
 		ifTournamentMode = true;
@@ -1794,10 +1826,10 @@ public class GameController {
 					enableComponents(reinfoPhaseUI);
 
 					// calculated armies for reinforcement phase.
-					gameService.calcArmiesForReinforcement(currentPlayer);
+					gameService.calcArmiesForReinforcement(currentPlayer,PlayerStrategyEnum.HUMAN,cardExchangeViewModel);
 					displayPlayerInfo();
 				} else {
-					gameService.calcArmiesForReinforcement(currentPlayer);
+					gameService.calcArmiesForReinforcement(currentPlayer,playerStrategyMapping.get(currentPlayer),cardExchangeViewModel);
 					reinforcementForNonHumanPlayer();
 				}
 			}
@@ -1815,6 +1847,7 @@ public class GameController {
 			e.printStackTrace();
 		}
 	}
+	
 
 	public void updateTournamentModeVariables() {
 		MapService mapService = new MapService();
@@ -1857,6 +1890,31 @@ public class GameController {
 		}
 		playersList = playerList;
 		playTournament();
+	}
+	private TableColumn<ObservableList<StringProperty>, String> createColumn(final int columnIndex,
+			String columnTitle) {
+		TableColumn<ObservableList<StringProperty>, String> column = new TableColumn<>();
+		String title;
+		if (columnTitle == null || columnTitle.trim().length() == 0) {
+			title = "Column " + (columnIndex + 1);
+		} else {
+			title = columnTitle;
+		}
+		column.setText(title);
+		column.setCellValueFactory(
+				new Callback<TableColumn.CellDataFeatures<ObservableList<StringProperty>, String>, ObservableValue<String>>() {
+					@Override
+					public ObservableValue<String> call(
+							CellDataFeatures<ObservableList<StringProperty>, String> cellDataFeatures) {
+						ObservableList<StringProperty> values = cellDataFeatures.getValue();
+						if (columnIndex >= values.size()) {
+							return new SimpleStringProperty("");
+						} else {
+							return cellDataFeatures.getValue().get(columnIndex);
+						}
+					}
+				});
+		return column;
 	}
 
 }
