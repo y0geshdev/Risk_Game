@@ -1,9 +1,6 @@
 package controller;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,15 +9,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Random;
 import java.util.Set;
 
-import domain.AggressiveStrategy;
-import domain.BenevolentStrategy;
 import domain.CardExchangeViewModel;
 import domain.Continent;
-import domain.GameObjectClass;
-import domain.HumanStrategy;
 import domain.PhaseViewModel;
 import domain.Player;
 import domain.PlayerStrategyEnum;
@@ -29,6 +21,8 @@ import domain.WorldDominationModel;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.collections.FXCollections;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -38,7 +32,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -51,10 +44,7 @@ import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
-import javafx.stage.FileChooser;
-import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import javafx.util.Pair;
 import service.GameService;
 import service.MapService;
@@ -65,7 +55,7 @@ import service.MapService;
  * @author Yogesh
  *
  */
-public class GameController {
+public class GameController2 {
 
 	/**
 	 * AnchorPane for phase view.
@@ -194,12 +184,6 @@ public class GameController {
 	@FXML
 	private TextField defenderTotalDiceTF;
 
-	@FXML
-	private Button saveGame;
-
-	@FXML
-	private Button saveAndExitGame;  
-	
 	/**
 	 * Game constant for CONTROL_VALUE_WITH_SEMICOLON string.
 	 */
@@ -284,41 +268,6 @@ public class GameController {
 	 * Reference to stage of cardExchangeView.
 	 */
 	private Stage cardExchangeViewStage;
-	
-	
-	/**
-	 * String holding the name of current phase
-	 */
-	private String currentPhase;
-
-	/**
-	 * Reference to stage of game.
-	 */
-	private Stage gameStage = null;
-	/**
-	 * Game constant for STARTUP_PHASE string
-	 */
-	final private static String STARTUP_PHASE = "startUpPhase";
-	
-	/**
-	 * Game constant for REINFORCEMENT_PHASE string
-	 */
-	final private static String REINFORCEMENT_PHASE = "reinforcementPhase";
-	
-	/**
-	 * Game constant for ATTACK_PHASE string
-	 */
-	final private static String ATTACK_PHASE = "attackPhase";
-	
-	/**
-	 * Game constant for FORTIFICATION_PHASE string
-	 */
-	final private static String FORTIFICATION_PHASE = "fortificationPhase";
-	 
-	/**
-	 * Reference to file named savedfile initiated with null
-	 */
-	private static File savedFile = null;
 
 	Map<Player, PlayerStrategyEnum> playerStrategyMapping;
 
@@ -364,19 +313,6 @@ public class GameController {
 		this.territoriesSet = territoriesSet;
 		this.playersList = playersList;
 		this.playerStrategyMapping = playerStrategyMapping;
-		//Registers an event of window close request to this window of this scene of game stage 
-		 // and handles that event with actionOnClosingWindow method
-		 		
-		gameStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST,
-				new EventHandler<WindowEvent>() {
-
-					@Override
-					public void handle(WindowEvent event) {
-
-						actionOnClosingWindow(event);
-
-					}
-				});
 
 		// SetUp UI and game context.
 		displayMap();
@@ -419,20 +355,6 @@ public class GameController {
 			startUpPhase();
 		}
 
-	}
-	
-	/**
-	 * This method handles the window closing event on the scene of game stage
-	 * @param event :
-	 * 			Handling the event of window closing of game stage
-	 */
-	private void actionOnClosingWindow(WindowEvent event) {
-		savedFile = null;
-		territoriesSet = null;
-		continentsSet = null;
-		currentPhase = null;
-		currentPlayer = null;
-		playersList = null;
 	}
 
 	/**
@@ -683,7 +605,7 @@ public class GameController {
 			}
 			cardExchangeViewModel.setIfPlayerGetsCard(false);
 		}
-		currentPhase	=	GameController.FORTIFICATION_PHASE;
+
 		// update UI
 		updatePhaseInfo(null, "Fortification Phase", "Fortification Phase started.");
 		attackerTotalDiceTF.disableProperty().unbind();
@@ -825,7 +747,7 @@ public class GameController {
 			cardExchangeViewStage.hide();
 			setArmiesOnPlayerOwnedCardTerritory();
 			enableComponents(reinfoPhaseUI);
-			currentPhase	=	GameController.REINFORCEMENT_PHASE;
+
 			// calculated armies for reinforcement phase.
 			gameService.calcArmiesForReinforcement(currentPlayer);
 			displayPlayerInfo();
@@ -896,6 +818,7 @@ public class GameController {
 			updatePhaseInfo(currentPlayer.getName(), "Reinforcement Phase", "Reinforcement Phase started.");
 			sleep(1);
 			Runnable task = new Runnable() {
+
 				@Override
 				public void run() {
 					sleep(20);
@@ -905,7 +828,6 @@ public class GameController {
 						cardExchangeViewModel.setViewForCurrentPlayer(currentPlayer);
 						cardExchangeViewStage.showAndWait();
 						enableComponents(reinfoPhaseUI);
-						currentPhase	=	GameController.REINFORCEMENT_PHASE;
 						reinforcementPhase();
 					} else {
 						disableComponents(reinfoPhaseUI);
@@ -915,17 +837,18 @@ public class GameController {
 					}
 				}
 			};
+
 			Platform.runLater(task);
 
 		} else {
 			updatePhaseInfo(currentPlayer.getName(), "StartUp Phase", "Place armies for " + currentPlayer.getName());
 			if (playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
 				enableComponents(reinfoPhaseUI);
-				currentPhase	=	GameController.STARTUP_PHASE;
 				displayPlayerInfo();
 			} else {
 				disableComponents(reinfoPhaseUI);
 				reinforcementForNonHumanPlayer();
+
 			}
 		}
 	}
@@ -937,7 +860,6 @@ public class GameController {
 		if (gameService.endOfReinforcementPhase(currentPlayer, cardExchangeViewModel)) {
 
 			disableComponents(reinfoPhaseUI);
-			currentPhase	=	GameController.ATTACK_PHASE;
 			// logic to automatically end the attack if current user can't attack anymore.
 			boolean furtherAttackPossible = gameService.canPlayerAttackFurther(currentPlayer);
 
@@ -994,7 +916,7 @@ public class GameController {
 
 			// setup UI for current continent
 			Label continentName = new Label(nameofTheContinent);
-			Label controlValueLabel = new Label(GameController.CONTROL_VALUE_WITH_SEMICOLON + controlValue.toString());
+			Label controlValueLabel = new Label(GameController2.CONTROL_VALUE_WITH_SEMICOLON + controlValue.toString());
 			GridPane.setConstraints(continentName, colCounter, 1);
 			GridPane.setConstraints(controlValueLabel, colCounter, 2);
 
@@ -1104,9 +1026,9 @@ public class GameController {
 			TextField tf = territoriesToTFMapping.get(terr.getName());
 			if (isEntered) {
 				if (terr.getOwner() != territoryObj.getOwner()) {
-					tf.setStyle(GameController.TEXTFIELD_BORDER_COLOUR_DEFENDER_TERRITORY);
+					tf.setStyle(GameController2.TEXTFIELD_BORDER_COLOUR_DEFENDER_TERRITORY);
 				} else {
-					tf.setStyle(GameController.TEXTFIELD_BORDER_COLOUR_OWN_TERRITORY);
+					tf.setStyle(GameController2.TEXTFIELD_BORDER_COLOUR_OWN_TERRITORY);
 				}
 			} else
 				tf.setStyle("");
@@ -1152,8 +1074,6 @@ public class GameController {
 		for (Node n : nodes) {
 			n.setDisable(true);
 		}
-		saveGame.setDisable(true);
-		saveAndExitGame.setDisable(true);
 	}
 
 	/**
@@ -1167,8 +1087,6 @@ public class GameController {
 		for (Node n : nodes) {
 			n.setDisable(false);
 		}
-		saveGame.setDisable(false);
-		saveAndExitGame.setDisable(false);
 	}
 
 	/**
@@ -1314,259 +1232,6 @@ public class GameController {
 		worldDominationModel.addObserver(worldDominationViewController);
 		worldDominationViewController.setUpWorldDominationView(playersList);
 	}
-	
-	/**
-	 * This method handle {@link GameController#saveGame} button event and save the game
-	 * by serializing required objects to a file. It also lets the user to save again and again
-	 * and all changes are update in same file until user uses the button Save and Quit.
-	 * @param event:
-	 * 			ActionEvent instance which is generated by the user.
-	 */
-	public void saveGameState(ActionEvent event) {
-		if (savedFile == null) {
-			FileChooser fileChooser = new FileChooser();
-			fileChooser.getExtensionFilters().add(new ExtensionFilter(".ser files", "*.ser"));
-			savedFile = fileChooser.showSaveDialog(null);
-				}
-		FileOutputStream fileOutput;
-		ObjectOutputStream out = null;
-
-		try {
-			fileOutput = new FileOutputStream(savedFile);
-			out = new ObjectOutputStream(fileOutput);
-			GameObjectClass gameState = new GameObjectClass(continentsSet, territoriesSet, playersList, currentPlayer,
-					currentPhase,ifStartUpIsComepleted);
-
-			out.writeObject(gameState);
-			String info = "Game Saved";
-			showInformation(info);
-			out.close();
-		} catch (Exception e) {
-			String error = "Game Cannot be saved";
-			showError(error);
-			e.printStackTrace();
-			return;
-		} finally {
-			try {
-				if (out != null)
-					out.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-
-	}
-	
-	/**
-	 * This method handle {@link GameController#saveGame} button event and save the game
-	 * by serializing required objects to a file and also exits the game
-	 * @param event:
-	 * 			ActionEvent instance which is generated by the user.
-	 */
-	public void saveAndExitGame(ActionEvent event) {
-		if (savedFile == null) {
-			FileChooser fileChooser = new FileChooser();
-			fileChooser.getExtensionFilters().add(new ExtensionFilter(".ser files", "*.ser"));
-			savedFile = fileChooser.showSaveDialog(null);			
-		}
-		serialize(savedFile, continentsSet, territoriesSet, playersList, currentPlayer,
-				currentPhase,ifStartUpIsComepleted, playerStrategyMapping);
-	}
-	
-	/**
-	 * This method serializes the game state to a file
-	 * 
-	 * @param fileToSave:
-	 * 				file in which game state is saved
-	 * @param continentSet:
-	 * 				Set of Continents at that game state
-	 * @param territorySet:
-	 * 				Set of Territories at that game state
-	 * @param playerList:
-	 * 				List of players playing the game at that game state
-	 * @param currentPlayer:
-	 * 				Player playing at that instance of game state
-	 * @param currentPhase:
-	 * 				Phase at that game state
-	 * @param ifStartUpIsComepleted:
-	 * 				boolean parameter true if start up phase is completed else false
-	 * @return true if game state is serialized
-	 */
-	public boolean serialize(File fileToSave,HashSet<Continent> continentSet, HashSet<Territory> territorySet, List<Player> playerList,
-			Player currentPlayer,String currentPhase,boolean ifStartUpIsComepleted, Map<Player,PlayerStrategyEnum> playerStrategyMapping) {
-		
-		FileOutputStream fileOutput;
-		ObjectOutputStream out = null;
-
-		try {
-			fileOutput = new FileOutputStream(fileToSave);
-			out = new ObjectOutputStream(fileOutput);
-			GameObjectClass gameState = new GameObjectClass(continentSet, territorySet, playersList, currentPlayer,
-					currentPhase,ifStartUpIsComepleted);
-
-			out.writeObject(gameState);
-			out.close();
-			fileToSave = null;
-			Platform.exit();
-		} catch (Exception e) {
-			String error = "Game Cannot be saved";
-			showError(error);
-			return false;
-		} finally {
-			try {
-				if (out != null) {
-					out.close();
-				}
-				fileToSave = null;
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-     return true;
-	}
-
-	/**
-	 * This method resumes the game to state where game was saved
-	 * 
-	 * @param continentsSet2:
-	 * 				Set of continent at last saved state of the game
-	 * @param territoriesSet2:
-	 * 				Set of Territories at last saved state of the game
-	 * @param playersList2:
-	 * 				List of players at last saved state of the game
-	 * @param currentPlayer2:
-	 * 				Player playing at last saved state of the game
-	 * @param currentPhase2:
-	 * 				Phase at last saved state of the game
-	 * @param ifStartUpIsComepleted2:
-	 * 				boolean parameter true if start up phase is completed else false
-	 * @param file:
-	 * 				File from which information of game state to be retrieved 
-	 */
-	public void resumeGame(HashSet<Continent> continentsSet2, HashSet<Territory> territoriesSet2,
-			List<Player> playersList2, Player currentPlayer2, String currentPhase2,boolean ifStartUpIsComepleted2,File file) {
-
-		gameStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST,
-				new EventHandler<WindowEvent>() {
-
-					@Override
-					public void handle(WindowEvent event) {
-
-						actionOnClosingWindow(event);
-
-					}
-				});
-		this.continentsSet = continentsSet2;
-		this.territoriesSet = territoriesSet2;
-		playersList = playersList2;
-		currentPlayer = currentPlayer2;
-		savedFile = file;
-		ifStartUpIsComepleted	=	ifStartUpIsComepleted2;
-		setPlayerStartegyEnumMap(playersList2);
-		
-		displayMap();
-		updateMapData();
-		disableComponents(attackPhaseUI);
-		disableComponents(fortiPhaseUI);
-		disableComponents(reinfoPhaseUI);
-		List<String> errorList = new ArrayList<>();
-
-		// setup Phase view, World domination view and Card exchange view.
-		setUpPhaseAndWorldDominationViews(errorList);
-		setUpCardExchangeView(errorList);
-		worldDominationModel.updateState(continentsSet2, territoriesSet2);
-		if (errorList.size() > 0) {
-			Platform.exit();
-		} else {
-
-			if (currentPhase2.equalsIgnoreCase(GameController.STARTUP_PHASE)) {
-
-				enableComponents(reinfoPhaseUI);
-				startUpPhase();
-			} else if (currentPhase2.equalsIgnoreCase(GameController.REINFORCEMENT_PHASE)) {
-				updatePhaseInfo(currentPlayer.getName(), "Reinforcement Phase", "Reinforcement Phase started.");
-				cardExchangeViewStage.showAndWait();
-				ifStartUpIsComepleted = true;
-				startUpAndReinforcementId.setText("Reinforcement Phase");
-				enableComponents(reinfoPhaseUI);
-				reinforcementPhase();
-			} else if (currentPhase2.equalsIgnoreCase(GameController.ATTACK_PHASE)) {
-
-				updatePhaseInfo(currentPlayer.getName(), "Attack Phase", "Attack Phase Started.");
-				// prepare UI and reinforcement phase drop downs
-				currentPhase = GameController.ATTACK_PHASE;
-				enableComponents(attackPhaseUI);
-				attackerTotalDiceTF.disableProperty().bind(Bindings.not(normalModeRB.selectedProperty()));
-				defenderTotalDiceTF.disableProperty().bind(Bindings.not(normalModeRB.selectedProperty()));
-
-				attackAttackerCB.setItems(FXCollections.observableList(currentPlayer.getTerritories()));
-				attackAttackerCB.setValue(currentPlayer.getTerritories().get(0));
-
-				List<Territory> defenderTerritories = gameService
-						.getAttackableTerritories(currentPlayer.getTerritories().get(0));
-				if (defenderTerritories.size() > 0) {
-					attackDefenderCB.setDisable(false);
-					attackDefenderCB.setItems(FXCollections.observableList(defenderTerritories));
-					attackDefenderCB.setValue(defenderTerritories.get(0));
-				} else {
-					attackDefenderCB.setDisable(true);
-					attackDefenderCB.setValue(null);
-				}
-
-			} else {
-				updatePhaseInfo(null, "Fortification Phase", "Fortification Phase started.");
-				currentPhase = GameController.FORTIFICATION_PHASE;
-				attackerTotalDiceTF.disableProperty().unbind();
-				defenderTotalDiceTF.disableProperty().unbind();
-				disableComponents(attackPhaseUI);
-				enableComponents(fortiPhaseUI);
-
-				// prepare fortification phase drop downs
-				fortifyFromTerritoryCB.setItems(FXCollections.observableList(currentPlayer.getTerritories()));
-				fortifyFromTerritoryCB.setValue(currentPlayer.getTerritories().get(0));
-				List<Territory> fortifiableTerritories = gameService
-						.getFortifiableTerritories(currentPlayer.getTerritories().get(0));
-				if (fortifiableTerritories.size() > 0) {
-					fortifyToTerritoryCB.setItems(FXCollections.observableList(fortifiableTerritories));
-					fortifyToTerritoryCB.setValue(fortifiableTerritories.get(0));
-					fortifyToTerritoryCB.setDisable(false);
-				} else {
-					fortifyToTerritoryCB.setValue(null);
-					fortifyToTerritoryCB.setDisable(true);
-				}
-
-			}
-		}
-	}
-	
-	public void setPlayerStartegyEnumMap(List<Player> playerList) {
-		this.playerStrategyMapping	=	new HashMap<>();
-		for(int i=0;i<playerList.size();i++) {
-			Player curPlayer	=	playerList.get(i);
-			if(curPlayer.getPlayingStrategy() instanceof AggressiveStrategy) {
-				this.playerStrategyMapping.put(curPlayer, PlayerStrategyEnum.AGGRESSIVE);
-			}else if(curPlayer.getPlayingStrategy() instanceof HumanStrategy) {
-				this.playerStrategyMapping.put(curPlayer, PlayerStrategyEnum.HUMAN);
-			}else if(curPlayer.getPlayingStrategy() instanceof BenevolentStrategy) {
-				this.playerStrategyMapping.put(curPlayer, PlayerStrategyEnum.BENEVOLENT);
-			}else if(curPlayer.getPlayingStrategy() instanceof Random) {
-				this.playerStrategyMapping.put(curPlayer, PlayerStrategyEnum.RANDOM);
-			}else {
-				this.playerStrategyMapping.put(curPlayer, PlayerStrategyEnum.CHEATER);
-			}
-		}
-	}
-	
-	/**
-	 * Setter for gameStage
-	 * @param gameStage:
-	 * 			Represents stage of the game.
-	 */
-	public void setGameStage(Stage gameStage) {
-		this.gameStage = gameStage;
-	}
 
 	public void playTournament() {
 
@@ -1635,7 +1300,6 @@ public class GameController {
 
 	private void reinforcementForNonHumanPlayer() {
 
-	
 		// do reinforcement or startup and update UI
 		playerArmies.setText(String.valueOf(currentPlayer.getArmyCount()));
 		if (ifStartUpIsComepleted) {
@@ -1726,7 +1390,6 @@ public class GameController {
 
 		// check if current player won whole game.
 		if (gameService.isGameEnded(currentPlayer, territoriesSet.size())) {
-			showInformation("Player " + currentPlayer.getName() + " won the game.");
 			if (!ifTournamentMode) {
 				showInformation("Player " + currentPlayer.getName() + " won the game.");
 				Platform.exit();
@@ -1761,7 +1424,7 @@ public class GameController {
 		}
 		if (movesToDefineDraw == 0 && ifTournamentMode) {
 			updateTournamentModeVariables();
-			return;
+
 		}
 		sleep(1);
 		Runnable task = new Runnable() {
@@ -1815,6 +1478,7 @@ public class GameController {
 			e.printStackTrace();
 		}
 	}
+	//
 
 	public void updateTournamentModeVariables() {
 		MapService mapService = new MapService();
@@ -1840,8 +1504,9 @@ public class GameController {
 			fileIndex = 0;
 		}
 		if (totalGames == 0) {
+			Platform.exit();
 			generateTournamentStats();
-			return;
+			
 		}
 		cleanAllPhases(worldDominationViewUI);
 		cleanAllPhases(phaseViewUI);

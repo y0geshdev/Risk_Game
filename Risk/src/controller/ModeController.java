@@ -360,7 +360,8 @@ public class ModeController {
 		Stage stage = new Stage(); stage.setTitle("Game");
 		stage.setScene(new Scene(root, 800, 600));
 		stage.show();
-		gameController.playTournament(playerList, drawMoves, noOfGames, mapFiles,playerStrategyMapping);
+		gameController.setUpTournamentMode(playerList, drawMoves, noOfGames, mapFiles,playerStrategyMapping);
+		gameController.playTournament();
 
 	}
 
