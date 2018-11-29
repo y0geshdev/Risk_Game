@@ -17,7 +17,6 @@ import domain.PhaseViewModel;
 import domain.Player;
 import domain.PlayerStrategyEnum;
 import domain.Territory;
-import javafx.collections.FXCollections;
 import javafx.util.Pair;
 
 /**
@@ -64,35 +63,12 @@ public class GameService {
 	 * 
 	 * @param playerInFocus:
 	 *            Player who is currently in reinforcement phase
+	 * @param playerStrategy:
+	 * Strategy with which the current player is playing
+	 * 
+	 * @param model:
+	 * instance of CardExchangeViewModel
 	 */
-//	public void calcArmiesForReinforcement(Player playerInFocus) {
-//
-//		List<Territory> playerTerritories = playerInFocus.getTerritories();
-//		int numberOfTerritories = playerInFocus.getTerritories().size();
-//		int numberOfArmiesToAdd = 0;
-//		Iterator<Continent> contIterator = MapController.continentsSet.iterator();
-//		Continent contObject;
-//
-//		// check if current player occupy whole continents to add continent control
-//		// values.
-//		while (contIterator.hasNext()) {
-//			contObject = contIterator.next();
-//			List<Territory> territoriesInContinent = contObject.getTerritories();
-//			if (ifContinentOccupied(territoriesInContinent, playerTerritories)) {
-//				numberOfArmiesToAdd += contObject.getContinentArmyValue();
-//			}
-//		}
-//
-//		if (numberOfTerritories < 9) {
-//			numberOfArmiesToAdd += 3;
-//			playerInFocus.setArmyCount(playerInFocus.getArmyCount() + numberOfArmiesToAdd);
-//		} else {
-//			numberOfArmiesToAdd += (int) Math.floor(numberOfTerritories / 3);
-//			playerInFocus.setArmyCount(playerInFocus.getArmyCount() + numberOfArmiesToAdd);
-//		}
-//
-//	}
-	
 	public void calcArmiesForReinforcement(Player playerInFocus, PlayerStrategyEnum playerStrategy,
 			CardExchangeViewModel model) {
 

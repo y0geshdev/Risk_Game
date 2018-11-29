@@ -3,7 +3,6 @@ package domain;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This class is contains all the objects required for storing game state at any

@@ -7,12 +7,10 @@ import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 
 import domain.Continent;
 import domain.GameObjectClass;
 import domain.Player;
-import domain.PlayerStrategyEnum;
 import domain.Territory;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
