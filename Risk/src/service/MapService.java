@@ -48,8 +48,7 @@ public class MapService {
 	/**
 	 * This method is used to validate that whether the map in application memory is
 	 * valid map or not.
-	 * 
-	 * @author karanbhalla
+	 *
 	 * @param continentsSet:
 	 *            Set which represent continent object.
 	 * @param territoriesSet:
@@ -134,8 +133,6 @@ public class MapService {
 	/**
 	 * This is a DFS function to check that whether the graph is connected or not.
 	 * 
-	 * @author karanbhalla
-	 * 
 	 * @param territoryObject:
 	 *            A starting object of Territory, could be any Territory.
 	 * @param queueForChecking:
@@ -213,20 +210,13 @@ public class MapService {
 	 * This method is using the File object in order to access the file and parse
 	 * it's contents. It will call the rendering Class method which will render the
 	 * map on UI.
-	 * 
-	 * 
-	 * @author Kunal
 	 *
 	 * @param file:
 	 *            This object is passed from the <u>class</u> where we choose a
 	 *            particular map file.
 	 *
-	 * @param modifyOrPlay:
-	 *            true if this method is called for modifying the exisiting map else
-	 *            false if called to play.
-	 *
-	 * @throws Exception:
-	 *             Throw file not found and other custom exceptions.
+	 * @param errorList:
+	 * 			List containing error messages.
 	 */
 	public void parseFile(File file, List<String> errorList) {
 		String errormessage = new String();
@@ -372,7 +362,11 @@ public class MapService {
 			return;
 		}
 	}
-	
+	/**
+	 * This method checks Bi-directional relation between a territory and its neighbors
+	 * @param territorySet:
+	 * 				set containing territories.
+	 */
 	public void checkAndUpdateBiDirectionalLinks(HashSet<Territory>territorySet) {
 		Iterator<Territory> ite	=	territorySet.iterator();
 		while(ite.hasNext()) {
@@ -385,6 +379,12 @@ public class MapService {
 		}
 	}
 
+	/**
+	 * This is getter method to get the strategy of player
+	 * @param strategyEnum:
+	 * 				reference to an enum which reflects strategies for players playing style.
+	 * @return strategy of the player
+	 */
 	public IStrategy getStrategyfromEnum(PlayerStrategyEnum strategyEnum) {
 		IStrategy strategy = null;
 		switch (strategyEnum) {

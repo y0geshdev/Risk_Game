@@ -83,7 +83,7 @@ public class CardExchangeViewModel extends Observable {
 	/**
 	 * This method returns the type of a particular card.
 	 * 
-	 * @return
+	 * @return card type
 	 */
 	public String getCardType() {
 		return card.cardType;
@@ -92,7 +92,7 @@ public class CardExchangeViewModel extends Observable {
 	/**
 	 * This method returns the territory of the card.
 	 * 
-	 * @return
+	 * @return territory to which the card belongs
 	 */
 	public Territory getCardTerritory() {
 		return card.cardTerritory;
@@ -101,7 +101,7 @@ public class CardExchangeViewModel extends Observable {
 	/**
 	 * This method returns the current player for whom the view is to be set.
 	 * 
-	 * @return
+	 * @return current player
 	 */
 	public Player getCurrentPlayer() {
 		return currentPlayer;
@@ -134,7 +134,7 @@ public class CardExchangeViewModel extends Observable {
 	/**
 	 * This method returns the whole deck of cards.
 	 * 
-	 * @return
+	 * @return all cards
 	 */
 	public Queue<Card> getAllCards() {
 		return allCards;
@@ -145,7 +145,7 @@ public class CardExchangeViewModel extends Observable {
 	 * 
 	 * @param currentPlayer
 	 *            : player for whose owned cards are required.
-	 * @return
+	 * @return cards belongs to a particular player
 	 */
 	public Queue<Card> getCurrentPlayerCards(Player currentPlayer) {
 		Queue<Card> playerCards = playerToCardMapping.get(currentPlayer);
@@ -182,7 +182,7 @@ public class CardExchangeViewModel extends Observable {
 	 * This method returns the total Number of Exchanges that have happened in the
 	 * whole game.
 	 * 
-	 * @return
+	 * @return total number of exchanges
 	 */
 	public int getTotalNumberOfExchanges() {
 		return totalNumberOfExchanges;
@@ -218,7 +218,8 @@ public class CardExchangeViewModel extends Observable {
 	 * This method returns the card and territory owned which is associated with the
 	 * card.
 	 * 
-	 * @return
+	 * @return card and territory owned and associated with the
+	 * card
 	 */
 	public Territory getCardAndOwnedTerritory() {
 		return cardAndOwnedTerritory;
@@ -238,7 +239,7 @@ public class CardExchangeViewModel extends Observable {
 	 * This method returns the valid number of armies based on the totalNumber of
 	 * exchanges that have happened during the game as per Risk Rules
 	 * 
-	 * @return
+	 * @return number of armies
 	 */
 	public int getArmyCount() {
 
@@ -268,7 +269,7 @@ public class CardExchangeViewModel extends Observable {
 	/**
 	 * This method returns if the player is eligible to get the card or not.
 	 * 
-	 * @return
+	 * @return true if player gets a card
 	 */
 	public boolean getIfPlayerGetsCard() {
 		return ifPlayerGetsCard;
@@ -314,7 +315,8 @@ public class CardExchangeViewModel extends Observable {
 	 * This method is used to give the top card of the deck to the player who has
 	 * won at least one territory during his attack phase
 	 * 
-	 * @param attacker
+	 * @param attacker:
+	 * 			Player who is attacking other player's territory
 	 */
 	public void assignCardToAPlayer(Player attacker) {
 		Queue<Card> allCards = getAllCards();

@@ -16,14 +16,11 @@ public class Risk extends Application {
 
 	/**
 	 * start() is an overridden method from Application abstract class which sets up
-	 * the UI for user to interact and create/modify map or start game.
+	 * the UI for user to interact and create/modify map or start game. Throws exception.
 	 * 
 	 * @param primaryStage:
 	 *            primaryStage is a JavaFx container which provide base for creating
 	 *            JavaFx application.
-	 *  
-	 * @throws Exception:
-	 *             for exception handling.
 	 */
 	@Override
 	public void start(Stage primaryStage) throws Exception {

@@ -33,7 +33,7 @@ public class Card {
 	/**
 	 * This method returns the type of card.
 	 * 
-	 * @return
+	 * @return type of card
 	 */
 	public String getCardType() {
 		return cardType;
@@ -52,7 +52,7 @@ public class Card {
 	/**
 	 * This method returns the territory of the card.
 	 * 
-	 * @return
+	 * @return territory for the card
 	 */
 	public Territory getCardTerritory() {
 		return cardTerritory;

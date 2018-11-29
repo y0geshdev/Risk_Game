@@ -33,6 +33,8 @@ public class GameService {
 	 * 
 	 * @param numberOfPlayers:
 	 *            It has all the player object.
+	 * @param territoriesSet:
+	 * 				set of territories.
 	 */
 	public void assignTerritories(List<Player> numberOfPlayers, Set<Territory> territoriesSet) {
 		List<Territory> territoryObjectList = new ArrayList<>(territoriesSet);
@@ -402,6 +404,10 @@ public class GameService {
 	 *            Territory to which armies to be moved.
 	 * @param armiesToMove:
 	 *            Number of armies to move.
+	 * @param phaseViewModel:
+	 * 				Reference to PhaseviewModel
+	 * @param player:
+	 * 				Reference to a player object
 	 */
 	public void fortify(Player player, Territory from, Territory to, int armiesToMove, PhaseViewModel phaseViewModel) {
 		player.fortify(from, to, armiesToMove, phaseViewModel);
@@ -479,6 +485,10 @@ public class GameService {
 	 *            Territory to which armies is to be added for reinforcement.
 	 * @param numberOfArmies:
 	 *            number of armies to add to a territory as reinforcement.
+	 * @param phaseViewModel:
+	 * 				Reference to PhaseviewModel
+	 * @param player:
+	 * 				Reference to a player object
 	 */
 	public void addReinforcement(Player player, Territory selectedTerritory, int numberOfArmies,
 			PhaseViewModel phaseViewModel) {
@@ -515,7 +525,10 @@ public class GameService {
 
 	/**
 	 * This method defines the condition to verify if startUpPhase has ended or not.
-	 * 
+	 * @param playersWithZeroArmies:
+	 * 				set of players that have zero armies.
+	 * @param playersList:
+	 * 				List of players
 	 * @return boolean: true if startUp phase is finished else false.
 	 */
 	public boolean endOfStartUpPhase(Set<Player> playersWithZeroArmies, List<Player> playersList) {
@@ -532,9 +545,12 @@ public class GameService {
 	 * 
 	 * @param playerInFocus
 	 *            : Player who is doing the reinforcement currently.
+	 * @param cardExchangeViewModel:
+	 * 				Reference to CardExchangeViewModel.
 	 * @return boolean: true if reinforcement phase is finished for current player
 	 *         else false;
 	 */
+	
 	public boolean endOfReinforcementPhase(Player playerInFocus, CardExchangeViewModel cardExchangeViewModel) {
 		if (playerInFocus.getArmyCount() == 0) {
 			cardExchangeViewModel.setCardAndOwnedTerritory(null);
