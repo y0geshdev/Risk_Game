@@ -22,7 +22,7 @@ public class BenevolentStrategy implements IStrategy, Serializable {
 	@Override
 	public void reinforcement(Player player, Territory selectedTerritory, int numberOfArmies,
 			PhaseViewModel phaseViewModel) {
-		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nPlayer will place armies on weakest territory.");
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nReinforcing for Benevolent player.");
 		selectedTerritory = findWeakestTerritory(player);
 		selectedTerritory.setArmyCount(selectedTerritory.getArmyCount() + player.getArmyCount());
 		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nMoved " + player.getArmyCount()
@@ -35,6 +35,7 @@ public class BenevolentStrategy implements IStrategy, Serializable {
 	 */
 	@Override
 	public void fortify(Player player, Territory from, Territory to, int armiesToMove, PhaseViewModel phaseViewModel) {
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nFortifying for Benevolent player.");
 		to = findWeakestTerritory(player);
 		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nFortifying weakest territory : " + to.getName());
 		List<Territory> fortifiableTerritories = new ArrayList<>();
@@ -83,6 +84,7 @@ public class BenevolentStrategy implements IStrategy, Serializable {
 	public Pair<Boolean, Integer> attack(Player attacker, Player defender, Territory attackerTerritory,
 			Territory defenderTerritory, boolean isAllOutMode, int totalAttackerDice, int totalDefenderDice,
 			PhaseViewModel phaseViewModel) {
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nAttacking for Benevolent player.");
 		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nPlayer will not attack.");
 		return new Pair<Boolean, Integer>(Boolean.FALSE, null);
 	}

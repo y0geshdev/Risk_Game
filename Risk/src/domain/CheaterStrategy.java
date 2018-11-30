@@ -26,6 +26,7 @@ public class CheaterStrategy implements IStrategy, Serializable {
 	@Override
 	public void reinforcement(Player player, Territory selectedTerritory, int numberOfArmies,
 			PhaseViewModel phaseViewModel) {
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nReinforcing for Cheater player.");
 		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nPlayer will double armies in all territory.");
 
 		for (Territory territory : player.getTerritories()) {
@@ -50,6 +51,7 @@ public class CheaterStrategy implements IStrategy, Serializable {
 	 */
 	@Override
 	public void fortify(Player player, Territory from, Territory to, int armiesToMove, PhaseViewModel phaseViewModel) {
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nFortification for Cheater player.");
 		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo()
 				+ "\nPlayer will fortify all territory which have neighbors occupied by other players.");
 
@@ -79,6 +81,7 @@ public class CheaterStrategy implements IStrategy, Serializable {
 	public Pair<Boolean, Integer> attack(Player attacker, Player defender, Territory attackerTerritory,
 			Territory defenderTerritory, boolean isAllOutMode, int totalAttackerDice, int totalDefenderDice,
 			PhaseViewModel phaseViewModel) {
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nAttacking for Cheater player.");
 		List<Territory> conqueredTerritories = new ArrayList<>();
 		phaseViewModel
 				.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nPlayer try conquer all the neighbouring territories.");

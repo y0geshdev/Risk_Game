@@ -23,6 +23,7 @@ public class HumanStrategy implements IStrategy,Serializable {
 	@Override
 	public void reinforcement(Player player, Territory selectedTerritory, int numberOfArmies,
 			PhaseViewModel phaseViewModel) {
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nReinforcing for Human player.");
 		selectedTerritory.setArmyCount(selectedTerritory.getArmyCount() + numberOfArmies);
 		player.setArmyCount(player.getArmyCount() - numberOfArmies);
 		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo()+"\n"+String.valueOf(numberOfArmies) + " armies moved to " + selectedTerritory.getName());
@@ -34,6 +35,7 @@ public class HumanStrategy implements IStrategy,Serializable {
 	 */
 	@Override
 	public void fortify(Player player, Territory from, Territory to, int armiesToMove, PhaseViewModel phaseViewModel) {
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nFortification for Human player.");
 		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nMoved " + armiesToMove + " to " + to.getName()
 				+ " from " + from.getName());
 		from.setArmyCount(from.getArmyCount() - armiesToMove);
@@ -50,6 +52,7 @@ public class HumanStrategy implements IStrategy,Serializable {
 	public Pair<Boolean, Integer> attack(Player attacker, Player defender, Territory attackerTerritory,
 			Territory defenderTerritory, boolean isAllOutMode, int totalAttackerDice, int totalDefenderDice,
 			PhaseViewModel phaseViewModel) {
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nAttacking for Human player.");
 		boolean isWon = false;
 		int remainingAttackingTroops = -1;
 		List<Integer> attackerDiceRolls;

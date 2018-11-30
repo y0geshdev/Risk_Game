@@ -1,5 +1,6 @@
 package service;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -13,6 +14,7 @@ import org.junit.Test;
 
 import controller.MapController;
 import domain.Continent;
+import domain.Player;
 import domain.Territory;
 
 /**
@@ -69,7 +71,7 @@ public class MapServiceTest {
 
 	/**
 	 * This Test method validate map and check for logic where
-	 * {@link MapService#validateMap(Set, Set, List)} method validate that each
+	 * MapService validateMap(Set, Set, List) method validate that each
 	 * continent have one territory atleast.
 	 */
 	@Test
@@ -92,7 +94,7 @@ public class MapServiceTest {
 
 	/**
 	 * This Test method validate map and check for logic where
-	 * {@link MapService#validateMap(Set, Set, List)} method validate that each
+	 * MapService validateMap(Set, Set, List) method validate that each
 	 * territory is in single continent.
 	 * 
 	 */
@@ -113,7 +115,7 @@ public class MapServiceTest {
 
 	/**
 	 * This Test method validate map and check for logic where
-	 * {@link MapService#validateMap(Set, Set, List)} method validate that whether
+	 * MapService validateMap(Set, Set, List) method validate that whether
 	 * there is any continent or territory exits or not.
 	 */
 	@Test
@@ -126,7 +128,7 @@ public class MapServiceTest {
 
 	/**
 	 * This Test method validate map and check for logic where
-	 * {@link MapService#validateMap(Set, Set, List)} method validate that each
+	 * MapService validateMap(Set, Set, List) method validate that each
 	 * territory have atleast one neighbor.
 	 */
 	@Test
@@ -144,7 +146,7 @@ public class MapServiceTest {
 
 	/**
 	 * This Test method validate map and check for logic where
-	 * {@link MapService#validateMap(Set, Set, List)} method validate that map is
+	 * MapService validateMap(Set, Set, List) method validate that map is
 	 * connected or not.
 	 */
 	@Test
@@ -193,9 +195,21 @@ public class MapServiceTest {
 		String errorMessageForZeroContinent = "No Continent is present in the File";
 		String errorMessageForZeroTerritory = "No Territory is present in the File";
 		assertTrue(errorList.contains(errorMessageForZeroContinent));
-		
-		
-		
+
 		}
+	
+	/**
+	 * This method test MapService createPlayers(List, int) method which
+	 * should populate playerList which is passed as one of the argument with as
+	 * many players as denoted by numberOfplayers argument.
+	 * 
+	 */
+	@Test
+	public void testCreatePlayers() {
+		List<Player> playerList = new ArrayList<>();
+		int numberOfplayers = 5;
+		mapserviceObj.createPlayers(playerList, numberOfplayers);
+		assertEquals(numberOfplayers, playerList.size());
+	}
 
 }

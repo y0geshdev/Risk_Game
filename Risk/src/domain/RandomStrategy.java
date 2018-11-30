@@ -24,7 +24,7 @@ public class RandomStrategy implements IStrategy, Serializable {
 	@Override
 	public void reinforcement(Player player, Territory selectedTerritory, int numberOfArmies,
 			PhaseViewModel phaseViewModel) {
-		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nPlacing armies for Random player.");
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nReinforcing for Random player.");
 		phaseViewModel.setCurrentPlayer(player.getName());
 		selectedTerritory = player.getTerritories().get(randomNumber(player.getTerritories().size()));
 		selectedTerritory.setArmyCount(selectedTerritory.getArmyCount() + player.getArmyCount());
@@ -41,7 +41,8 @@ public class RandomStrategy implements IStrategy, Serializable {
 	@Override
 	public void fortify(Player player, Territory from, Territory to, int armiesToMove, PhaseViewModel phaseViewModel) {
 		to = player.getTerritories().get(randomNumber(player.getTerritories().size()));
-		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nFortifying random territory : " + to.getName());
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nFortification for Random player.");
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nRandom territory : " + to.getName());
 		List<Territory> fortifiableTerritories = new ArrayList<>();
 
 		Queue<Territory> queue = new LinkedList<>();
@@ -94,7 +95,7 @@ public class RandomStrategy implements IStrategy, Serializable {
 	public Pair<Boolean, Integer> attack(Player attacker, Player defender, Territory attackerTerritory,
 			Territory defenderTerritory, boolean isAllOutMode, int totalAttackerDice, int totalDefenderDice,
 			PhaseViewModel phaseViewModel) {
-
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nAttacking for Random player.");
 		boolean isWon = false;
 		int remainingAttackingTroops = -1;
 		List<Integer> attackerDiceRolls;
