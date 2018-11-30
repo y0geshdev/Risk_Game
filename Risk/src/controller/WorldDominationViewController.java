@@ -55,7 +55,7 @@ public class WorldDominationViewController implements Observer {
 	private List<Player> playersList;
 
 	/**
-	 * Overridden method from {@link Observer#update(Observable, Object)} to update
+	 * Overridden method from Observer's update(Observable, Object) to update
 	 * the UI once observer is notified of observer state change.
 	 */
 	@Override
@@ -67,7 +67,7 @@ public class WorldDominationViewController implements Observer {
 
 		// iterate over player list to fetch changed state and update UI.
 		for (Player player : playersList) {
-			playerToPercentageLabelMap.get(player).setText(String.format("%.2f", playerMapCoverageMapping.get(player))); // String.valueOf(playerMapCoverageMapping.get(player))
+			playerToPercentageLabelMap.get(player).setText(String.format("%.2f", playerMapCoverageMapping.get(player)));
 			playerToArmiesLabelMap.get(player).setText(String.valueOf(playerArmiesMapping.get(player)));
 			String continents = "";
 			for (Continent continent : playerContinentsMapping.get(player)) {

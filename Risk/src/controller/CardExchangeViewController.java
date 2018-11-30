@@ -107,7 +107,7 @@ public class CardExchangeViewController implements Observer {
 	}
 
 	/**
-	 * This method handle {@link CardExchangeViewController#handIn} button event. It
+	 * This method handle CardExchangeViewController handIn button event. It
 	 * exchanges the number of cards entered by player.
 	 * 
 	 * @param event:

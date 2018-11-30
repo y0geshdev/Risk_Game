@@ -35,7 +35,7 @@ public class PhaseViewController implements Observer {
 	private TextArea phaseInfoTF;
 
 	/**
-	 * Overridden method of {@link Observer#update(Observable, Object)} to update
+	 * Overridden method of Observer's update(Observable, Object) to update
 	 * view according to updated to state of Observable object passed as parameter.
 	 */
 	@Override
