@@ -24,7 +24,7 @@ public class CheaterStrategy implements IStrategy,Serializable {
 							+ territory.getArmyCount() + " to " + (2 * territory.getArmyCount()));
 			territory.setArmyCount(2 * territory.getArmyCount());
 		}
-
+		player.setArmyCount(0);
 	}
 
 	@Override
