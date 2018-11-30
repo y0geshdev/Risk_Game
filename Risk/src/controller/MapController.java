@@ -627,7 +627,10 @@ public class MapController {
 			boolean ifStartUpIsComepleted;
 			List<String> errorList = new ArrayList<>();
 			try {
-				gameState = deserialize(file);
+				gameState = mapService.deserialize(file, errorList);
+				if (errorList.size() > 0) {
+					showError(errorList.get(0));
+				}
 				continentsSet = gameState.getContinentSet();
 				territoriesSet = gameState.getTerritorySet();
 				playersList = gameState.getPlayerList();
@@ -670,32 +673,6 @@ public class MapController {
 			}
 
 		}
-	}
-
-	/**
-	 * This method deserializes the file
-	 * 
-	 * @param file:
-	 *            File in which game state is saved which user has chosen
-	 * 
-	 * @return an instance of GameObjectClass class
-	 * 
-	 * @throws Exception
-	 *             : Exception in case the function is not able to deserialize the
-	 *             object.
-	 */
-	public GameObjectClass deserialize(File file) throws Exception {
-		FileInputStream fileIn = null;
-		ObjectInputStream objIn = null;
-		GameObjectClass gameState = null;
-
-		fileIn = new FileInputStream(file);
-		objIn = new ObjectInputStream(fileIn);
-		gameState = (GameObjectClass) objIn.readObject();
-		if (gameState != null) {
-			objIn.close();
-		}
-		return gameState;
 	}
 
 }

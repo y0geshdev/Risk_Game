@@ -1,7 +1,12 @@
 package service;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -17,11 +22,13 @@ import domain.BenevolentStrategy;
 import domain.Card;
 import domain.CardExchangeViewModel;
 import domain.Continent;
+import domain.GameObjectClass;
 import domain.HumanStrategy;
 import domain.PhaseViewModel;
 import domain.Player;
 import domain.PlayerStrategyEnum;
 import domain.Territory;
+import javafx.application.Platform;
 import javafx.util.Pair;
 
 /**
@@ -669,4 +676,60 @@ public class GameService {
 
 	}
 
+	
+	/**
+	 * This method serializes the game state to a file
+	 * 
+	 * @param fileToSave:
+	 *            file in which game state is saved
+	 * @param continentSet:
+	 *            Set of Continents at that game state
+	 * @param territorySet:
+	 *            Set of Territories at that game state
+	 * @param playerList:
+	 *            List of players playing the game at that game state
+	 * @param currentPlayer:
+	 *            Player playing at that instance of game state
+	 * @param currentPhase:
+	 *            Phase at that game state
+	 * @param ifStartUpIsComepleted:
+	 *            boolean parameter true if start up phase is completed else false
+	 * @param playerStrategyMapping:
+	 *            mapping of players to their corresponding strategies.
+	 * @return true if game state is serialized
+	 */
+	public boolean serialize(File fileToSave, HashSet<Continent> continentSet, HashSet<Territory> territorySet,
+			List<Player> playerList, Player currentPlayer, String currentPhase, boolean ifStartUpIsComepleted,
+			Map<Player, PlayerStrategyEnum> playerStrategyMapping,List<String>errorList) {
+
+		FileOutputStream fileOutput;
+		ObjectOutputStream out = null;
+
+		try {
+			fileOutput = new FileOutputStream(fileToSave);
+			out = new ObjectOutputStream(fileOutput);
+			GameObjectClass gameState = new GameObjectClass(continentSet, territorySet, playerList, currentPlayer,
+					currentPhase, ifStartUpIsComepleted);
+
+			out.writeObject(gameState);
+			out.close();
+			fileToSave = null;
+			Platform.exit();
+		} catch (Exception e) {
+			String error = "Game Cannot be saved";
+			errorList.add(error);
+			return false;
+		} finally {
+			try {
+				if (out != null) {
+					out.close();
+				}
+				fileToSave = null;
+			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return true;
+	}
 }

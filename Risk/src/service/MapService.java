@@ -2,9 +2,11 @@ package service;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +21,7 @@ import domain.AggressiveStrategy;
 import domain.BenevolentStrategy;
 import domain.CheaterStrategy;
 import domain.Continent;
+import domain.GameObjectClass;
 import domain.HumanStrategy;
 import domain.IStrategy;
 import domain.Player;
@@ -453,4 +456,35 @@ public class MapService {
 		}
 	}
 
+	
+	/**
+	 * This method deserializes the file
+	 * 
+	 * @param file:
+	 *            File in which game state is saved which user has chosen
+	 * 
+	 * @return an instance of GameObjectClass class
+	 * 
+	 * @throws Exception
+	 *             : Exception in case the function is not able to deserialize the
+	 *             object.
+	 */
+	public GameObjectClass deserialize(File file,List<String>errorList)  {
+		FileInputStream fileIn = null;
+		ObjectInputStream objIn = null;
+		GameObjectClass gameState = null;
+		try {
+		fileIn = new FileInputStream(file);
+		objIn = new ObjectInputStream(fileIn);
+		gameState = (GameObjectClass) objIn.readObject();
+		if (gameState != null) {
+			objIn.close();
+		}
+		}catch(Exception e) {
+			String error	=	"File cannot be Deserialized";
+			errorList.add(error);
+			return null;
+		}
+		return gameState;
+	}
 }
