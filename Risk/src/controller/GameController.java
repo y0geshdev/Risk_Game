@@ -1730,12 +1730,11 @@ public class GameController {
 
 		// check if current player won whole game.
 		if (gameService.isGameEnded(currentPlayer, territoriesSet.size())) {
-			showInformation("Player " + currentPlayer.getName() + " won the game.");
 			if (!ifTournamentMode) {
 				showInformation("Player " + currentPlayer.getName() + " won the game.");
 				Platform.exit();
 			} else {
-				statForTournamentMode = currentPlayer.getName();
+				statForTournamentMode = playerStrategyMapping.get(currentPlayer).toString();
 				updateTournamentModeVariables();
 			}
 		} else {
