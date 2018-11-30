@@ -16,6 +16,10 @@ import javafx.util.Pair;
  */
 public class HumanStrategy implements IStrategy,Serializable {
 
+	/**
+	 * {@inheritDoc}
+	 * This method reinforce selected territory with selected number of armies.
+	 */
 	@Override
 	public void reinforcement(Player player, Territory selectedTerritory, int numberOfArmies,
 			PhaseViewModel phaseViewModel) {
@@ -24,6 +28,10 @@ public class HumanStrategy implements IStrategy,Serializable {
 		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo()+"\n"+String.valueOf(numberOfArmies) + " armies moved to " + selectedTerritory.getName());
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * This method fortify selected territory by moving entered number of armies from selected territory.
+	 */
 	@Override
 	public void fortify(Player player, Territory from, Territory to, int armiesToMove, PhaseViewModel phaseViewModel) {
 		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nMoved " + armiesToMove + " to " + to.getName()
@@ -34,27 +42,9 @@ public class HumanStrategy implements IStrategy,Serializable {
 	}
 
 	/**
+	 * {@inheritDoc}
 	 * This method perform attack from attacker to defender territory.
 	 * 
-	 * @param attackerTerritory:
-	 *            Territory from which attack is performed.
-	 * @param defenderTerritory:
-	 *            Territory to which attack is performed.
-	 * @param defender:
-	 *            Owner of defenderTerritory.
-	 * @param isAllOutMode:
-	 *            true if current attack is of All-Out mode else false.
-	 * @param totalAttackerDice:
-	 *            Number of dice to roll for attacker if current mode of attack is
-	 *            normal mode.
-	 * @param totalDefenderDice:
-	 *            Number of dice to roll for defender if current mode of attack is
-	 *            normal mode.
-	 * @param phaseViewModel:
-	 *            PhaseViewModel instance to update information on phase view with
-	 *            each step of attack.
-	 * @return A {@link Pair} class which hold data as Boolean and Integer
-	 *         representing attack outcome and minimum troops to move.
 	 */
 	@Override
 	public Pair<Boolean, Integer> attack(Player attacker, Player defender, Territory attackerTerritory,
@@ -120,7 +110,7 @@ public class HumanStrategy implements IStrategy,Serializable {
 	 * @param defenderDiceRolls:
 	 *            List of dice roll outcome for defender.
 	 * @param phaseViewModel:
-	 *            Instance of {@link PhaseViewModel} class to update information for
+	 *            Instance of PhaseViewModel class to update information for
 	 *            phaseView during attack.
 	 * @return an integer representing as how many troops are survived from
 	 *         attacking territory.

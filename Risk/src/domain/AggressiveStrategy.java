@@ -18,23 +18,32 @@ import javafx.util.Pair;
  */
 public class AggressiveStrategy implements IStrategy, Serializable {
 
+	/**
+	 * {@inheritDoc} This strategy will find strongest army and pull all the armies
+	 * in that territory.
+	 */
 	@Override
 	public void reinforcement(Player player, Territory selectedTerritory, int numberOfArmies,
 			PhaseViewModel phaseViewModel) {
 
-		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo()+"\nPlacing armies for Aggressive player.");
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nPlacing armies for Aggressive player.");
 		phaseViewModel.setCurrentPlayer(player.getName());
 		selectedTerritory = fetchAttackFromTerritory(player);
 		selectedTerritory.setArmyCount(selectedTerritory.getArmyCount() + player.getArmyCount());
-		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nMoved "+player.getArmyCount()+" armies to strongest territory("
-				+ selectedTerritory.getName() + ").");
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nMoved " + player.getArmyCount()
+				+ " armies to strongest territory(" + selectedTerritory.getName() + ").");
 		player.setArmyCount(0);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * Select a territory to fortify which have maximum number of armies.
+	 */
 	@Override
 	public void fortify(Player player, Territory from, Territory to, int armiesToMove, PhaseViewModel phaseViewModel) {
 		to = fetchAttackFromTerritory(player);
-		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nFortifying strongest territory : "+to.getName());
+		phaseViewModel
+				.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nFortifying strongest territory : " + to.getName());
 		List<Territory> fortifiableTerritories = new ArrayList<>();
 
 		Queue<Territory> queue = new LinkedList<>();
@@ -53,37 +62,46 @@ public class AggressiveStrategy implements IStrategy, Serializable {
 		}
 		if (fortifiableTerritories.contains(to))
 			fortifiableTerritories.remove(to);
-		
-		from = fortifiableTerritories.size()>0?fortifiableTerritories.get(0):null;
-		for(Territory territory : fortifiableTerritories) {
-			if(territory.getArmyCount()>from.getArmyCount())
+
+		from = fortifiableTerritories.size() > 0 ? fortifiableTerritories.get(0) : null;
+		for (Territory territory : fortifiableTerritories) {
+			if (territory.getArmyCount() > from.getArmyCount())
 				from = territory;
 		}
-		
-		if(from==null || from.getArmyCount()==1) {
-			phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nNo possible territory to fortify "+to.getName());
+
+		if (from == null || from.getArmyCount() == 1) {
+			phaseViewModel
+					.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nNo possible territory to fortify " + to.getName());
 			return;
-		}else {
-			armiesToMove = from.getArmyCount()-1;
-			phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nFortified "+to.getName()+" with "+armiesToMove+" from "+from.getName());
+		} else {
+			armiesToMove = from.getArmyCount() - 1;
+			phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nFortified " + to.getName() + " with "
+					+ armiesToMove + " from " + from.getName());
 			from.setArmyCount(1);
 			to.setArmyCount(to.getArmyCount() + armiesToMove);
 		}
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * Select strongest territory to attack and keep on attacking with all out mode till either territory is conquered or player can't attack from attacker territory.
+	 */
 	@Override
 	public Pair<Boolean, Integer> attack(Player attacker, Player defender, Territory attackerTerritory,
 			Territory defenderTerritory, boolean isAllOutMode, int totalAttackerDice, int totalDefenderDice,
 			PhaseViewModel phaseViewModel) {
-		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo()+"\nPlayer will attack from strongest territory to it's weakest neighbour.");
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo()
+				+ "\nPlayer will attack from strongest territory to it's weakest neighbour.");
 
+		// select attacker and defender territory.
 		attackerTerritory = fetchAttackFromTerritory(attacker);
 		defenderTerritory = fetchAttackToTerritory(attackerTerritory);
 		defender = defenderTerritory != null ? defenderTerritory.getOwner() : null;
-		phaseViewModel.setPhaseInfo(
-				phaseViewModel.getPhaseInfo() + "\nAttacking Territory: " + attackerTerritory.getName());
+		phaseViewModel
+				.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nAttacking Territory: " + attackerTerritory.getName());
 
+		//perform attack in all out mode.
 		if (defenderTerritory == null) {
 			phaseViewModel.setPhaseInfo(
 					phaseViewModel.getPhaseInfo() + "\nCan't find any territory to attack from selected territory.");
@@ -129,6 +147,14 @@ public class AggressiveStrategy implements IStrategy, Serializable {
 
 	}
 
+	/**
+	 * This method will find the strongest territory among given player territories.
+	 * 
+	 * @param player:
+	 *            An instance of player.
+	 * @return a territory with maximum number of armies for given player.
+	 * 
+	 */
 	public Territory fetchAttackFromTerritory(Player player) {
 		List<Territory> territoryList = player.getTerritories();
 		Territory strongestTerritory = territoryList.get(0);
@@ -138,6 +164,14 @@ public class AggressiveStrategy implements IStrategy, Serializable {
 		return strongestTerritory;
 	}
 
+	/**
+	 * This method will find the weakest territory among all the neighbors of passed territory.
+	 * 
+	 * @param attackerTerritory:
+	 *            An instance of territory whose neighbors are to be searched..
+	 * @return a territory with minimum number of armies among the neighbors of given attackerTerritory.
+	 * 
+	 */
 	public Territory fetchAttackToTerritory(Territory attackerTerritory) {
 		List<Territory> attackableTerritory = new ArrayList<>();
 		Player attacker = attackerTerritory.getOwner();
@@ -166,7 +200,7 @@ public class AggressiveStrategy implements IStrategy, Serializable {
 	 * @param defenderDiceRolls:
 	 *            List of dice roll outcome for defender.
 	 * @param phaseViewModel:
-	 *            Instance of {@link PhaseViewModel} class to update information for
+	 *            Instance of PhaseViewModel class to update information for
 	 *            phaseView during attack.
 	 * @return an integer representing as how many troops are survived from
 	 *         attacking territory.
