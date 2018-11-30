@@ -9,18 +9,18 @@ import java.util.List;
  * 
  * @author Yogesh
  */
-public class Continent  implements Serializable{
+public class Continent implements Serializable {
 
 	/**
 	 * Represents continents name.
 	 */
 	private String name;
-	
+
 	/**
 	 * Represents list of territories.
 	 */
 	private List<Territory> territories;
-	
+
 	/**
 	 * Represents continents control value.
 	 */

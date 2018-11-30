@@ -2,18 +2,19 @@ package domain;
 
 /**
  * This class is an entity class for cards
+ * 
  * @author Shivam
  *
  */
 public class Card {
-	
+
 	/**
 	 * Represents the type of card.
 	 */
 	String cardType;
-	
+
 	/**
-	 * Represents the territory of the card. 
+	 * Represents the territory of the card.
 	 */
 	Territory cardTerritory;
 
@@ -67,14 +68,13 @@ public class Card {
 	public void setCardTerritory(Territory cardTerritory) {
 		this.cardTerritory = cardTerritory;
 	}
-	
+
 	/**
 	 * Overridden toString() method.
 	 */
 	@Override
 	public String toString() {
 		// returns the type and territory name of the card.
-		return cardType+" "+cardTerritory.getName();
+		return cardType + " " + cardTerritory.getName();
 	}
 }
-

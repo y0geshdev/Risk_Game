@@ -36,8 +36,8 @@ public class AggressiveStrategy implements IStrategy, Serializable {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 * Select a territory to fortify which have maximum number of armies.
+	 * {@inheritDoc} Select a territory to fortify which have maximum number of
+	 * armies.
 	 */
 	@Override
 	public void fortify(Player player, Territory from, Territory to, int armiesToMove, PhaseViewModel phaseViewModel) {
@@ -85,8 +85,9 @@ public class AggressiveStrategy implements IStrategy, Serializable {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 * Select strongest territory to attack and keep on attacking with all out mode till either territory is conquered or player can't attack from attacker territory.
+	 * {@inheritDoc} Select strongest territory to attack and keep on attacking with
+	 * all out mode till either territory is conquered or player can't attack from
+	 * attacker territory.
 	 */
 	@Override
 	public Pair<Boolean, Integer> attack(Player attacker, Player defender, Territory attackerTerritory,
@@ -103,7 +104,7 @@ public class AggressiveStrategy implements IStrategy, Serializable {
 		phaseViewModel
 				.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nAttacking Territory: " + attackerTerritory.getName());
 
-		//perform attack in all out mode.
+		// perform attack in all out mode.
 		if (defenderTerritory == null) {
 			phaseViewModel.setPhaseInfo(
 					phaseViewModel.getPhaseInfo() + "\nCan't find any territory to attack from selected territory.");
@@ -167,11 +168,13 @@ public class AggressiveStrategy implements IStrategy, Serializable {
 	}
 
 	/**
-	 * This method will find the weakest territory among all the neighbors of passed territory.
+	 * This method will find the weakest territory among all the neighbors of passed
+	 * territory.
 	 * 
 	 * @param attackerTerritory:
 	 *            An instance of territory whose neighbors are to be searched..
-	 * @return a territory with minimum number of armies among the neighbors of given attackerTerritory.
+	 * @return a territory with minimum number of armies among the neighbors of
+	 *         given attackerTerritory.
 	 * 
 	 */
 	public Territory fetchAttackToTerritory(Territory attackerTerritory) {

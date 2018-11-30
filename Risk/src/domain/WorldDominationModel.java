@@ -61,7 +61,7 @@ public class WorldDominationModel extends Observable {
 	}
 
 	/**
-	 * Getter for {@link WorldDominationModel#playerMapCoverageMapping}.
+	 * Getter for playerMapCoverageMapping.
 	 * 
 	 * @return a Map.
 	 */
@@ -70,7 +70,7 @@ public class WorldDominationModel extends Observable {
 	}
 
 	/**
-	 * Getter for {@link WorldDominationModel#playerContinentsMapping}.
+	 * Getter for playerContinentsMapping}.
 	 * 
 	 * @return a Map.
 	 */
@@ -79,7 +79,7 @@ public class WorldDominationModel extends Observable {
 	}
 
 	/**
-	 * Getter for {@link WorldDominationModel#playerArmiesMapping}.
+	 * Getter for playerArmiesMapping.
 	 * 
 	 * @return a Map.
 	 */
@@ -113,7 +113,6 @@ public class WorldDominationModel extends Observable {
 			armies = getTotalArmies(player);
 			playerArmiesMapping.put(player, armies);
 
-			// notify observer.
 			setChanged();
 			notifyObservers(this);
 

@@ -12,10 +12,29 @@ import java.util.List;
  */
 public class Territory  implements Serializable{
 
+	/**
+	 * Represents name of the territory.
+	 */
 	private String name;
+	
+	/**
+	 * Represents neighboring territory list.
+	 */
 	private List<Territory> neighbourTerritories;
+	
+	/**
+	 * Continent to which this territory belongs.
+	 */
 	private Continent continent;
+	
+	/**
+	 * Owner of this territory.
+	 */
 	private Player owner;
+	
+	/**
+	 * Army count in this territory.
+	 */
 	private int armyCount;
 
 	/**

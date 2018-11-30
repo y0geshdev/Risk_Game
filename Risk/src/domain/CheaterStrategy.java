@@ -1,7 +1,6 @@
 package domain;
 
 import java.io.Serializable;
-import java.lang.annotation.Inherited;
 import java.util.ArrayList;
 import java.util.List;
 

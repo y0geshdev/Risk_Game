@@ -14,11 +14,11 @@ import javafx.util.Pair;
  * @author Yogesh
  *
  */
-public class HumanStrategy implements IStrategy,Serializable {
+public class HumanStrategy implements IStrategy, Serializable {
 
 	/**
-	 * {@inheritDoc}
-	 * This method reinforce selected territory with selected number of armies.
+	 * {@inheritDoc} This method reinforce selected territory with selected number
+	 * of armies.
 	 */
 	@Override
 	public void reinforcement(Player player, Territory selectedTerritory, int numberOfArmies,
@@ -26,12 +26,13 @@ public class HumanStrategy implements IStrategy,Serializable {
 		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nReinforcing for Human player.");
 		selectedTerritory.setArmyCount(selectedTerritory.getArmyCount() + numberOfArmies);
 		player.setArmyCount(player.getArmyCount() - numberOfArmies);
-		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo()+"\n"+String.valueOf(numberOfArmies) + " armies moved to " + selectedTerritory.getName());
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\n" + String.valueOf(numberOfArmies)
+				+ " armies moved to " + selectedTerritory.getName());
 	}
 
 	/**
-	 * {@inheritDoc}
-	 * This method fortify selected territory by moving entered number of armies from selected territory.
+	 * {@inheritDoc} This method fortify selected territory by moving entered number
+	 * of armies from selected territory.
 	 */
 	@Override
 	public void fortify(Player player, Territory from, Territory to, int armiesToMove, PhaseViewModel phaseViewModel) {
@@ -44,8 +45,7 @@ public class HumanStrategy implements IStrategy,Serializable {
 	}
 
 	/**
-	 * {@inheritDoc}
-	 * This method perform attack from attacker to defender territory.
+	 * {@inheritDoc} This method perform attack from attacker to defender territory.
 	 * 
 	 */
 	@Override
