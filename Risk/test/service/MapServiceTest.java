@@ -5,16 +5,23 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import controller.MapController;
+import domain.AggressiveStrategy;
 import domain.Continent;
+import domain.HumanStrategy;
 import domain.Player;
+import domain.PlayerStrategyEnum;
 import domain.Territory;
 
 /**
@@ -211,5 +218,121 @@ public class MapServiceTest {
 		mapserviceObj.createPlayers(playerList, numberOfplayers);
 		assertEquals(numberOfplayers, playerList.size());
 	}
+	
+	
+	@Test
+	public void testDeserializePass() {
+		File fileToSave = null;
+		Set<Continent> continentSet = new HashSet<>();
+		Set<Territory> territorySet = new HashSet<>();
+		List<Player> playerList = new ArrayList<>();
+		Player currentPlayer = new Player();
+		String currentPhase = null;
+		Boolean ifStartUpIsComepleted = false;
+		Map<Player, PlayerStrategyEnum> playerStrategyMapping = new HashMap<>();
+		List<String> errorList = new ArrayList<>();
+		fileToSave = new File("resource\\CheckSerialize.ser");
+
+		generateSavedGameState(continentSet, territorySet, playerList, currentPlayer, currentPhase,
+				ifStartUpIsComepleted, playerStrategyMapping, errorList);
+		assertTrue(errorList.size() == 0);
+	}
+
+	@Test
+	public void testDeserializeFail() {
+		File fileToSave = null;
+		Set<Continent> continentSet = new HashSet<>();
+		Set<Territory> territorySet = new HashSet<>();
+		List<Player> playerList = new ArrayList<>();
+		Player currentPlayer = new Player();
+		String currentPhase = null;
+		Boolean ifStartUpIsComepleted = false;
+		Map<Player, PlayerStrategyEnum> playerStrategyMapping = new HashMap<>();
+		List<String> errorList = new ArrayList<>();
+
+		generateSavedGameState(continentSet, territorySet, playerList, currentPlayer, currentPhase,
+				ifStartUpIsComepleted, playerStrategyMapping, errorList);
+		fileToSave = null;
+		mapserviceObj.deserialize(fileToSave, errorList);
+		assertTrue(errorList.size() != 0);
+	}
+
+	public void generateSavedGameState(Set<Continent> continentsSet, Set<Territory> territoriesSet,
+			List<Player> playerList, Player currentPlayer, String currentPhase, Boolean ifStartUpIsComepleted,
+			Map<Player, PlayerStrategyEnum> playerStrategyMapping, List<String> errorList) {
+
+		Player p1 = new Player();
+		Player p2 = new Player();
+		Player p3 = new Player();
+
+		// setUp continents
+		Continent continentOne = new Continent("C1", 5);
+		Continent continentTwo = new Continent("C2", 10);
+
+		// setUp territories.
+		Territory territoryOne = new Territory("T1", continentOne);
+		Territory territoryTwo = new Territory("T2", continentOne);
+		Territory territoryThree = new Territory("T3", continentTwo);
+		Territory territoryFour = new Territory("T4", continentTwo);
+		Territory territoryFive = new Territory("T5", continentTwo);
+
+		// mapping territories
+		territoryOne.getNeighbourTerritories().add(territoryTwo);
+		territoryOne.getNeighbourTerritories().add(territoryFive);
+		territoryTwo.getNeighbourTerritories().add(territoryOne);
+		territoryTwo.getNeighbourTerritories().add(territoryThree);
+		territoryThree.getNeighbourTerritories().add(territoryTwo);
+		territoryThree.getNeighbourTerritories().add(territoryFour);
+		territoryFour.getNeighbourTerritories().add(territoryThree);
+		territoryFour.getNeighbourTerritories().add(territoryFive);
+		territoryFive.getNeighbourTerritories().add(territoryFour);
+		territoryFive.getNeighbourTerritories().add(territoryOne);
+
+		// setting up whole Map.
+		continentsSet = new HashSet<>();
+		territoriesSet = new HashSet<>();
+
+		List<Territory> territoryList = new ArrayList<>();
+		List<Continent> continentList = new ArrayList<>();
+
+		Collections.addAll(continentsSet, continentOne, continentTwo);
+		Collections.addAll(territoriesSet, territoryOne, territoryTwo, territoryThree, territoryFour, territoryFive);
+
+		Collections.addAll(continentList, continentOne, continentTwo);
+		Collections.addAll(territoryList, territoryOne, territoryTwo, territoryThree, territoryFour, territoryFive);
+
+		Collections.addAll(continentOne.getTerritories(), territoryOne, territoryTwo);
+		Collections.addAll(continentTwo.getTerritories(), territoryThree, territoryFour, territoryFive);
+
+		MapController.territoriesSet = (HashSet<Territory>) territoriesSet;
+		MapController.continentsSet = (HashSet<Continent>) continentsSet;
+
+		p1.setArmyCount(12);
+		p1.setPlayingStrategy(new HumanStrategy());
+		p1.setTerritories(Arrays.asList(territoryOne, territoryTwo));
+
+		p2.setArmyCount(10);
+		p2.setPlayingStrategy(new AggressiveStrategy());
+		p2.setTerritories(Arrays.asList(territoryThree, territoryFour));
+
+		p3.setArmyCount(10);
+		p3.setPlayingStrategy(new HumanStrategy());
+		p3.setTerritories(Arrays.asList(territoryFive));
+
+		playerList = new ArrayList<>();
+		playerList.add(p1);
+		playerList.add(p2);
+		playerList.add(p3);
+
+		currentPlayer = p1;
+		currentPhase = "reinforcementPhase";
+		ifStartUpIsComepleted = true;
+
+		playerStrategyMapping = new HashMap<>();
+		playerStrategyMapping.put(p1, PlayerStrategyEnum.HUMAN);
+		playerStrategyMapping.put(p2, PlayerStrategyEnum.AGGRESSIVE);
+		playerStrategyMapping.put(p3, PlayerStrategyEnum.HUMAN);
+	}
+
 
 }
