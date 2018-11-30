@@ -1643,7 +1643,13 @@ public class GameController {
 			startUpAndReinforcementId.setText("Reinforcement Phase");
 		}
 
-		gameService.addReinforcement(currentPlayer, null, 0, phaseViewModel);
+		// if startUp is not completed then assign amies to random territory else call player's fortification logic
+		if(!ifStartUpIsComepleted) {
+			gameService.nonHumanStartUpPhase(currentPlayer, currentPlayer.getArmyCount(),phaseViewModel);
+		}else {
+			gameService.addReinforcement(currentPlayer, null, 0, phaseViewModel);
+		}
+
 		for (Territory territory : currentPlayer.getTerritories()) {
 			updateTerritoryFields(territory);
 		}

@@ -645,4 +645,28 @@ public class GameService {
 		}
 	}
 
+	/**
+	 * This is startUp phase logic for non human player where a random territory is
+	 * selected and all the armies is player to it.
+	 * 
+	 * @param currentPlayer:
+	 *            Player instance for which armies to be placed.
+	 * @param armyCount:
+	 *            Total number of armies to be placed.
+	 * @param phaseViewModel:
+	 *            instance of phaseViewModel.
+	 */
+	public void nonHumanStartUpPhase(Player currentPlayer, int armyCount, PhaseViewModel phaseViewModel) {
+		phaseViewModel
+				.setPhaseInfo("StartUp Phase: placing armies on radom territory.");
+		phaseViewModel.setCurrentPlayer(currentPlayer.getName());
+		Territory selectedTerritory = currentPlayer.getTerritories()
+				.get(randomIndex(0, currentPlayer.getTerritories().size() - 1));
+		selectedTerritory.setArmyCount(selectedTerritory.getArmyCount() + armyCount);
+		phaseViewModel.setPhaseInfo(phaseViewModel.getPhaseInfo() + "\nMoved " + armyCount
+				+ " armies to randomly selected territory(" + selectedTerritory.getName() + ").");
+		currentPlayer.setArmyCount(0);
+
+	}
+
 }
