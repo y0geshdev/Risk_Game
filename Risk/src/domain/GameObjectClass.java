@@ -13,26 +13,63 @@ import java.util.List;
  */
 public class GameObjectClass implements Serializable {
 
+	/**
+	 * serialUId for the class.
+	 */
 	private static final long serialVersionUID = 1L;
+	/**
+	 * variable to hold reference of the continent set.
+	 */
 	HashSet<Continent> continentSet;
+	/**
+	 * variable to hold reference of the territory set.
+	 */
 	HashSet<Territory> territorySet;
+	/**
+	 * variable to hold reference of the playerList.
+	 */
 	List<Player> playerList;
+	/**
+	 * variable to hold reference of the current player.
+	 */
 	Player currentPlayer;
+	/**
+	 * variable to hold reference of the current phase of the game.
+	 */
 	String currentPhase;
+	/**
+	 * variable to hold reference of the if the startUp phase is completed or not.
+	 */
 	boolean ifStartUpIsComepleted;
-		
-	//constructor
+
+	/**
+	 * Class constructor
+	 * 
+	 * @param continentSet
+	 *            : parameter of the continent set.
+	 * @param territorySet:
+	 *            parameter of the territory set.
+	 * @param playerList:
+	 *            parameter of the player List.
+	 * @param currentPlayer:
+	 *            parameter of the current player.
+	 * @param currentPhase:
+	 *            parameter of the current phase.
+	 * @param ifStartUpIsComepleted:
+	 *            parameter of the if the startup phase is completed or not.
+	 */
 	public GameObjectClass(HashSet<Continent> continentSet, HashSet<Territory> territorySet, List<Player> playerList,
-			Player currentPlayer,String currentPhase,boolean ifStartUpIsComepleted) {
+			Player currentPlayer, String currentPhase, boolean ifStartUpIsComepleted) {
 		super();
 		this.continentSet = continentSet;
 		this.territorySet = territorySet;
 		this.playerList = playerList;
 		this.currentPlayer = currentPlayer;
-		this.currentPhase	=	currentPhase;
-		this.ifStartUpIsComepleted	=	ifStartUpIsComepleted;
-		
+		this.currentPhase = currentPhase;
+		this.ifStartUpIsComepleted = ifStartUpIsComepleted;
+
 	}
+
 	/**
 	 * Getter for serial version ID
 	 * 
@@ -41,7 +78,7 @@ public class GameObjectClass implements Serializable {
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
-	
+
 	/**
 	 * Getter for Continent Set
 	 * 
@@ -72,12 +109,12 @@ public class GameObjectClass implements Serializable {
 	/**
 	 * Getter for Current player
 	 * 
-	 * @return the  player currently playing the game
+	 * @return the player currently playing the game
 	 */
 	public Player getCurrentPlayer() {
 		return currentPlayer;
 	}
-	
+
 	/**
 	 * Getter for Current phase
 	 * 
@@ -86,21 +123,22 @@ public class GameObjectClass implements Serializable {
 	public String getCurrentPhase() {
 		return currentPhase;
 	}
-	
+
 	/**
-	 * Getter for IfStartUpIsComepleted boolean which is true if start up phase is completed
+	 * Getter for IfStartUpIsComepleted boolean which is true if start up phase is
+	 * completed
 	 * 
 	 * @return IfStartUpIsComepleted as a boolean parameter
 	 */
 	public boolean getIfStartUpIsComepleted() {
 		return ifStartUpIsComepleted;
 	}
-	
+
 	/**
 	 * Setter for IfStartUpIsComepleted boolean parameter
 	 * 
 	 * @param ifStartUpIsComepleted:
-	 * 				boolean parameter which is true if start up phase is completed	
+	 *            boolean parameter which is true if start up phase is completed
 	 */
 	public void setIfStartUpIsComepleted(boolean ifStartUpIsComepleted) {
 		this.ifStartUpIsComepleted = ifStartUpIsComepleted;

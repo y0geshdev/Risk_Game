@@ -1418,17 +1418,17 @@ public class GameController {
 	/**
 	 * This method resumes the game to state where game was saved
 	 * 
-	 * @param continentsSet2:
+	 * @param continentsSet:
 	 *            Set of continent at last saved state of the game
-	 * @param territoriesSet2:
+	 * @param territoriesSet:
 	 *            Set of Territories at last saved state of the game
-	 * @param playersList2:
+	 * @param playersList:
 	 *            List of players at last saved state of the game
-	 * @param currentPlayer2:
+	 * @param currentPlayer:
 	 *            Player playing at last saved state of the game
-	 * @param currentPhase2:
+	 * @param currentPhase:
 	 *            Phase at last saved state of the game
-	 * @param ifStartUpIsComepleted2:
+	 * @param ifStartUpIsComepleted:
 	 *            boolean parameter true if start up phase is completed else false
 	 * @param file:
 	 *            File from which information of game state to be retrieved
