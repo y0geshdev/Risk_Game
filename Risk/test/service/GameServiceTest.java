@@ -4,17 +4,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import controller.MapController;
+import domain.AggressiveStrategy;
 import domain.CardExchangeViewModel;
 import domain.Continent;
 import domain.HumanStrategy;
@@ -53,6 +57,13 @@ public class GameServiceTest {
 	 * It hold collection of all the continents in game in list.
 	 */
 	private List<Continent> continentList;
+	
+	File fileToSave;
+	List<Player> playerList;
+	Player currentPlayer;
+	String currentPhase;
+	boolean ifStartUpIsComepleted;
+	Map<Player, PlayerStrategyEnum> playerStrategyMapping;
 
 	/**
 	 * This method setup require common context before every test is run.
@@ -60,6 +71,11 @@ public class GameServiceTest {
 	@Before
 	public void setUp() {
 		gameService = new GameService();
+		fileToSave = new File("resource\\CheckSerialize.ser");
+
+		Player p1 = new Player();
+		Player p2 = new Player();
+		Player p3 = new Player();
 
 		// setUp continents
 		Continent continentOne = new Continent("C1", 5);
@@ -102,6 +118,33 @@ public class GameServiceTest {
 
 		MapController.territoriesSet = territoriesSet;
 		MapController.continentsSet = continentsSet;
+		
+		//setting for serialization in file
+		p1.setArmyCount(12);
+		p1.setPlayingStrategy(new HumanStrategy());
+		p1.setTerritories(Arrays.asList(territoryOne, territoryTwo));
+
+		p2.setArmyCount(10);
+		p2.setPlayingStrategy(new AggressiveStrategy());
+		p2.setTerritories(Arrays.asList(territoryThree, territoryFour));
+
+		p3.setArmyCount(10);
+		p3.setPlayingStrategy(new HumanStrategy());
+		p3.setTerritories(Arrays.asList(territoryFive));
+
+		playerList = new ArrayList<>();
+		playerList.add(p1);
+		playerList.add(p2);
+		playerList.add(p3);
+
+		currentPlayer = p1;
+		currentPhase = "reinforcementPhase";
+		ifStartUpIsComepleted = true;
+
+		playerStrategyMapping = new HashMap<>();
+		playerStrategyMapping.put(p1, PlayerStrategyEnum.HUMAN);
+		playerStrategyMapping.put(p2, PlayerStrategyEnum.AGGRESSIVE);
+		playerStrategyMapping.put(p3, PlayerStrategyEnum.HUMAN);
 	}
 
 	/**
@@ -461,5 +504,24 @@ public class GameServiceTest {
 
 		// asserts
 		assertEquals(error, errorList.get(0));
+	}
+	
+	
+
+	@Test
+	public void testSerializePossible() {
+		List<String> errorList = new ArrayList<>();
+		boolean ifSerialized = gameService.serialize(fileToSave, continentsSet, territoriesSet, playerList,
+				currentPlayer, currentPhase, ifStartUpIsComepleted, playerStrategyMapping, errorList);
+		assertTrue(ifSerialized);
+	}
+
+	@Test
+	public void testSerializeFail() {
+		fileToSave = null;
+		List<String> errorList = new ArrayList<>();
+		boolean ifSerialized = gameService.serialize(fileToSave, continentsSet, territoriesSet, playerList,
+				currentPlayer, currentPhase, ifStartUpIsComepleted, playerStrategyMapping, errorList);
+		assertTrue(!ifSerialized);
 	}
 }
