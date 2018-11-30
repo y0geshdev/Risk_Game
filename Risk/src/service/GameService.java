@@ -1,18 +1,23 @@
 package service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 
 import controller.GameController;
 import controller.MapController;
+import domain.AggressiveStrategy;
+import domain.BenevolentStrategy;
 import domain.Card;
 import domain.CardExchangeViewModel;
 import domain.Continent;
+import domain.HumanStrategy;
 import domain.PhaseViewModel;
 import domain.Player;
 import domain.PlayerStrategyEnum;
@@ -34,7 +39,7 @@ public class GameService {
 	 * @param numberOfPlayers:
 	 *            It has all the player object.
 	 * @param territoriesSet:
-	 * 				set of territories.
+	 *            set of territories.
 	 */
 	public void assignTerritories(List<Player> numberOfPlayers, Set<Territory> territoriesSet) {
 		List<Territory> territoryObjectList = new ArrayList<>(territoriesSet);
@@ -66,10 +71,10 @@ public class GameService {
 	 * @param playerInFocus:
 	 *            Player who is currently in reinforcement phase
 	 * @param playerStrategy:
-	 * Strategy with which the current player is playing
+	 *            Strategy with which the current player is playing
 	 * 
 	 * @param model:
-	 * instance of CardExchangeViewModel
+	 *            instance of CardExchangeViewModel
 	 */
 	public void calcArmiesForReinforcement(Player playerInFocus, PlayerStrategyEnum playerStrategy,
 			CardExchangeViewModel model) {
@@ -160,8 +165,6 @@ public class GameService {
 					model.setPlayerArmyCount(playerInFocus, 0, null);
 				}
 			}
-
-			
 
 		}
 	}
@@ -405,9 +408,9 @@ public class GameService {
 	 * @param armiesToMove:
 	 *            Number of armies to move.
 	 * @param phaseViewModel:
-	 * 				Reference to PhaseviewModel
+	 *            Reference to PhaseviewModel
 	 * @param player:
-	 * 				Reference to a player object
+	 *            Reference to a player object
 	 */
 	public void fortify(Player player, Territory from, Territory to, int armiesToMove, PhaseViewModel phaseViewModel) {
 		player.fortify(from, to, armiesToMove, phaseViewModel);
@@ -486,9 +489,9 @@ public class GameService {
 	 * @param numberOfArmies:
 	 *            number of armies to add to a territory as reinforcement.
 	 * @param phaseViewModel:
-	 * 				Reference to PhaseviewModel
+	 *            Reference to PhaseviewModel
 	 * @param player:
-	 * 				Reference to a player object
+	 *            Reference to a player object
 	 */
 	public void addReinforcement(Player player, Territory selectedTerritory, int numberOfArmies,
 			PhaseViewModel phaseViewModel) {
@@ -525,10 +528,11 @@ public class GameService {
 
 	/**
 	 * This method defines the condition to verify if startUpPhase has ended or not.
+	 * 
 	 * @param playersWithZeroArmies:
-	 * 				set of players that have zero armies.
+	 *            set of players that have zero armies.
 	 * @param playersList:
-	 * 				List of players
+	 *            List of players
 	 * @return boolean: true if startUp phase is finished else false.
 	 */
 	public boolean endOfStartUpPhase(Set<Player> playersWithZeroArmies, List<Player> playersList) {
@@ -546,11 +550,11 @@ public class GameService {
 	 * @param playerInFocus
 	 *            : Player who is doing the reinforcement currently.
 	 * @param cardExchangeViewModel:
-	 * 				Reference to CardExchangeViewModel.
+	 *            Reference to CardExchangeViewModel.
 	 * @return boolean: true if reinforcement phase is finished for current player
 	 *         else false;
 	 */
-	
+
 	public boolean endOfReinforcementPhase(Player playerInFocus, CardExchangeViewModel cardExchangeViewModel) {
 		if (playerInFocus.getArmyCount() == 0) {
 			cardExchangeViewModel.setCardAndOwnedTerritory(null);
@@ -611,6 +615,33 @@ public class GameService {
 		if (totalDefenderDice > 2 || totalDefenderDice < 1 || totalDefenderDice > defenderTerritory.getArmyCount()) {
 			errorList.add("Selected defender can roll min 1 and max "
 					+ (2 > defenderTerritory.getArmyCount() ? defenderTerritory.getArmyCount() : 2));
+		}
+	}
+
+	/**
+	 * Setter for playerstrategyEnumMap sets player to corresponding strategy in a
+	 * Map
+	 * 
+	 * @param playerList:
+	 *            list of players playing game
+	 * @param playerStrategyMapping
+	 *            : playerStrategy Mapping map
+	 */
+	public void setPlayerStartegyEnumMap(List<Player> playerList,
+			Map<Player, PlayerStrategyEnum> playerStrategyMapping) {
+		for (int i = 0; i < playerList.size(); i++) {
+			Player curPlayer = playerList.get(i);
+			if (curPlayer.getPlayingStrategy() instanceof AggressiveStrategy) {
+				playerStrategyMapping.put(curPlayer, PlayerStrategyEnum.AGGRESSIVE);
+			} else if (curPlayer.getPlayingStrategy() instanceof HumanStrategy) {
+				playerStrategyMapping.put(curPlayer, PlayerStrategyEnum.HUMAN);
+			} else if (curPlayer.getPlayingStrategy() instanceof BenevolentStrategy) {
+				playerStrategyMapping.put(curPlayer, PlayerStrategyEnum.BENEVOLENT);
+			} else if (curPlayer.getPlayingStrategy() instanceof Random) {
+				playerStrategyMapping.put(curPlayer, PlayerStrategyEnum.RANDOM);
+			} else {
+				playerStrategyMapping.put(curPlayer, PlayerStrategyEnum.CHEATER);
+			}
 		}
 	}
 

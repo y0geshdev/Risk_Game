@@ -41,7 +41,7 @@ public class CheaterStrategy implements IStrategy, Serializable {
 			}
 
 		}
-
+		player.setArmyCount(0);
 	}
 
 	/**
