@@ -6,11 +6,12 @@ import org.junit.runners.Suite.SuiteClasses;
 
 /**
  * This is a suite for Domain model classes.
+ * 
  * @author Yogesh
  *
  */
 @RunWith(Suite.class)
-@SuiteClasses({ /*PlayerTest.class*/ })
+@SuiteClasses({ HumanStrategyTest.class, WorldDominationModelTest.class })
 public class DomainTestSuite {
 
 }

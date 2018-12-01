@@ -6,8 +6,13 @@ import controller.ControllerTestSuite;
 import domain.DomainTestSuite;
 import service.ServiceTestSuite;
 
+/**
+ * This is a test suite for whole game.
+ * 
+ * @author Yogesh
+ */
 @RunWith(Suite.class)
-@SuiteClasses({ControllerTestSuite.class, DomainTestSuite.class, ServiceTestSuite.class})
+@SuiteClasses({ ControllerTestSuite.class, DomainTestSuite.class, ServiceTestSuite.class })
 public class GameTestSuite {
 
 }

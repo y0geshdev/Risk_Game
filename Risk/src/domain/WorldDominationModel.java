@@ -129,7 +129,7 @@ public class WorldDominationModel extends Observable {
 	 * @return Set containing all the continents which are covered by
 	 *         passed player.
 	 */
-	private Set<Continent> getAllCoveredContinents(Player player, HashSet<Continent> continentsSet) {
+	public Set<Continent> getAllCoveredContinents(Player player, HashSet<Continent> continentsSet) {
 		Set<Continent> coveredContinentsSet = new LinkedHashSet<>();
 		boolean currentContinentCovered;
 
@@ -156,7 +156,7 @@ public class WorldDominationModel extends Observable {
 	 *            player for which army count is to done.
 	 * @return an int representing total number of armies.
 	 */
-	private int getTotalArmies(Player player) {
+	public int getTotalArmies(Player player) {
 		int armyCount = 0;
 		for (Territory territory : player.getTerritories()) {
 			armyCount += territory.getArmyCount();
