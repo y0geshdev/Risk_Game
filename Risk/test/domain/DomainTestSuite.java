@@ -12,7 +12,7 @@ import org.junit.runners.Suite.SuiteClasses;
  */
 @RunWith(Suite.class)
 @SuiteClasses({ WorldDominationModelTest.class, HumanStrategyTest.class, CheaterStrategyTest.class,
-		RandomStrategyTest.class })
+		RandomStrategyTest.class, BenevolentStrategyTest.class, AggressiveStrategyTest.class })
 public class DomainTestSuite {
 
 }
