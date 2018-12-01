@@ -239,13 +239,13 @@ public class ModeController {
 				int playersCount = Integer.parseInt(noOfPlayerTM.getText());
 				int drawMoves = Integer.parseInt(movesForDraw.getText());
 				int gameNumber = Integer.parseInt(noOfGamesTM.getText());
-				validateTournamentModeVariables(drawMoves, gameNumber, playersCount, errorList);
+				mapService.validateTournamentModeVariables(drawMoves, gameNumber, playersCount, errorList);
 				if (errorList.size()!=0) {
-					error	=	new String();
-					for(String err:errorList) {
-						error+=err;
-					}
-					showError(error);
+					String errors = "Resolve below errors:";
+					for (String err : errorList)
+						errors = errors.concat("\n-" + err);
+					showError(errors);
+					return;
 				} else {
 					playerStrategyMapping = new HashMap<>();
 					enableTMComponents();
@@ -467,18 +467,16 @@ public class ModeController {
 	@FXML
 	public void playTM(ActionEvent event) {
 
-		String error;
-		for (int i = 0; i < playerList.size(); i++) {
-			Player curPlayer = playerList.get(i);
-			if (playerStrategyMapping.get(curPlayer) == null) {
-				error = "Strategy for " + curPlayer + " is null";
-				showError(error);
-				return;
-			} else if (playerStrategyMapping.get(curPlayer).equals(PlayerStrategyEnum.HUMAN)) {
-				error = "Strategy for " + curPlayer + " cannot be Human in Tournament Mode";
-				showError(error);
-				return;
-			}
+		
+		List<String> errorList	=	new ArrayList<>();
+		mapService.validatePlayerStrategyMappingForTM(playerList, errorList,playerStrategyMapping);
+		
+		if(errorList.size()>0) {
+			String errors = "Resolve below errors:";
+			for (String err : errorList)
+				errors = errors.concat("\n-" + err);
+			showError(errors);
+			return;
 		}
 
 		IStrategy playerStrategy;
@@ -515,25 +513,6 @@ public class ModeController {
 		gameController.setUpTournamentMode(playerList, drawMoves, noOfGames, mapFiles, playerStrategyMapping);
 		gameController.playTournament();
 
-	}
-	
-	public void validateTournamentModeVariables(int drawMoves, int noOfGames, int playerCount,List<String>errorList) {
-		
-		String error;
-		if(drawMoves<10 || drawMoves>50) {
-			error	=	"Enter Valid Draw Moves";
-			errorList.add(error);
-		}
-		if(noOfGames<1 || noOfGames>5) {
-			error	=	"Enter Valid Game Moves";
-			errorList.add(error);
-		}
-		if(playerCount<2 || playerCount>5) {
-			error	=	"Enter Valid Number Of Players";
-			errorList.add(error);
-		}
-		
-		
 	}
 
 	/**

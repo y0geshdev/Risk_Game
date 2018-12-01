@@ -18,6 +18,7 @@ import org.junit.Test;
 
 import controller.MapController;
 import domain.AggressiveStrategy;
+import domain.CheaterStrategy;
 import domain.Continent;
 import domain.HumanStrategy;
 import domain.Player;
@@ -61,7 +62,8 @@ public class MapServiceTest {
 	 */
 	List<Territory> territoryList1, territoryList2, territoryList3;
 	/**
-	 * Variable holds reference to error message string if no continent or territory exist
+	 * Variable holds reference to error message string if no continent or territory
+	 * exist
 	 */
 	String errorMessage_noContinent_terrExists;
 	/**
@@ -69,13 +71,13 @@ public class MapServiceTest {
 	 */
 	String errorMessage_hasOneTerritory;
 	/**
-	 * Variable holds reference to error message string if one territory present
-	 * in multiple continents
+	 * Variable holds reference to error message string if one territory present in
+	 * multiple continents
 	 */
 	String errorMessage_terrPresentInMultipleContinents;
 	/**
-	 * Variable holds reference to error message string if one territory has
-	 * no neighbouring territory
+	 * Variable holds reference to error message string if one territory has no
+	 * neighbouring territory
 	 */
 	String errorMessage_noNeighbouringTerritory;
 	/**
@@ -92,14 +94,14 @@ public class MapServiceTest {
 	 */
 	@Before
 	public void setUp() {
-		//setup error message 
+		// setup error message
 		errorMessage_noContinent_terrExists = new String();
 		errorMessage_hasOneTerritory = new String();
 		errorMessage_terrPresentInMultipleContinents = new String();
 		errorMessage_noNeighbouringTerritory = new String();
 		errorMessage_unconnectedGraph = new String();
 		errorList = new ArrayList<String>();
-		//setup map
+		// setup map
 		continentsSet = new HashSet<>();
 		territoriesSet = new HashSet<>();
 		territoryList1 = new ArrayList<Territory>();
@@ -117,9 +119,9 @@ public class MapServiceTest {
 	}
 
 	/**
-	 * This Test method validate map and check for logic where
-	 * MapService validateMap(Set, Set, List) method validate that each
-	 * continent have one territory atleast.
+	 * This Test method validate map and check for logic where MapService
+	 * validateMap(Set, Set, List) method validate that each continent have one
+	 * territory atleast.
 	 */
 	@Test
 	public void testValidateMapCaseOne() {
@@ -140,9 +142,9 @@ public class MapServiceTest {
 	}
 
 	/**
-	 * This Test method validate map and check for logic where
-	 * MapService validateMap(Set, Set, List) method validate that each
-	 * territory is in single continent.
+	 * This Test method validate map and check for logic where MapService
+	 * validateMap(Set, Set, List) method validate that each territory is in single
+	 * continent.
 	 * 
 	 */
 	@Test
@@ -161,9 +163,9 @@ public class MapServiceTest {
 	}
 
 	/**
-	 * This Test method validate map and check for logic where
-	 * MapService validateMap(Set, Set, List) method validate that whether
-	 * there is any continent or territory exits or not.
+	 * This Test method validate map and check for logic where MapService
+	 * validateMap(Set, Set, List) method validate that whether there is any
+	 * continent or territory exits or not.
 	 */
 	@Test
 	public void testValidateMapCaseThree() {
@@ -174,9 +176,9 @@ public class MapServiceTest {
 	}
 
 	/**
-	 * This Test method validate map and check for logic where
-	 * MapService validateMap(Set, Set, List) method validate that each
-	 * territory have atleast one neighbor.
+	 * This Test method validate map and check for logic where MapService
+	 * validateMap(Set, Set, List) method validate that each territory have atleast
+	 * one neighbor.
 	 */
 	@Test
 	public void testValidateMapCaseFour() {
@@ -192,9 +194,8 @@ public class MapServiceTest {
 	}
 
 	/**
-	 * This Test method validate map and check for logic where
-	 * MapService validateMap(Set, Set, List) method validate that map is
-	 * connected or not.
+	 * This Test method validate map and check for logic where MapService
+	 * validateMap(Set, Set, List) method validate that map is connected or not.
 	 */
 	@Test
 	public void testValidateMapCaseFive() {
@@ -222,33 +223,33 @@ public class MapServiceTest {
 	 */
 	@Test
 	public void testParseFile() {
-		
-		//check if file is not found		
+
+		// check if file is not found
 		List<String> errorList = new ArrayList<>();
 		String errorString = "File not Found";
 		mapserviceObj.parseFile(nullFileObject, errorList);
 		assertTrue(errorList.contains(errorString));
-				
-		//Check if all checks pass
+
+		// Check if all checks pass
 		errorList = new ArrayList<>();
 		mapserviceObj.parseFile(correctFileObject, errorList);
 		assertTrue(MapController.continentsSet.size() >= 1);
 		assertTrue(MapController.territoriesSet.size() >= 1);
-		
-		//Checks if file doesn't contain continent and territories
-		
+
+		// Checks if file doesn't contain continent and territories
+
 		errorList = new ArrayList<>();
 		mapserviceObj.parseFile(wrongFileObject, errorList);
 		String errorMessageForZeroContinent = "No Continent is present in the File";
 		String errorMessageForZeroTerritory = "No Territory is present in the File";
 		assertTrue(errorList.contains(errorMessageForZeroContinent));
 
-		}
-	
+	}
+
 	/**
-	 * This method test MapService createPlayers(List, int) method which
-	 * should populate playerList which is passed as one of the argument with as
-	 * many players as denoted by numberOfplayers argument.
+	 * This method test MapService createPlayers(List, int) method which should
+	 * populate playerList which is passed as one of the argument with as many
+	 * players as denoted by numberOfplayers argument.
 	 * 
 	 */
 	@Test
@@ -258,10 +259,10 @@ public class MapServiceTest {
 		mapserviceObj.createPlayers(playerList, numberOfplayers);
 		assertEquals(numberOfplayers, playerList.size());
 	}
-	
+
 	/**
-	 * This method tests the deserialize(File,errorList) method from MapService class
-	 * which should not populate errors in case if it deserializes game state
+	 * This method tests the deserialize(File,errorList) method from MapService
+	 * class which should not populate errors in case if it deserializes game state
 	 * objects successfully from given file
 	 */
 	@Test
@@ -283,9 +284,9 @@ public class MapServiceTest {
 	}
 
 	/**
-	 * This method tests the deserialize(File,errorList) method from MapService class
-	 * which should populate errors in case if it fails to deserialize game state
-	 * objects
+	 * This method tests the deserialize(File,errorList) method from MapService
+	 * class which should populate errors in case if it fails to deserialize game
+	 * state objects
 	 */
 	@Test
 	public void testDeserializeFail() {
@@ -356,6 +357,7 @@ public class MapServiceTest {
 		MapController.territoriesSet = (HashSet<Territory>) territoriesSet;
 		MapController.continentsSet = (HashSet<Continent>) continentsSet;
 
+		// setting up the armies and stratwgy
 		p1.setArmyCount(12);
 		p1.setPlayingStrategy(new HumanStrategy());
 		p1.setTerritories(Arrays.asList(territoryOne, territoryTwo));
@@ -368,6 +370,7 @@ public class MapServiceTest {
 		p3.setPlayingStrategy(new HumanStrategy());
 		p3.setTerritories(Arrays.asList(territoryFive));
 
+		// Adding players to the playerlist
 		playerList = new ArrayList<>();
 		playerList.add(p1);
 		playerList.add(p2);
@@ -377,11 +380,85 @@ public class MapServiceTest {
 		currentPhase = "reinforcementPhase";
 		ifStartUpIsComepleted = true;
 
+		// MApping of the player strategies with the player
 		playerStrategyMapping = new HashMap<>();
 		playerStrategyMapping.put(p1, PlayerStrategyEnum.HUMAN);
 		playerStrategyMapping.put(p2, PlayerStrategyEnum.AGGRESSIVE);
 		playerStrategyMapping.put(p3, PlayerStrategyEnum.HUMAN);
 	}
 
+	/**
+	 * This method returns true as number of drawMoves is between 10 and 50.
+	 */
+	@Test
+	public void testvalidateTournamentModeVariablesPass() {
+		int noOfGames = 2;
+		int drawMoves = 20;
+		int noOfPlayers = 2;
+		List<String> errorList = new ArrayList<>();
+		mapserviceObj.validateTournamentModeVariables(drawMoves, noOfGames, noOfPlayers, errorList);
 
+		assertTrue(errorList.size() == 0);
+	}
+
+	/**
+	 * This method will return true as size of errorList is not zero because value
+	 * of drawMoves is greater is greater than 50.
+	 */
+	@Test
+	public void testvalidateTournamentModeVariablesFail() {
+		int noOfGames = 2;
+		int drawMoves = 60;
+		int noOfPlayers = 2;
+		List<String> errorList = new ArrayList<>();
+		mapserviceObj.validateTournamentModeVariables(drawMoves, noOfGames, noOfPlayers, errorList);
+
+		assertTrue(errorList.size() != 0);
+	}
+
+	/**
+	 * This method validates the player strategy mapping with the player. Returns
+	 * true if errorList is empty.
+	 */
+	@Test
+	public void validatePlayerStrategyMappingForTMPass() {
+		List<Player> playerList = new ArrayList<>();
+		List<String> errorList = new ArrayList<>();
+		Map<Player, PlayerStrategyEnum> playerStrategyMapping = new HashMap<>();
+
+		Player p1 = new Player(new AggressiveStrategy());
+		Player p2 = new Player(new CheaterStrategy());
+		playerList.add(p1);
+		playerList.add(p2);
+
+		playerStrategyMapping.put(p1, PlayerStrategyEnum.AGGRESSIVE);
+		playerStrategyMapping.put(p2, PlayerStrategyEnum.CHEATER);
+
+		mapserviceObj.validatePlayerStrategyMappingForTM(playerList, errorList, playerStrategyMapping);
+
+		assertTrue(errorList.size() == 0);
+	}
+
+	/**
+	 * This method validates the player strategy mapping with the player. Returns
+	 * true if errorList is not empty.
+	 */
+	@Test
+	public void validatePlayerStrategyMappingForTMFail() {
+		List<Player> playerList = new ArrayList<>();
+		List<String> errorList = new ArrayList<>();
+		Map<Player, PlayerStrategyEnum> playerStrategyMapping = new HashMap<>();
+
+		Player p1 = new Player(new AggressiveStrategy());
+		Player p2 = new Player(new CheaterStrategy());
+		playerList.add(p1);
+		playerList.add(p2);
+
+		playerStrategyMapping.put(p1, PlayerStrategyEnum.AGGRESSIVE);
+		playerStrategyMapping.put(p2, PlayerStrategyEnum.HUMAN);
+
+		mapserviceObj.validatePlayerStrategyMappingForTM(playerList, errorList, playerStrategyMapping);
+
+		assertTrue(errorList.size() != 0);
+	}
 }

@@ -487,4 +487,53 @@ public class MapService {
 		}
 		return gameState;
 	}
+	
+	/**
+	 * This method validates the tournamentModeVariable
+	 * @param drawMoves: no. of draw moves.
+	 * @param noOfGames: no. of games
+	 * @param playerCount: number of players
+	 * @param errorList: list containing errors.
+	 */
+	public void validateTournamentModeVariables(int drawMoves, int noOfGames, int playerCount,List<String>errorList) {
+		
+		String error;
+		if(drawMoves<10 || drawMoves>50) {
+			error	=	"Enter Valid Draw Moves";
+			errorList.add(error);
+		}
+		if(noOfGames<1 || noOfGames>5) {
+			error	=	"Enter Valid Game Moves";
+			errorList.add(error);
+		}
+		if(playerCount<2 || playerCount>5) {
+			error	=	"Enter Valid Number Of Players";
+			errorList.add(error);
+		}
+		
+		
+	}
+	
+	/**
+	 * This method validates the mapping of the strategy to the player
+	 * @param playerList: List of players
+	 * @param errorList: List containing error messages
+	 * @param playerStrategyMapping: Map containing playerstrategy mapping
+	 */
+	public void validatePlayerStrategyMappingForTM(List<Player> playerList, List<String> errorList,Map<Player,PlayerStrategyEnum>playerStrategyMapping) {
+		String error;
+		for (int i = 0; i < playerList.size(); i++) {
+			Player curPlayer = playerList.get(i);
+			if (playerStrategyMapping.get(curPlayer) == null) {
+				error = "Strategy for " + curPlayer + " is null";
+				errorList.add(error);
+
+			} else if (playerStrategyMapping.get(curPlayer).equals(PlayerStrategyEnum.HUMAN)) {
+				error = "Strategy for " + curPlayer + " cannot be Human in Tournament Mode";
+				errorList.add(error);
+
+			}
+		}
+
+	}
 }
