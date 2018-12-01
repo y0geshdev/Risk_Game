@@ -32,8 +32,8 @@ import javafx.application.Platform;
 import javafx.util.Pair;
 
 /**
- * This class handle all the service call from GameController class and
- * provide business logic for same.
+ * This class handle all the service call from GameController class and provide
+ * business logic for same.
  * 
  * @author Yogesh
  *
@@ -366,8 +366,8 @@ public class GameService {
 	 * @param phaseViewModel:
 	 *            PhaseViewModel instance to update information on phase view with
 	 *            each step of attack.
-	 * @return A Boolean and Integer
-	 *         representing attack outcome and minimum troops to move.
+	 * @return A Boolean and Integer representing attack outcome and minimum troops
+	 *         to move.
 	 */
 	public Pair<Boolean, Integer> attack(Player attacker, Player defender, Territory attackerTerritory,
 			Territory defenderTerritory, boolean isAllOutMode, int totalAttackerDice, int totalDefenderDice,
@@ -664,8 +664,7 @@ public class GameService {
 	 *            instance of phaseViewModel.
 	 */
 	public void nonHumanStartUpPhase(Player currentPlayer, int armyCount, PhaseViewModel phaseViewModel) {
-		phaseViewModel
-				.setPhaseInfo("StartUp Phase: placing armies on radom territory.");
+		phaseViewModel.setPhaseInfo("StartUp Phase: placing armies on radom territory.");
 		phaseViewModel.setCurrentPlayer(currentPlayer.getName());
 		Territory selectedTerritory = currentPlayer.getTerritories()
 				.get(randomIndex(0, currentPlayer.getTerritories().size() - 1));
@@ -676,7 +675,6 @@ public class GameService {
 
 	}
 
-	
 	/**
 	 * This method serializes the game state to a file
 	 * 
@@ -696,11 +694,14 @@ public class GameService {
 	 *            boolean parameter true if start up phase is completed else false
 	 * @param playerStrategyMapping:
 	 *            mapping of players to their corresponding strategies.
+	 * @param errorList:
+	 *            List of string to hold error.
+	 * 
 	 * @return true if game state is serialized
 	 */
 	public boolean serialize(File fileToSave, HashSet<Continent> continentSet, HashSet<Territory> territorySet,
 			List<Player> playerList, Player currentPlayer, String currentPhase, boolean ifStartUpIsComepleted,
-			Map<Player, PlayerStrategyEnum> playerStrategyMapping,List<String>errorList) {
+			Map<Player, PlayerStrategyEnum> playerStrategyMapping, List<String> errorList) {
 
 		FileOutputStream fileOutput;
 		ObjectOutputStream out = null;

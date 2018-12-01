@@ -519,7 +519,7 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This method tests SerializePossible method & returns true if it is
+	 * This method tests SerializePossible method and returns true if it is
 	 * successfully able to serialize gameState objects into a file.
 	 */
 
@@ -532,7 +532,7 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This method tests SerializePossible method & returns true if it is not able
+	 * This method tests SerializePossible method and returns true if it is not able
 	 * to serialize gameState objects into a file.
 	 */
 	@Test

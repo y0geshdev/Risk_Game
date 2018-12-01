@@ -466,12 +466,11 @@ public class MapService {
 	 * 
 	 * @param file:
 	 *            File in which game state is saved which user has chosen
+	 * @param errorList:
+	 *            List to hold errors.
 	 * 
 	 * @return an instance of GameObjectClass class
 	 * 
-	 * @throws Exception
-	 *             : Exception in case the function is not able to deserialize the
-	 *             object.
 	 */
 	public GameObjectClass deserialize(File file, List<String> errorList) {
 		FileInputStream fileIn = null;
