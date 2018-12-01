@@ -32,7 +32,7 @@ import javafx.application.Platform;
 import javafx.util.Pair;
 
 /**
- * This class handle all the service call from {@link GameController} class and
+ * This class handle all the service call from GameController class and
  * provide business logic for same.
  * 
  * @author Yogesh
@@ -366,7 +366,7 @@ public class GameService {
 	 * @param phaseViewModel:
 	 *            PhaseViewModel instance to update information on phase view with
 	 *            each step of attack.
-	 * @return A {@link Pair} class which hold data as Boolean and Integer
+	 * @return A Boolean and Integer
 	 *         representing attack outcome and minimum troops to move.
 	 */
 	public Pair<Boolean, Integer> attack(Player attacker, Player defender, Territory attackerTerritory,

@@ -72,7 +72,8 @@ public class GameServiceTest {
 	 */
 	String currentPhase;
 	/**
-	 * Variable holds reference to boolean parameter that is true is start up phase is completed
+	 * Variable holds reference to boolean parameter that is true is start up phase
+	 * is completed
 	 */
 	boolean ifStartUpIsComepleted;
 	/**
@@ -165,8 +166,8 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This method test if GameService assignTerritories(List) assigns territories
-	 * to players or not.
+	 * This method test if GameService assignTerritories() assigns territories to
+	 * players or not.
 	 */
 	@Test
 	public void testAssignTerritories() {
@@ -182,7 +183,7 @@ public class GameServiceTest {
 
 	/**
 	 * This method is use to test the functionality of GameService
-	 * calcArmiesForReinforcement(Player) method for HUMAN strategy that whether it
+	 * calcArmiesForReinforcement() method for HUMAN strategy that whether it
 	 * calculate armies for a given player as per game rules or not when player
 	 * occupy whole continent.
 	 */
@@ -199,7 +200,7 @@ public class GameServiceTest {
 
 	/**
 	 * This method is use to test the functionality of GameService
-	 * calcArmiesForReinforcement(Player) method for HUMAN strategy that whether it
+	 * calcArmiesForReinforcement() method for HUMAN strategy that whether it
 	 * calculate armies for a given player as per game rules or not when player
 	 * doesn't occupy whole continent.
 	 */
@@ -213,9 +214,8 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This test case is for GameService validateArmyInput(String, Player,
-	 * Territory, List) method where we test to various cases where method validates
-	 * given parameters as per logic.
+	 * This test case is for GameService validateArmyInput() method where we test to
+	 * various cases where method validates given parameters as per logic.
 	 */
 	@Test
 	public void testValidateArmyInput() {
@@ -310,8 +310,8 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This test checks if the GameService attack(Territory, Territory) method for
-	 * HUMAN strategy attack given territory or not.
+	 * This test checks if the GameService attack() method for HUMAN strategy attack
+	 * given territory or not.
 	 */
 	@Test
 	public void testAttack() {
@@ -355,7 +355,7 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This test checks if the GameService getNextPlayer()} method returns valid
+	 * This test checks if the GameService getNextPlayer() method returns valid
 	 * player whose turn it is as per round robin fashion for choosing player turn
 	 */
 	@Test

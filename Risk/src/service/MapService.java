@@ -30,8 +30,8 @@ import domain.RandomStrategy;
 import domain.Territory;
 
 /**
- * This class is used to handle all the service calls from {@link MapController}
- * class. This is used to implement required business logic.
+ * This class is used to handle all the service calls from MapController class.
+ * This is used to implement required business logic.
  * 
  * @author Yogesh
  *
@@ -219,7 +219,7 @@ public class MapService {
 	 *            particular map file.
 	 *
 	 * @param errorList:
-	 * 			List containing error messages.
+	 *            List containing error messages.
 	 */
 	public void parseFile(File file, List<String> errorList) {
 		String errormessage = new String();
@@ -356,7 +356,7 @@ public class MapService {
 				List<Territory> abc = continentToTerritoryMap.get(continentToSetTerritories.getName());
 				continentToSetTerritories.setTerritories(abc);
 			}
-			checkAndUpdateBiDirectionalLinks((HashSet<Territory>)territoryObjectSet);
+			checkAndUpdateBiDirectionalLinks((HashSet<Territory>) territoryObjectSet);
 			MapController.continentsSet = (HashSet<Continent>) continentObjectSet;
 			MapController.territoriesSet = (HashSet<Territory>) territoryObjectSet;
 
@@ -365,17 +365,20 @@ public class MapService {
 			return;
 		}
 	}
+
 	/**
-	 * This method checks Bi-directional relation between a territory and its neighbors
+	 * This method checks Bi-directional relation between a territory and its
+	 * neighbors
+	 * 
 	 * @param territorySet:
-	 * 				set containing territories.
+	 *            set containing territories.
 	 */
-	public void checkAndUpdateBiDirectionalLinks(HashSet<Territory>territorySet) {
-		Iterator<Territory> ite	=	territorySet.iterator();
-		while(ite.hasNext()) {
-			Territory obj	=	ite.next();
-			for(int i=0;i<obj.getNeighbourTerritories().size();i++) {
-				if(!obj.getNeighbourTerritories().get(i).getNeighbourTerritories().contains(obj)) {
+	public void checkAndUpdateBiDirectionalLinks(HashSet<Territory> territorySet) {
+		Iterator<Territory> ite = territorySet.iterator();
+		while (ite.hasNext()) {
+			Territory obj = ite.next();
+			for (int i = 0; i < obj.getNeighbourTerritories().size(); i++) {
+				if (!obj.getNeighbourTerritories().get(i).getNeighbourTerritories().contains(obj)) {
 					obj.getNeighbourTerritories().get(i).getNeighbourTerritories().add(obj);
 				}
 			}
@@ -384,8 +387,10 @@ public class MapService {
 
 	/**
 	 * This is getter method to get the strategy of player
+	 * 
 	 * @param strategyEnum:
-	 * 				reference to an enum which reflects strategies for players playing style.
+	 *            reference to an enum which reflects strategies for players playing
+	 *            style.
 	 * @return strategy of the player
 	 */
 	public IStrategy getStrategyfromEnum(PlayerStrategyEnum strategyEnum) {
@@ -456,7 +461,6 @@ public class MapService {
 		}
 	}
 
-	
 	/**
 	 * This method deserializes the file
 	 * 
@@ -469,58 +473,67 @@ public class MapService {
 	 *             : Exception in case the function is not able to deserialize the
 	 *             object.
 	 */
-	public GameObjectClass deserialize(File file,List<String>errorList)  {
+	public GameObjectClass deserialize(File file, List<String> errorList) {
 		FileInputStream fileIn = null;
 		ObjectInputStream objIn = null;
 		GameObjectClass gameState = null;
 		try {
-		fileIn = new FileInputStream(file);
-		objIn = new ObjectInputStream(fileIn);
-		gameState = (GameObjectClass) objIn.readObject();
-		if (gameState != null) {
-			objIn.close();
-		}
-		}catch(Exception e) {
-			String error	=	"File cannot be Deserialized";
+			fileIn = new FileInputStream(file);
+			objIn = new ObjectInputStream(fileIn);
+			gameState = (GameObjectClass) objIn.readObject();
+			if (gameState != null) {
+				objIn.close();
+			}
+		} catch (Exception e) {
+			String error = "File cannot be Deserialized";
 			errorList.add(error);
 			return null;
 		}
 		return gameState;
 	}
-	
+
 	/**
 	 * This method validates the tournamentModeVariable
-	 * @param drawMoves: no. of draw moves.
-	 * @param noOfGames: no. of games
-	 * @param playerCount: number of players
-	 * @param errorList: list containing errors.
+	 * 
+	 * @param drawMoves:
+	 *            no. of draw moves.
+	 * @param noOfGames:
+	 *            no. of games
+	 * @param playerCount:
+	 *            number of players
+	 * @param errorList:
+	 *            list containing errors.
 	 */
-	public void validateTournamentModeVariables(int drawMoves, int noOfGames, int playerCount,List<String>errorList) {
-		
+	public void validateTournamentModeVariables(int drawMoves, int noOfGames, int playerCount, List<String> errorList) {
+
 		String error;
-		if(drawMoves<10 || drawMoves>50) {
-			error	=	"Enter Valid Draw Moves";
+		if (drawMoves < 10 || drawMoves > 50) {
+			error = "Enter Valid Draw Moves";
 			errorList.add(error);
 		}
-		if(noOfGames<1 || noOfGames>5) {
-			error	=	"Enter Valid Game Moves";
+		if (noOfGames < 1 || noOfGames > 5) {
+			error = "Enter Valid Game Moves";
 			errorList.add(error);
 		}
-		if(playerCount<2 || playerCount>5) {
-			error	=	"Enter Valid Number Of Players";
+		if (playerCount < 2 || playerCount > 5) {
+			error = "Enter Valid Number Of Players";
 			errorList.add(error);
 		}
-		
-		
+
 	}
-	
+
 	/**
 	 * This method validates the mapping of the strategy to the player
-	 * @param playerList: List of players
-	 * @param errorList: List containing error messages
-	 * @param playerStrategyMapping: Map containing playerstrategy mapping
+	 * 
+	 * @param playerList:
+	 *            List of players
+	 * @param errorList:
+	 *            List containing error messages
+	 * @param playerStrategyMapping:
+	 *            Map containing playerstrategy mapping
 	 */
-	public void validatePlayerStrategyMappingForTM(List<Player> playerList, List<String> errorList,Map<Player,PlayerStrategyEnum>playerStrategyMapping) {
+	public void validatePlayerStrategyMappingForTM(List<Player> playerList, List<String> errorList,
+			Map<Player, PlayerStrategyEnum> playerStrategyMapping) {
 		String error;
 		for (int i = 0; i < playerList.size(); i++) {
 			Player curPlayer = playerList.get(i);

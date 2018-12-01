@@ -6,8 +6,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * This Junit Test Class will have all the test cases for {@link GameController}
- * class.
+ * This Junit Test Class will have all the test cases for GameController class.
  * 
  * @author Yogesh
  *

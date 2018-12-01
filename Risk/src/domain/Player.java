@@ -12,7 +12,7 @@ import javafx.util.Pair;
  * @author Yogesh
  *
  */
-public class Player implements Serializable{
+public class Player implements Serializable {
 
 	/**
 	 * It represents player's name.
@@ -38,7 +38,9 @@ public class Player implements Serializable{
 
 	/**
 	 * default constructor for Player
-	 * @param playingStrategy: holds reference to strategy of a player.
+	 * 
+	 * @param playingStrategy:
+	 *            holds reference to strategy of a player.
 	 */
 	public Player(IStrategy playingStrategy) {
 		armyCount = 0;
@@ -126,7 +128,7 @@ public class Player implements Serializable{
 	 * @param numberOfArmies:
 	 *            number of armies to add to a territory as reinforcement.
 	 * @param phaseViewModel:
-	 * 				reference to PhaseViewModel
+	 *            reference to PhaseViewModel
 	 */
 	public void reinforcement(Territory selectedTerritory, int numberOfArmies, PhaseViewModel phaseViewModel) {
 		playingStrategy.reinforcement(this, selectedTerritory, numberOfArmies, phaseViewModel);
@@ -142,10 +144,10 @@ public class Player implements Serializable{
 	 * @param armiesToMove:
 	 *            Number of armies to move.
 	 * @param phaseViewModel:
-	 * 				reference to PhaseViewModel
+	 *            reference to PhaseViewModel
 	 */
 	public void fortify(Territory from, Territory to, int armiesToMove, PhaseViewModel phaseViewModel) {
-		playingStrategy.fortify(this, from, to, armiesToMove,phaseViewModel);
+		playingStrategy.fortify(this, from, to, armiesToMove, phaseViewModel);
 	}
 
 	/**
@@ -168,13 +170,13 @@ public class Player implements Serializable{
 	 * @param phaseViewModel:
 	 *            PhaseViewModel instance to update information on phase view with
 	 *            each step of attack.
-	 * @return A {@link Pair} class which hold data as Boolean and Integer
-	 *         representing attack outcome and minimum troops to move.
+	 * @return A Boolean and Integer representing attack outcome and minimum troops
+	 *         to move.
 	 */
 	public Pair<Boolean, Integer> attack(Player defender, Territory attackerTerritory, Territory defenderTerritory,
 			boolean isAllOutMode, int totalAttackerDice, int totalDefenderDice, PhaseViewModel phaseViewModel) {
-		return playingStrategy.attack(this, defender, attackerTerritory, defenderTerritory, isAllOutMode, totalAttackerDice,
-				totalDefenderDice, phaseViewModel);
+		return playingStrategy.attack(this, defender, attackerTerritory, defenderTerritory, isAllOutMode,
+				totalAttackerDice, totalDefenderDice, phaseViewModel);
 	}
 
 }

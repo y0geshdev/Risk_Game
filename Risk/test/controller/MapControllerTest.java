@@ -6,7 +6,7 @@ import org.junit.Ignore;
 import org.junit.Test;
 
 /**
- * This Junit Test Class will have all the test cases for {@link MapController}
+ * This Junit Test Class will have all the test cases for MapController
  * class.
  * 
  * @author Yogesh

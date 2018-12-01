@@ -26,8 +26,7 @@ import domain.PlayerStrategyEnum;
 import domain.Territory;
 
 /**
- * This Junit Test Class will have all the test cases for {@link MapService}
- * class.
+ * This Junit Test Class will have all the test cases for MapService class.
  * 
  * @author Yogesh
  *
