@@ -11,7 +11,8 @@ import org.junit.runners.Suite.SuiteClasses;
  *
  */
 @RunWith(Suite.class)
-@SuiteClasses({  WorldDominationModelTest.class, HumanStrategyTest.class, CheaterStrategyTest.class})
+@SuiteClasses({ WorldDominationModelTest.class, HumanStrategyTest.class, CheaterStrategyTest.class,
+		RandomStrategyTest.class })
 public class DomainTestSuite {
 
 }

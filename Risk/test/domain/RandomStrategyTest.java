@@ -1,6 +1,7 @@
 package domain;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -8,20 +9,23 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
+import javafx.util.Pair;
+
 /**
- * This test class have test cases for CheaterStrategy.
+ * This test class have test cases for RandomStrategy.
  * 
  * @author Yogesh
  *
  */
-public class CheaterStrategyTest {
+public class RandomStrategyTest {
 
 	/**
-	 * To hold CheaterStrategy class instance.
+	 * To hold RandomStrategy class instance.
 	 */
-	private CheaterStrategy cheaterStrategy;
+	private RandomStrategy randomStrategy;
 	/**
 	 * It hold collection of all the continents in game in set.
 	 */
@@ -44,7 +48,7 @@ public class CheaterStrategyTest {
 	 */
 	@Before
 	public void setUp() {
-		cheaterStrategy = new CheaterStrategy();
+		randomStrategy = new RandomStrategy();
 
 		// setUp continents
 		Continent continentOne = new Continent("C1", 5);
@@ -89,76 +93,62 @@ public class CheaterStrategyTest {
 	}
 
 	/**
-	 * This test case test CheaterStrategy reinforcement method. It set some army to
-	 * player's territory and then call method and then check if they are doubled or
-	 * not.
+	 * This case assign a single territory to player and call reinforcement method
+	 * on RandomStrategy and then check if all the armies are assigned to that
+	 * territory or not.
 	 */
 	@Test
 	public void testReinforcement() {
 		Player player = new Player();
-		territoryList.get(0).setArmyCount(1);
-		territoryList.get(1).setArmyCount(2);
-		Collections.addAll(player.getTerritories(), territoryList.get(0), territoryList.get(1));
-		cheaterStrategy.reinforcement(player, null, 0, new PhaseViewModel());
+		Collections.addAll(player.getTerritories(), territoryList.get(0));
+		player.setArmyCount(10);
 
-		assertEquals(2, territoryList.get(0).getArmyCount());
-		assertEquals(4, territoryList.get(1).getArmyCount());
-
+		randomStrategy.reinforcement(player, null, 0, new PhaseViewModel());
+		assertEquals(10, territoryList.get(0).getArmyCount());
+		assertEquals(0, player.getArmyCount());
 	}
 
 	/**
-	 * This test case is for CheaterStrategy fortification method. It test if
-	 * fortification will double the armies in territories whose neighbor territory
-	 * is owned by someone else or not.
+	 * The random strategy uses To and from territory which are randomly selected at
+	 * run time. So cannot observe which territory state is changed.
 	 */
+	@Ignore
 	@Test
 	public void testFortify() {
-		Player player = new Player();
-		territoryList.get(2).setArmyCount(1);
-		territoryList.get(3).setArmyCount(1);
-		territoryList.get(4).setArmyCount(1);
-		territoryList.get(2).setOwner(player);
-		territoryList.get(3).setOwner(player);
-		territoryList.get(4).setOwner(player);
-
-		Player defender = new Player();
-		defender.setName("defender");
-		Collections.addAll(defender.getTerritories(), territoryList.get(0), territoryList.get(1));
-		territoryList.get(0).setOwner(defender);
-		territoryList.get(1).setOwner(defender);
-
-		Collections.addAll(player.getTerritories(), territoryList.get(2), territoryList.get(3), territoryList.get(4));
-		cheaterStrategy.fortify(player, null, null, 0, new PhaseViewModel());
-
-		assertEquals(2, territoryList.get(2).getArmyCount());
-		assertEquals(1, territoryList.get(3).getArmyCount());
-		assertEquals(2, territoryList.get(4).getArmyCount());
+		fail("Not yet implemented");
 	}
 
 	/**
-	 * This test will set territory 3, 4 and 5 to player and then call attack method
-	 * on Cheater strategy. Then it check if all territory is occupied by player or
-	 * not.
+	 * This test case will assign only one territory to player and call attack
+	 * method of Random strategy. If attack is successful then player will have 2
+	 * territory else it will have only one territory.
 	 */
 	@Test
 	public void testAttack() {
 		Player player = new Player();
-		territoryList.get(2).setArmyCount(1);
-		territoryList.get(3).setArmyCount(1);
-		territoryList.get(4).setArmyCount(1);
-		territoryList.get(2).setOwner(player);
-		territoryList.get(3).setOwner(player);
-		territoryList.get(4).setOwner(player);
+		player.getTerritories().add(territoryList.get(0));
+		territoryList.get(0).setArmyCount(10);
+		territoryList.get(0).setOwner(player);
 
 		Player defender = new Player();
 		defender.setName("defender");
-		Collections.addAll(defender.getTerritories(), territoryList.get(0), territoryList.get(1));
-		territoryList.get(0).setOwner(defender);
+		Collections.addAll(defender.getTerritories(), territoryList.get(1), territoryList.get(2), territoryList.get(3),
+				territoryList.get(4));
 		territoryList.get(1).setOwner(defender);
+		territoryList.get(2).setOwner(defender);
+		territoryList.get(3).setOwner(defender);
+		territoryList.get(4).setOwner(defender);
+		territoryList.get(1).setArmyCount(1);
+		territoryList.get(2).setArmyCount(1);
+		territoryList.get(3).setArmyCount(1);
+		territoryList.get(4).setArmyCount(1);
 
-		Collections.addAll(player.getTerritories(), territoryList.get(2), territoryList.get(3), territoryList.get(4));
-		cheaterStrategy.attack(player, null, null, null, true, 0, 0, new PhaseViewModel());
-		assertEquals(5, player.getTerritories().size());
+		Pair<Boolean, Integer> result = randomStrategy.attack(player, defender, null, null, false, 0, 0,
+				new PhaseViewModel());
+		if (result.getKey()) {
+			assertEquals(2, player.getTerritories().size());
+		} else
+			assertEquals(1, player.getTerritories().size());
 	}
 
 }
