@@ -227,6 +227,8 @@ public class ModeController {
 	public void setPlayerStartegyTM(ActionEvent event) {
 
 		String error;
+		List<String>errorList	=	new ArrayList<>();
+		
 		if (map1PathTM.getText().trim().length() == 0 && map2PathTM.getText().trim().length() == 0
 				&& map3PathTM.getText().trim().length() == 0 && map4PathTM.getText().trim().length() == 0
 				&& map5PathTM.getText().trim().length() == 0) {
@@ -237,14 +239,12 @@ public class ModeController {
 				int playersCount = Integer.parseInt(noOfPlayerTM.getText());
 				int drawMoves = Integer.parseInt(movesForDraw.getText());
 				int gameNumber = Integer.parseInt(noOfGamesTM.getText());
-				if (playersCount <= 1) {
-					error = "Number of Players cannot be less than 2";
-					showError(error);
-				} else if (drawMoves < 10 || drawMoves > 50) {
-					error = "Enter Valid Number of Draw Moves";
-					showError(error);
-				} else if (gameNumber < 1 || gameNumber > 5) {
-					error = "Enter Valid Number of Games";
+				validateTournamentModeVariables(drawMoves, gameNumber, playersCount, errorList);
+				if (errorList.size()!=0) {
+					error	=	new String();
+					for(String err:errorList) {
+						error+=err;
+					}
 					showError(error);
 				} else {
 					playerStrategyMapping = new HashMap<>();
@@ -515,6 +515,25 @@ public class ModeController {
 		gameController.setUpTournamentMode(playerList, drawMoves, noOfGames, mapFiles, playerStrategyMapping);
 		gameController.playTournament();
 
+	}
+	
+	public void validateTournamentModeVariables(int drawMoves, int noOfGames, int playerCount,List<String>errorList) {
+		
+		String error;
+		if(drawMoves<10 || drawMoves>50) {
+			error	=	"Enter Valid Draw Moves";
+			errorList.add(error);
+		}
+		if(noOfGames<1 || noOfGames>5) {
+			error	=	"Enter Valid Game Moves";
+			errorList.add(error);
+		}
+		if(playerCount<2 || playerCount>5) {
+			error	=	"Enter Valid Number Of Players";
+			errorList.add(error);
+		}
+		
+		
 	}
 
 	/**
