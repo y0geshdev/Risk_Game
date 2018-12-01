@@ -32,21 +32,59 @@ import domain.Territory;
  *
  */
 public class MapServiceTest {
-
+	/**
+	 * Variable holds reference to mapservice class
+	 */
 	MapService mapserviceObj = new MapService();
+	/**
+	 * Variable holds reference to set of continent
+	 */
 	Set<Continent> continentsSet;
+	/**
+	 * Variable holds reference to set of territories
+	 */
 	Set<Territory> territoriesSet;
+	/**
+	 * Variable holds reference to continents
+	 */
 	Continent continent1, continent2;
+	/**
+	 * Variable holds reference to territories
+	 */
 	Territory territory1, territory2, territory3, territory4;
+	/**
+	 * Variable holds reference to list of errors
+	 */
 	List<String> errorList;
-	List<Territory> territoryList1;
-	List<Territory> territoryList2;
-	List<Territory> territoryList3;
+	/**
+	 * Variable holds reference to list of territories
+	 */
+	List<Territory> territoryList1, territoryList2, territoryList3;
+	/**
+	 * Variable holds reference to error message string if no continent or territory exist
+	 */
 	String errorMessage_noContinent_terrExists;
+	/**
+	 * Variable holds reference to error message string if one territory exist
+	 */
 	String errorMessage_hasOneTerritory;
+	/**
+	 * Variable holds reference to error message string if one territory present
+	 * in multiple continents
+	 */
 	String errorMessage_terrPresentInMultipleContinents;
+	/**
+	 * Variable holds reference to error message string if one territory has
+	 * no neighbouring territory
+	 */
 	String errorMessage_noNeighbouringTerritory;
+	/**
+	 * Variable holds reference to error message string if graph is not connected
+	 */
 	String errorMessage_unconnectedGraph;
+	/**
+	 * Variables holds reference to file
+	 */
 	File nullFileObject, correctFileObject, wrongFileObject;
 
 	/**
@@ -54,12 +92,14 @@ public class MapServiceTest {
 	 */
 	@Before
 	public void setUp() {
+		//setup error message 
 		errorMessage_noContinent_terrExists = new String();
 		errorMessage_hasOneTerritory = new String();
 		errorMessage_terrPresentInMultipleContinents = new String();
 		errorMessage_noNeighbouringTerritory = new String();
 		errorMessage_unconnectedGraph = new String();
 		errorList = new ArrayList<String>();
+		//setup map
 		continentsSet = new HashSet<>();
 		territoriesSet = new HashSet<>();
 		territoryList1 = new ArrayList<Territory>();
@@ -219,7 +259,11 @@ public class MapServiceTest {
 		assertEquals(numberOfplayers, playerList.size());
 	}
 	
-	
+	/**
+	 * This method tests the deserialize(File,errorList) method from MapService class
+	 * which should not populate errors in case if it deserializes game state
+	 * objects successfully from given file
+	 */
 	@Test
 	public void testDeserializePass() {
 		File fileToSave = null;
@@ -238,6 +282,11 @@ public class MapServiceTest {
 		assertTrue(errorList.size() == 0);
 	}
 
+	/**
+	 * This method tests the deserialize(File,errorList) method from MapService class
+	 * which should populate errors in case if it fails to deserialize game state
+	 * objects
+	 */
 	@Test
 	public void testDeserializeFail() {
 		File fileToSave = null;

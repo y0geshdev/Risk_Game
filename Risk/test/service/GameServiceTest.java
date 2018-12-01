@@ -29,8 +29,7 @@ import domain.Territory;
 import javafx.util.Pair;
 
 /**
- * This Junit Test Class will have all the test cases for GameService
- * class.
+ * This Junit Test Class will have all the test cases for GameService class.
  * 
  * @author Yogesh
  *
@@ -40,7 +39,6 @@ public class GameServiceTest {
 	 * To hold GameService class instance.
 	 */
 	private GameService gameService;
-
 	/**
 	 * It hold collection of all the continents in game in set.
 	 */
@@ -57,12 +55,29 @@ public class GameServiceTest {
 	 * It hold collection of all the continents in game in list.
 	 */
 	private List<Continent> continentList;
-	
+	/**
+	 * It holds reference to file to save object
+	 */
 	File fileToSave;
+	/**
+	 * Variable holds reference to list of players
+	 */
 	List<Player> playerList;
+	/**
+	 * Variable holds reference to current player playing the game
+	 */
 	Player currentPlayer;
+	/**
+	 * Variable holds reference to current phase in the game
+	 */
 	String currentPhase;
+	/**
+	 * Variable holds reference to boolean parameter that is true is start up phase is completed
+	 */
 	boolean ifStartUpIsComepleted;
+	/**
+	 * Variable holds reference to a map of player and its playing strategy
+	 */
 	Map<Player, PlayerStrategyEnum> playerStrategyMapping;
 
 	/**
@@ -73,6 +88,7 @@ public class GameServiceTest {
 		gameService = new GameService();
 		fileToSave = new File("resource\\CheckSerialize.ser");
 
+		// setup players
 		Player p1 = new Player();
 		Player p2 = new Player();
 		Player p3 = new Player();
@@ -118,8 +134,8 @@ public class GameServiceTest {
 
 		MapController.territoriesSet = territoriesSet;
 		MapController.continentsSet = continentsSet;
-		
-		//setting for serialization in file
+
+		// setting for serialization in file
 		p1.setArmyCount(12);
 		p1.setPlayingStrategy(new HumanStrategy());
 		p1.setTerritories(Arrays.asList(territoryOne, territoryTwo));
@@ -132,6 +148,7 @@ public class GameServiceTest {
 		p3.setPlayingStrategy(new HumanStrategy());
 		p3.setTerritories(Arrays.asList(territoryFive));
 
+		// setting up gameState objects
 		playerList = new ArrayList<>();
 		playerList.add(p1);
 		playerList.add(p2);
@@ -148,8 +165,8 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This method test if GameService assignTerritories(List) assigns
-	 * territories to players or not.
+	 * This method test if GameService assignTerritories(List) assigns territories
+	 * to players or not.
 	 */
 	@Test
 	public void testAssignTerritories() {
@@ -164,8 +181,8 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This method is use to test the functionality of
-	 * GameService calcArmiesForReinforcement(Player) method for HUMAN strategy that whether it
+	 * This method is use to test the functionality of GameService
+	 * calcArmiesForReinforcement(Player) method for HUMAN strategy that whether it
 	 * calculate armies for a given player as per game rules or not when player
 	 * occupy whole continent.
 	 */
@@ -174,14 +191,15 @@ public class GameServiceTest {
 
 		Player playerOne = new Player();
 		Collections.addAll(playerOne.getTerritories(), territoryList.get(0), territoryList.get(1));
-		gameService.calcArmiesForReinforcement(playerOne,PlayerStrategyEnum.HUMAN, new CardExchangeViewModel(territoriesSet));
+		gameService.calcArmiesForReinforcement(playerOne, PlayerStrategyEnum.HUMAN,
+				new CardExchangeViewModel(territoriesSet));
 		assertEquals(8, playerOne.getArmyCount());
 
 	}
 
 	/**
-	 * This method is use to test the functionality of
-	 * GameService calcArmiesForReinforcement(Player) method for HUMAN strategy that whether it
+	 * This method is use to test the functionality of GameService
+	 * calcArmiesForReinforcement(Player) method for HUMAN strategy that whether it
 	 * calculate armies for a given player as per game rules or not when player
 	 * doesn't occupy whole continent.
 	 */
@@ -195,10 +213,9 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This test case is for
-	 * GameService validateArmyInput(String, Player, Territory, List) method
-	 * where we test to various cases where method validates given parameters as per
-	 * logic.
+	 * This test case is for GameService validateArmyInput(String, Player,
+	 * Territory, List) method where we test to various cases where method validates
+	 * given parameters as per logic.
 	 */
 	@Test
 	public void testValidateArmyInput() {
@@ -237,10 +254,9 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This test checks if the
-	 * GameService getAttackableTerritories(Territory) method returns valid
-	 * attackable territories according to given territory and according to game
-	 * rule.
+	 * This test checks if the GameService getAttackableTerritories(Territory)
+	 * method returns valid attackable territories according to given territory and
+	 * according to game rule.
 	 */
 	@Test
 	public void testGetAttackableTerritories() {
@@ -258,10 +274,10 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This test checks if the
-	 * GameService fortify(Territory, Territory, int, List) method fortify
-	 * given territory according to game logic and after proper validation or not
-	 * when armies to move is greater than from territory army count.
+	 * This test checks if the GameService fortify(Territory, Territory, int, List)
+	 * method fortify given territory according to game logic and after proper
+	 * validation or not when armies to move is greater than from territory army
+	 * count.
 	 */
 	@Test
 	public void testValidatefortifcationParametersCaseOne() {
@@ -276,10 +292,9 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This test checks if the
-	 * GameService fortify(Territory, Territory, int, List) method fortify
-	 * given territory according to game logic and after proper validation or not
-	 * when from territory try to move armies to itself.
+	 * This test checks if the GameService fortify(Territory, Territory, int, List)
+	 * method fortify given territory according to game logic and after proper
+	 * validation or not when from territory try to move armies to itself.
 	 */
 	@Test
 	public void testValidatefortifcationParametersCaseTwo() {
@@ -295,8 +310,8 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This test checks if the GameService attack(Territory, Territory)
-	 * method for HUMAN strategy attack given territory or not.
+	 * This test checks if the GameService attack(Territory, Territory) method for
+	 * HUMAN strategy attack given territory or not.
 	 */
 	@Test
 	public void testAttack() {
@@ -309,10 +324,10 @@ public class GameServiceTest {
 		attackerTerritory.setArmyCount(10);
 		defenderTerritory.setArmyCount(5);
 		playerOne.setPlayingStrategy(new HumanStrategy());
-		
+
 		// testing for all out attack mode
-		Pair<Boolean, Integer> result = gameService.attack(playerOne,playerTwo,attackerTerritory, defenderTerritory, true, 0, 0,
-				new PhaseViewModel());
+		Pair<Boolean, Integer> result = gameService.attack(playerOne, playerTwo, attackerTerritory, defenderTerritory,
+				true, 0, 0, new PhaseViewModel());
 		if (result.getKey()) {
 			assertEquals(defenderTerritory.getOwner(), playerOne);
 		} else {
@@ -322,10 +337,9 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This test checks if the
-	 * GameService getFortifiableTerritories(Territory) method returns valid
-	 * fortifiable territories according to given territory and according to game
-	 * rule.
+	 * This test checks if the GameService getFortifiableTerritories(Territory)
+	 * method returns valid fortifiable territories according to given territory and
+	 * according to game rule.
 	 */
 	@Test
 	public void testGetFortifiableTerritories() {
@@ -341,15 +355,14 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This test checks if the GameService getNextPlayer()} method returns
-	 * valid player whose turn it is as per round robin fashion for choosing player
-	 * turn
+	 * This test checks if the GameService getNextPlayer()} method returns valid
+	 * player whose turn it is as per round robin fashion for choosing player turn
 	 */
 	@Test
 	public void testGetNextPlayer() {
 		List<Player> playerList = new ArrayList<>();
 		int numberOfplayers = 5;
-		
+
 		for (int i = 0; i < numberOfplayers; i++) {
 			playerList.add(new Player());
 		}
@@ -367,8 +380,9 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This test checks if the GameService addReinforcement() method for HUMAN strategy to add
-	 * correct number of reinforcement armies to current player's selected territory
+	 * This test checks if the GameService addReinforcement() method for HUMAN
+	 * strategy to add correct number of reinforcement armies to current player's
+	 * selected territory
 	 */
 
 	@Test
@@ -393,8 +407,8 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This test check if the method GameService canPlayerAttackFurther()
-	 * returns correct boolean based on if current player can attack further or not
+	 * This test check if the method GameService canPlayerAttackFurther() returns
+	 * correct boolean based on if current player can attack further or not
 	 */
 
 	@Test
@@ -417,9 +431,9 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This test check if the method GameService ifContinentOccupied()
-	 * returns correct boolean based on if current player occupies all the
-	 * territories of the continent and hence occupies the continent.
+	 * This test check if the method GameService ifContinentOccupied() returns
+	 * correct boolean based on if current player occupies all the territories of
+	 * the continent and hence occupies the continent.
 	 */
 	@Test
 	public void testIfContinentOccupied() {
@@ -431,8 +445,8 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This test checks if the GameService endOfStartUpPhase() method
-	 * returns valid boolean to check if the startUp phase is completed or not.
+	 * This test checks if the GameService endOfStartUpPhase() method returns valid
+	 * boolean to check if the startUp phase is completed or not.
 	 */
 	@Test
 	public void testEndOfStartUpPhase() {
@@ -453,15 +467,14 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This method checks if the
-	 * GameService endOfReinforcementPhase(Player, CardExchangeViewModel)
-	 * method return correct result or not.
+	 * This method checks if the GameService endOfReinforcementPhase(Player,
+	 * CardExchangeViewModel) method return correct result or not.
 	 */
 	@Test
 	public void testEndOfReinforcementPhase() {
 		Player playerOne = new Player();
 		playerOne.setArmyCount(10);
-		
+
 		assertFalse(gameService.endOfReinforcementPhase(playerOne, new CardExchangeViewModel(territoriesSet)));
 
 		playerOne.setArmyCount(0);
@@ -469,8 +482,7 @@ public class GameServiceTest {
 	}
 
 	/**
-	 * This method test logic for GameService isGameEnded(Player, int)
-	 * method.
+	 * This method test logic for GameService isGameEnded(Player, int) method.
 	 */
 	@Test
 	public void testIsGameEnded() {
@@ -505,8 +517,11 @@ public class GameServiceTest {
 		// asserts
 		assertEquals(error, errorList.get(0));
 	}
-	
-	
+
+	/**
+	 * This method tests SerializePossible method & returns true if it is
+	 * successfully able to serialize gameState objects into a file.
+	 */
 
 	@Test
 	public void testSerializePossible() {
@@ -516,6 +531,10 @@ public class GameServiceTest {
 		assertTrue(ifSerialized);
 	}
 
+	/**
+	 * This method tests SerializePossible method & returns true if it is not able
+	 * to serialize gameState objects into a file.
+	 */
 	@Test
 	public void testSerializeFail() {
 		fileToSave = null;
