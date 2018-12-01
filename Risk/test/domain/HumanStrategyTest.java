@@ -158,7 +158,7 @@ public class HumanStrategyTest {
 		// assert based on if attacker won defending territory or not.
 		if (result.getKey()) {
 			assertEquals(1, attackerTerritory.getArmyCount());
-			assertEquals(humanStrategy, defenderTerritory.getOwner());
+			assertEquals(attacker, defenderTerritory.getOwner());
 			assertEquals(0, defenderTerritory.getArmyCount());
 		} else {
 			assertEquals(0, attackerTerritory.getArmyCount());
@@ -195,7 +195,7 @@ public class HumanStrategyTest {
 
 		// assert based on if attacker won defending territory or not.
 		if (result.getKey()) {
-			assertEquals(humanStrategy, defenderTerritory.getOwner());
+			assertEquals(attacker, defenderTerritory.getOwner());
 			assertEquals(0, defenderTerritory.getArmyCount());
 		} else {
 			assertTrue(defenderTerritory.getArmyCount() > 0);
