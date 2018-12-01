@@ -43,6 +43,11 @@ public class GameObjectClass implements Serializable {
 	boolean ifStartUpIsComepleted;
 
 	/**
+	 * variable to hold reference of the CardExchangeViewModel.
+	 */
+	CardExchangeViewModel cardExchangeViewModel;
+
+	/**
 	 * Class constructor
 	 * 
 	 * @param continentSet
@@ -57,9 +62,12 @@ public class GameObjectClass implements Serializable {
 	 *            parameter of the current phase.
 	 * @param ifStartUpIsComepleted:
 	 *            parameter of the if the startup phase is completed or not.
+	 * @param cardExchangeViewModel:
+	 *            parameter of the cardExchangeView model. .           
 	 */
 	public GameObjectClass(HashSet<Continent> continentSet, HashSet<Territory> territorySet, List<Player> playerList,
-			Player currentPlayer, String currentPhase, boolean ifStartUpIsComepleted) {
+			Player currentPlayer, String currentPhase, boolean ifStartUpIsComepleted,
+			CardExchangeViewModel cardExchangeViewModel) {
 		super();
 		this.continentSet = continentSet;
 		this.territorySet = territorySet;
@@ -67,7 +75,7 @@ public class GameObjectClass implements Serializable {
 		this.currentPlayer = currentPlayer;
 		this.currentPhase = currentPhase;
 		this.ifStartUpIsComepleted = ifStartUpIsComepleted;
-
+		this.cardExchangeViewModel = cardExchangeViewModel;
 	}
 
 	/**
@@ -115,6 +123,14 @@ public class GameObjectClass implements Serializable {
 		return currentPlayer;
 	}
 
+	public CardExchangeViewModel getCardExchangeViewModel() {
+		return cardExchangeViewModel;
+	}
+
+	public void setCardExchangeViewModel(CardExchangeViewModel cardExchangeViewModel) {
+		this.cardExchangeViewModel = cardExchangeViewModel;
+	}
+
 	/**
 	 * Getter for Current phase
 	 * 
@@ -132,16 +148,6 @@ public class GameObjectClass implements Serializable {
 	 */
 	public boolean getIfStartUpIsComepleted() {
 		return ifStartUpIsComepleted;
-	}
-
-	/**
-	 * Setter for IfStartUpIsComepleted boolean parameter
-	 * 
-	 * @param ifStartUpIsComepleted:
-	 *            boolean parameter which is true if start up phase is completed
-	 */
-	public void setIfStartUpIsComepleted(boolean ifStartUpIsComepleted) {
-		this.ifStartUpIsComepleted = ifStartUpIsComepleted;
 	}
 
 }

@@ -80,6 +80,11 @@ public class GameServiceTest {
 	 * Variable holds reference to a map of player and its playing strategy
 	 */
 	Map<Player, PlayerStrategyEnum> playerStrategyMapping;
+	
+	/**
+	 * Variable holds reference to CardExchangeViewModel 
+	 */
+	CardExchangeViewModel cardExchangeViewModel;
 
 	/**
 	 * This method setup require common context before every test is run.
@@ -163,6 +168,8 @@ public class GameServiceTest {
 		playerStrategyMapping.put(p1, PlayerStrategyEnum.HUMAN);
 		playerStrategyMapping.put(p2, PlayerStrategyEnum.AGGRESSIVE);
 		playerStrategyMapping.put(p3, PlayerStrategyEnum.HUMAN);
+		
+		cardExchangeViewModel	=	new CardExchangeViewModel(territoriesSet);
 	}
 
 	/**
@@ -527,7 +534,7 @@ public class GameServiceTest {
 	public void testSerializePossible() {
 		List<String> errorList = new ArrayList<>();
 		boolean ifSerialized = gameService.serialize(fileToSave, continentsSet, territoriesSet, playerList,
-				currentPlayer, currentPhase, ifStartUpIsComepleted, playerStrategyMapping, errorList);
+				currentPlayer, currentPhase, ifStartUpIsComepleted, playerStrategyMapping,cardExchangeViewModel, errorList);
 		assertTrue(ifSerialized);
 	}
 
@@ -540,7 +547,7 @@ public class GameServiceTest {
 		fileToSave = null;
 		List<String> errorList = new ArrayList<>();
 		boolean ifSerialized = gameService.serialize(fileToSave, continentsSet, territoriesSet, playerList,
-				currentPlayer, currentPhase, ifStartUpIsComepleted, playerStrategyMapping, errorList);
+				currentPlayer, currentPhase, ifStartUpIsComepleted, playerStrategyMapping,cardExchangeViewModel, errorList);
 		assertTrue(!ifSerialized);
 	}
 }

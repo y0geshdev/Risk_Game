@@ -1,5 +1,6 @@
 package domain;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -14,7 +15,7 @@ import java.util.Set;
  * @author Shivam
  *
  */
-public class CardExchangeViewModel extends Observable {
+public class CardExchangeViewModel extends Observable implements Serializable{
 
 	/**
 	 * Represents the current player object.

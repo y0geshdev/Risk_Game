@@ -290,7 +290,7 @@ public class GameController {
 	/**
 	 * Reference variable for the CardExchangeViewModel
 	 */
-	private CardExchangeViewModel cardExchangeViewModel;
+	private static CardExchangeViewModel cardExchangeViewModel;
 
 	/**
 	 * Reference to stage of cardExchangeView.
@@ -422,7 +422,9 @@ public class GameController {
 		currentPlayer = gameService.getNextPlayer(null, playersList);
 		enableComponents(reinfoPhaseUI);
 		List<String> errorList = new ArrayList<>();
-
+		cardExchangeViewModel = new CardExchangeViewModel(territoriesSet);
+		
+		
 		// setup Phase view, World domination view and Card exchange view.
 		setUpPhaseAndWorldDominationViews(errorList);
 		setUpCardExchangeView(errorList);
@@ -883,7 +885,6 @@ public class GameController {
 			// load fxml and add its controller to corresponding model.
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/CardExchange.fxml"));
 			root = loader.load();
-			cardExchangeViewModel = new CardExchangeViewModel(territoriesSet);
 			cardExchangeViewModel.addObserver(loader.getController());
 		} catch (Exception e) {
 			errorList.add("Issue setting up Card exchange view.");
@@ -903,7 +904,7 @@ public class GameController {
 	 * This method begins the startUp phase.
 	 */
 	private void startUpPhase() {
-
+		currentPhase = GameController.STARTUP_PHASE;
 		// if startUp phase is ended then prepare for reinforcement phase.
 		if (gameService.endOfStartUpPhase(playersWithZeroArmies, playersList)) {
 			ifStartUpIsComepleted = true;
@@ -937,7 +938,6 @@ public class GameController {
 			updatePhaseInfo(currentPlayer.getName(), "StartUp Phase", "Place armies for " + currentPlayer.getName());
 			if (playerStrategyMapping.get(currentPlayer).equals(PlayerStrategyEnum.HUMAN)) {
 				enableComponents(reinfoPhaseUI);
-				currentPhase = GameController.STARTUP_PHASE;
 				displayPlayerInfo();
 			} else {
 				disableComponents(reinfoPhaseUI);
@@ -950,6 +950,7 @@ public class GameController {
 	 * This method begins the reinforcement phase.
 	 */
 	private void reinforcementPhase() {
+		currentPhase	=	GameController.REINFORCEMENT_PHASE;
 		if (gameService.endOfReinforcementPhase(currentPlayer, cardExchangeViewModel)) {
 
 			disableComponents(reinfoPhaseUI);
@@ -1312,31 +1313,13 @@ public class GameController {
 			fileChooser.getExtensionFilters().add(new ExtensionFilter(".ser files", "*.ser"));
 			savedFile = fileChooser.showSaveDialog(null);
 		}
-		FileOutputStream fileOutput;
-		ObjectOutputStream out = null;
-
-		try {
-			fileOutput = new FileOutputStream(savedFile);
-			out = new ObjectOutputStream(fileOutput);
-			GameObjectClass gameState = new GameObjectClass(continentsSet, territoriesSet, playersList, currentPlayer,
-					currentPhase, ifStartUpIsComepleted);
-
-			out.writeObject(gameState);
-			String info = "Game Saved";
-			showInformation(info);
-			out.close();
-		} catch (Exception e) {
-			String error = "Game Cannot be saved";
-			showError(error);
-			e.printStackTrace();
-			return;
-		} finally {
-			try {
-				if (out != null)
-					out.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+		List<String> errorList = new ArrayList<>();
+		gameService.serialize(savedFile, continentsSet, territoriesSet, playersList, currentPlayer, currentPhase,
+				ifStartUpIsComepleted, playerStrategyMapping, cardExchangeViewModel,errorList);
+		if (errorList.size() > 0) {
+			showError(errorList.get(0));
+		}else {
+			showInformation("Game Saved");
 		}
 
 	}
@@ -1356,9 +1339,11 @@ public class GameController {
 		}
 		List<String> errorList = new ArrayList<>();
 		gameService.serialize(savedFile, continentsSet, territoriesSet, playersList, currentPlayer, currentPhase,
-				ifStartUpIsComepleted, playerStrategyMapping, errorList);
+				ifStartUpIsComepleted, playerStrategyMapping, cardExchangeViewModel,errorList);
 		if (errorList.size() > 0) {
 			showError(errorList.get(0));
+		}else {
+		Platform.exit();
 		}
 	}
 
@@ -1382,7 +1367,7 @@ public class GameController {
 	 */
 	public void resumeGame(HashSet<Continent> continentsSet, HashSet<Territory> territoriesSet,
 			List<Player> playersList, Player currentPlayer, String currentPhase, boolean ifStartUpIsComepleted,
-			File file) {
+			File file,CardExchangeViewModel cardExchangeViewModelObj) {
 
 		gameStage.getScene().getWindow().addEventFilter(WindowEvent.WINDOW_CLOSE_REQUEST,
 				new EventHandler<WindowEvent>() {
@@ -1400,9 +1385,11 @@ public class GameController {
 		this.currentPlayer = currentPlayer;
 		savedFile = file;
 		this.ifStartUpIsComepleted = ifStartUpIsComepleted;
+		cardExchangeViewModel	=	cardExchangeViewModelObj;
 		playerStrategyMapping = new HashMap<>();
 		gameService.setPlayerStartegyEnumMap(playersList, playerStrategyMapping);
-
+		int playerCurArmy	=	currentPlayer.getArmyCount();
+		currentPlayer.setArmyCount(0);
 		displayMap();
 		updateMapData();
 		disableComponents(attackPhaseUI);
@@ -1414,6 +1401,7 @@ public class GameController {
 		setUpPhaseAndWorldDominationViews(errorList);
 		setUpCardExchangeView(errorList);
 		worldDominationModel.updateState(continentsSet, territoriesSet);
+		currentPlayer.setArmyCount(playerCurArmy);
 		if (errorList.size() > 0) {
 			Platform.exit();
 		} else {
@@ -1424,6 +1412,7 @@ public class GameController {
 				startUpPhase();
 			} else if (currentPhase.equalsIgnoreCase(GameController.REINFORCEMENT_PHASE)) {
 				updatePhaseInfo(currentPlayer.getName(), "Reinforcement Phase", "Reinforcement Phase started.");
+				cardExchangeViewModel.setViewForCurrentPlayer(currentPlayer);
 				cardExchangeViewStage.showAndWait();
 				ifStartUpIsComepleted = true;
 				startUpAndReinforcementId.setText("Reinforcement Phase");
@@ -1742,7 +1731,7 @@ public class GameController {
 					cardExchangeViewStage.hide();
 					setArmiesOnPlayerOwnedCardTerritory();
 					enableComponents(reinfoPhaseUI);
-
+					currentPhase = GameController.REINFORCEMENT_PHASE;
 					// calculated armies for reinforcement phase.
 					gameService.calcArmiesForReinforcement(currentPlayer, playerStrategyMapping.get(currentPlayer),
 							cardExchangeViewModel);

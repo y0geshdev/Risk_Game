@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import domain.CardExchangeViewModel;
 import domain.Continent;
 import domain.GameObjectClass;
 import domain.Player;
@@ -626,53 +627,57 @@ public class MapController {
 			String currentPhase;
 			boolean ifStartUpIsComepleted;
 			List<String> errorList = new ArrayList<>();
+			CardExchangeViewModel cardExchangeViewModel;
 			try {
 				gameState = mapService.deserialize(file, errorList);
 				if (errorList.size() > 0) {
 					showError(errorList.get(0));
-				}
-				continentsSet = gameState.getContinentSet();
-				territoriesSet = gameState.getTerritorySet();
-				playersList = gameState.getPlayerList();
-				currentPlayer = gameState.getCurrentPlayer();
-				currentPhase = gameState.getCurrentPhase();
-				ifStartUpIsComepleted = gameState.getIfStartUpIsComepleted();
-				if (errorList.size() == 0) {
-					Parent root;
-					GameController gameController;
-					try {
+				} else {
+					continentsSet = gameState.getContinentSet();
+					territoriesSet = gameState.getTerritorySet();
+					playersList = gameState.getPlayerList();
+					currentPlayer = gameState.getCurrentPlayer();
+					currentPhase = gameState.getCurrentPhase();
+					ifStartUpIsComepleted = gameState.getIfStartUpIsComepleted();
+					cardExchangeViewModel = gameState.getCardExchangeViewModel();
+					if (errorList.size() == 0) {
+						Parent root;
+						GameController gameController;
+						try {
 
-						// load fxml for UI.
-						FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/Game.fxml"));
-						root = loader.load();
-						gameController = loader.getController();
-					} catch (IOException e) {
-						showError("Unable to load Game.fxml file.");
-						return;
+							// load fxml for UI.
+							FXMLLoader loader = new FXMLLoader(getClass().getResource("/ui/Game.fxml"));
+							root = loader.load();
+							gameController = loader.getController();
+						} catch (IOException e) {
+							showError("Unable to load Game.fxml file.");
+							return;
+						}
+
+						// setup stage
+						Stage stage = new Stage();
+						stage.setTitle("Risk Game");
+						stage.setScene(new Scene(root, 800, 600));
+						stage.show();
+						gameController.setGameStage(stage);
+						gameController.resumeGame(continentsSet, territoriesSet, playersList, currentPlayer,
+								currentPhase, ifStartUpIsComepleted, file, cardExchangeViewModel);
+
+					} else {
+						String errors = "Resolve below errors:";
+						for (String error : errorList)
+							errors = errors.concat("\n-" + error);
+						showError(errors);
 					}
 
-					// setup stage
-					Stage stage = new Stage();
-					stage.setTitle("Risk Game");
-					stage.setScene(new Scene(root, 800, 600));
-					stage.show();
-					gameController.setGameStage(stage);
-					gameController.resumeGame(continentsSet, territoriesSet, playersList, currentPlayer, currentPhase,
-							ifStartUpIsComepleted, file);
-
-				} else {
-					String errors = "Resolve below errors:";
-					for (String error : errorList)
-						errors = errors.concat("\n-" + error);
-					showError(errors);
 				}
-
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
 		}
+
 	}
 
 }

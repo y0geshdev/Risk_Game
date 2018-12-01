@@ -1,12 +1,14 @@
 package domain;
 
+import java.io.Serializable;
+
 /**
  * This class is an entity class for cards
  * 
  * @author Shivam
  *
  */
-public class Card {
+public class Card implements Serializable{
 
 	/**
 	 * Represents the type of card.
